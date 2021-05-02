@@ -25,4 +25,8 @@ Route::prefix('/listings')->group(function () {
 
 Route::prefix('/categories')->group(function () {
     Route::get('/', "CategoriesController@getAll");
+    Route::get('{categoryId}', "CategoriesController@getOne");
+    Route::post('/', "CategoriesController@create");
+    Route::put('{categoryId}', "CategoriesController@updateOne");
+    Route::delete('{categoryId}', "CategoriesController@deleteOne");
 });

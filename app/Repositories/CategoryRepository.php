@@ -4,25 +4,13 @@ namespace App\Repositories;
 
 use App\Models\Category;
 use App\Repositories\Contracts\CategoryRepositoryInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class CategoryRepository implements CategoryRepositoryInterface {
-
-    private $category;
-
-    public function __construct(Category $category)
+class CategoryRepository extends BaseRepository implements CategoryRepositoryInterface
+{
+    public function __construct(Category $model)
     {
-        $this->category = $category;
+        parent::__construct($model);
     }
 
-    public function getAll()
-    {
-        $categories = $this->category::with('children')->get()->toArray();
-        return $categories;
-    }
-
-    public function getCategory($id)
-    {
-        $category = $this->category::where("id", $id)->first()->toArray();
-        return $category;
-    }
 }

@@ -2,9 +2,8 @@
 
 namespace App\Repositories\Contracts;
 
-interface CategoryRepositoryInterface {
+interface CategoryRepositoryInterface extends BaseRepositoryInterface {
 
-    public function getAll();
 
-    public function getCategory($id);
+
 }

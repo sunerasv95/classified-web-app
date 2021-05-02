@@ -20,8 +20,8 @@ class CreateCategoriesTable extends Migration
             $table->string("category_slug", 100);
             $table->tinyInteger("is_parent");
             $table->integer("parent_id");
-            $table->tinyInteger("status");
-            $table->tinyInteger("is_deleted");
+            $table->tinyInteger("status")->default(0);
+            $table->tinyInteger("is_deleted")->default(0);
             $table->timestamps();
             $table->softDeletes($column = 'deleted_at', $precision = 0);
         });

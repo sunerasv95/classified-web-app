@@ -17,8 +17,8 @@ class CreateListingImagesTable extends Migration
             $table->id();
             $table->string("listing_img_url", 200);
             $table->integer("listing_id");
-            $table->tinyInteger("status");
-            $table->tinyInteger("is_deleted");
+            $table->tinyInteger("status")->default(0);;
+            $table->tinyInteger("is_deleted")->default(0);;
             $table->timestamps();
             $table->softDeletes($column = 'deleted_at', $precision = 0);
         });

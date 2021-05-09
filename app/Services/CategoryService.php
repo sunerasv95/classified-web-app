@@ -6,7 +6,6 @@ use App\Traits\ApiResponser;
 use App\Http\Resources\Category\CategoryResource;
 use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Services\Contracts\CategoryServiceInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoryService implements CategoryServiceInterface
 {
@@ -52,7 +51,7 @@ class CategoryService implements CategoryServiceInterface
         return $this->respondCreated($data);
     }
 
-    public function updateCategoryById($id, $data = array())
+    public function updateCategoryById($id, array $data)
     {
         $category = $this->categoryRepository->getOneById($id, array(), array("*"), array());
         $result = $this->categoryRepository->update($category, $data);

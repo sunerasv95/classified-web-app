@@ -1,9 +1,6 @@
 <?php
 
-namespace app\Services\Contracts;
-
-use App\Http\Requests\CreateCategoryRequest;
-use Illuminate\Http\Client\Request;
+namespace App\Services\Contracts;
 
 interface CategoryServiceInterface {
 
@@ -13,7 +10,7 @@ interface CategoryServiceInterface {
 
     public function createCategory(array $data);
 
-    public function updateCategoryById($id, $data=array());
+    public function updateCategoryById($id, array $data);
 
     public function deleteCategoryById($id);
 }

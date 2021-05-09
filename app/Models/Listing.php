@@ -12,6 +12,19 @@ class Listing extends Model
 {
     use SoftDeletes;
 
+    protected $fillable = [
+        "listing_title",
+        "listing_slug",
+        "listing_ref_number",
+        "listing_description",
+        "list_type",
+        "category_id",
+        "brand_id",
+        "pricing_option_id",
+        "list_price",
+        "status"
+    ];
+
    public function brand(): BelongsTo
    {
        return $this->belongsTo(Brand::class);

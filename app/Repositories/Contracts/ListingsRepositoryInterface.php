@@ -2,9 +2,9 @@
 
 namespace App\Repositories\Contracts;
 
-interface ListingRepositoryInterface {
+use App\Repositories\Contracts\BaseRepositoryInterface;
 
-    public function getAll();
+interface ListingRepositoryInterface extends BaseRepositoryInterface
+{
 
-    public function getListing($id);
 }

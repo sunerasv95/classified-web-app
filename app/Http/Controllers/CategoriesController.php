@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateCategoryRequest;
 use App\Repositories\Contracts\CategoryRepositoryInterface;
 use app\Services\Contracts\CategoryServiceInterface;
-use Illuminate\Http\Request;
-use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Requests\Category\CreateCategoryRequest;
+use App\Http\Requests\Category\UpdateCategoryRequest;
 
 class CategoriesController extends Controller
 {

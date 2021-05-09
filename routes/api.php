@@ -35,10 +35,10 @@ Route::prefix('/categories')->group(function () {
 });
 
 Route::prefix('/brands')->group(function () {
-    Route::get('/', "BrandController@getAll");
-    Route::get('{categoryId}', "BrandController@getOne");
-    Route::post('/', "BrandController@create");
-    Route::put('{categoryId}', "BrandController@updateOne");
-    Route::delete('{categoryId}', "BrandController@deleteOne");
+    Route::get('/', "BrandsController@getAll");
+    Route::get('{categoryId}', "BrandsController@getOne");
+    Route::post('/', "BrandsController@create");
+    Route::put('{categoryId}', "BrandsController@updateOne");
+    Route::delete('{categoryId}', "BrandsController@deleteOne");
 });
 

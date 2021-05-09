@@ -6,7 +6,7 @@ use App\Http\Requests\Brand\CreateBrandRequest;
 use App\Http\Requests\Brand\UpdateBrandRequest;
 use App\Services\Contracts\BrandServiceInterface;
 
-class BrandController extends Controller
+class BrandsController extends Controller
 {
     private $brandService;
 

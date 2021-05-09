@@ -18,9 +18,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
 Route::prefix('/listings')->group(function () {
     Route::get('/', "ListingsController@getAll");
+    Route::get('{listingId}', "ListingsController@getOne");
+    Route::post('/', "ListingsController@create");
+    Route::put('{listingId}', "ListingsController@updateOne");
+    Route::delete('{listingId}', "ListingsController@deleteOne");
 });
 
 Route::prefix('/categories')->group(function () {
@@ -30,3 +33,12 @@ Route::prefix('/categories')->group(function () {
     Route::put('{categoryId}', "CategoriesController@updateOne");
     Route::delete('{categoryId}', "CategoriesController@deleteOne");
 });
+
+Route::prefix('/brands')->group(function () {
+    Route::get('/', "BrandController@getAll");
+    Route::get('{categoryId}', "BrandController@getOne");
+    Route::post('/', "BrandController@create");
+    Route::put('{categoryId}', "BrandController@updateOne");
+    Route::delete('{categoryId}', "BrandController@deleteOne");
+});
+

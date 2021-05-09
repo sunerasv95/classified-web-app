@@ -18,7 +18,7 @@ class CreateBrandsTable extends Migration
             $table->string("brand_name", 100);
             $table->string("brand_description", 150);
             $table->string("brand_slug", 100);
-            $table->string("brand_image_url", 200);
+            $table->string("brand_image_url", 200)->nullable($value = true);
             $table->tinyInteger("status")->default(0);;
             $table->tinyInteger("is_deleted")->default(0);;
             $table->timestamps();

@@ -24,8 +24,8 @@ class CreateListingsTable extends Migration
             $table->integer("brand_id");
             $table->integer("pricing_option_id");
             $table->float("list_price", 18, 2);
-            $table->tinyInteger("status");
-            $table->tinyInteger("is_deleted");
+            $table->tinyInteger("status")->default(0);
+            $table->tinyInteger("is_deleted")->default(0);
             $table->timestamps();
             $table->softDeletes($column = 'deleted_at', $precision = 0);
         });

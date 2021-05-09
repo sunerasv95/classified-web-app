@@ -57,6 +57,9 @@ class Handler extends ExceptionHandler
         if(get_class($exception) == "Illuminate\Database\Eloquent\ModelNotFoundException"){
              return $this->respondNotFound("Resource not found!");
         }
+        if(get_class($exception) == "Illuminate\Validation\ValidationException"){
+            return $this->respondValidationErrors($exception);
+        }
         return parent::render($request, $exception);
     }
 }

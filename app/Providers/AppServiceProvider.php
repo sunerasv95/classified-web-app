@@ -8,6 +8,8 @@ use App\Services\CategoryService;
 use App\Services\Contracts\BrandServiceInterface;
 use App\Services\Contracts\CategoryServiceInterface;
 use App\Services\Contracts\ListingsServiceInterface;
+use App\Services\Contracts\PricingOptionServiceInterface;
+use App\Services\PricingOptionService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -32,5 +34,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ListingsServiceInterface::class, ListingsService::class);
         $this->app->bind(CategoryServiceInterface::class, CategoryService::class);
         $this->app->bind(BrandServiceInterface::class, BrandService::class);
+        $this->app->bind(PricingOptionServiceInterface::class, PricingOptionService::class);
+
     }
 }

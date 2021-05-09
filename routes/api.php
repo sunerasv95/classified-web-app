@@ -36,9 +36,18 @@ Route::prefix('/categories')->group(function () {
 
 Route::prefix('/brands')->group(function () {
     Route::get('/', "BrandsController@getAll");
-    Route::get('{categoryId}', "BrandsController@getOne");
+    Route::get('{brandId}', "BrandsController@getOne");
     Route::post('/', "BrandsController@create");
-    Route::put('{categoryId}', "BrandsController@updateOne");
-    Route::delete('{categoryId}', "BrandsController@deleteOne");
+    Route::put('{brandId}', "BrandsController@updateOne");
+    Route::delete('{brandId}', "BrandsController@deleteOne");
 });
+
+Route::prefix('/pricing-options')->group(function () {
+    Route::get('/', "PricingOptionsController@getAll");
+    Route::get('{pricingId}', "PricingOptionsController@getOne");
+    Route::post('/', "PricingOptionsController@create");
+    Route::put('{pricingId}', "PricingOptionsController@updateOne");
+    Route::delete('{pricingId}', "PricingOptionsController@deleteOne");
+});
+
 

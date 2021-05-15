@@ -24,6 +24,7 @@ Route::prefix('/listings')->group(function () {
     Route::post('/', "ListingsController@create");
     Route::put('{listingId}', "ListingsController@updateOne");
     Route::delete('{listingId}', "ListingsController@deleteOne");
+    Route::post('uploads/images', "ListingsController@uploadImage");
 });
 
 Route::prefix('/categories')->group(function () {

@@ -9,8 +9,10 @@ use App\Repositories\ListingRepository;
 use App\Repositories\Contracts\BaseRepositoryInterface;
 use App\Repositories\Contracts\BrandRepositoryInterface;
 use App\Repositories\Contracts\CategoryRepositoryInterface;
+use App\Repositories\Contracts\ListingImageRepositoryInterface;
 use App\Repositories\Contracts\ListingRepositoryInterface;
 use App\Repositories\Contracts\PricingOptionRepositoryInterface;
+use App\Repositories\ListingImageRepository;
 use App\Repositories\PricingOptionRepository;
 use Illuminate\Support\ServiceProvider;
 
@@ -38,5 +40,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
         $this->app->bind(BrandRepositoryInterface::class, BrandRepository::class);
         $this->app->bind(PricingOptionRepositoryInterface::class, PricingOptionRepository::class);
+        $this->app->bind(ListingImageRepositoryInterface::class, ListingImageRepository::class);
     }
 }

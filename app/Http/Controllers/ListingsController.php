@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use app\Services\Contracts\ListingsServiceInterface;
+use App\Services\Contracts\ListingsServiceInterface;
 use App\Http\Requests\Listing\CreateListingRequest;
 use App\Http\Requests\Listing\UpdateListingRequest;
+use App\Http\Requests\Listing\UploadListingImageRequest;
+use App\Services\Contracts\FileServiceInterface;
 
 class ListingsController extends Controller
 {
@@ -40,5 +42,11 @@ class ListingsController extends Controller
     public function deleteOne($id)
     {
         return $this->listingService->deleteListingById($id);
+    }
+
+    public function uploadImage(UploadListingImageRequest $request, FileServiceInterface $fileService)
+    {
+        $validatedData = $request->validated();
+        return $fileService->uploadImageFileToS3Bucket($validatedData);
     }
 }

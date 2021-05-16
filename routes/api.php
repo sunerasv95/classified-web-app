@@ -51,4 +51,8 @@ Route::prefix('/pricing-options')->group(function () {
     Route::delete('{pricingId}', "PricingOptionsController@deleteOne");
 });
 
+Route::prefix('/uploads')->group(function () {
+    Route::post('images', "UploadsController@uploadImage");
+});
+
 

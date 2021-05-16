@@ -44,9 +44,4 @@ class ListingsController extends Controller
         return $this->listingService->deleteListingById($id);
     }
 
-    public function uploadImage(UploadListingImageRequest $request, FileServiceInterface $fileService)
-    {
-        $validatedData = $request->validated();
-        return $fileService->uploadImageFileToS3Bucket($validatedData);
-    }
 }

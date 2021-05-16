@@ -41,7 +41,11 @@ class CreateListingRequest extends FormRequest
             "brand_id" => "required|integer",
             "pricing_option_id" => "required|integer",
             "list_price" => "required|numeric",
-            "status" => "required|integer"
+            "status" => "required|integer",
+            "details" => "required",
+            "details.attributes" => "required|array",
+            "details.attributes.*.attribute_id" => "required|integer",
+            "details.attributes.*.attribute_value" => "required",
         ];
     }
 }

@@ -12,6 +12,10 @@ class Listing extends Model
 {
     use SoftDeletes;
 
+    protected $hidden = [
+        "detailable_type"
+    ];
+
     protected $fillable = [
         "listing_title",
         "listing_slug",
@@ -25,23 +29,40 @@ class Listing extends Model
         "status"
     ];
 
-   public function brand(): BelongsTo
-   {
-       return $this->belongsTo(Brand::class);
-   }
+    protected $touches = [
+        "detail_attributes"
+    ];
 
-   public function category(): BelongsTo
-   {
-       return $this->belongsTo(Category::class);
-   }
+    public function brand(): BelongsTo
+    {
+        return $this->belongsTo(Brand::class);
+    }
 
-   public function pricing_option(): BelongsTo
-   {
-       return $this->belongsTo(PricingOption::class);
-   }
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
 
-   public function listing_image(): HasMany
-   {
-       return $this->hasMany(ListingImage::class, 'listing_id');
-   }
+    public function pricing_option(): BelongsTo
+    {
+        return $this->belongsTo(PricingOption::class);
+    }
+
+    public function listing_image(): HasMany
+    {
+        return $this->hasMany(ListingImage::class, 'listing_id');
+    }
+
+    // public function detailable()
+    // {
+    //     return $this->morphTo();
+    // }
+
+    public function detail_attributes()
+    {
+        return $this->belongsToMany(DetailAttribute::class, "listing_details", "listing_id", "attribute_id" )
+            ->as("attributes")
+            ->withPivot("attribute_value")
+            ->withTimestamps();
+    }
 }

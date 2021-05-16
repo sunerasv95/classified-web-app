@@ -43,7 +43,11 @@ class UpdateListingRequest extends FormRequest
             "brand_id" => "sometimes|integer|exists:brands,id",
             "pricing_option_id" => "sometimes|integer|exists:pricing_options,id",
             "list_price" => "sometimes|numeric",
-            "status" => "sometimes|integer"
+            "status" => "sometimes|integer",
+            "details" => "sometimes",
+            "details.attributes" => "required|array",
+            "details.attributes.*.attribute_id" => "required|integer",
+            "details.attributes.*.attribute_value" => "required",
         ];
     }
 }

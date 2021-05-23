@@ -10,6 +10,8 @@ class PricingOption extends Model
 {
     use SoftDeletes;
 
+    //protected $incrementing = false;
+
     protected $fillable = [
         "pricing_option",
         "status",

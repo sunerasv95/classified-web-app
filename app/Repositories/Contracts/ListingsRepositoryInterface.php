@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 interface ListingRepositoryInterface extends BaseRepositoryInterface
 {
-    public function createWithRelationships(array $payload, array $relations): Model;
+    // public function createWithRelationships(array $payload, array $relations): Model;
 
     public function updateWithRelationships(Model $model, array $attributes, array $relations): bool;
 }

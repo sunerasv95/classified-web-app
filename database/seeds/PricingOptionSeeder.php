@@ -14,6 +14,7 @@ class PricingOptionSeeder extends Seeder
     public function run()
     {
         DB::table('pricing_options')->insert([
+            // 'id' => rand(89999, 99999),
             'pricing_option' => "Sale Price",
             "status" => 1,
             "is_deleted" => 0,
@@ -23,6 +24,7 @@ class PricingOptionSeeder extends Seeder
         ]);
 
         DB::table('pricing_options')->insert([
+            // 'id' => rand(89999, 99999),
             'pricing_option' => "10 days/Rent",
             "status" => 1,
             "is_deleted" => 0,
@@ -32,6 +34,7 @@ class PricingOptionSeeder extends Seeder
         ]);
 
         DB::table('pricing_options')->insert([
+            // 'id' => rand(89999, 99999),
             'pricing_option' => "1 day/Rent",
             "status" => 1,
             "is_deleted" => 0,
@@ -41,6 +44,7 @@ class PricingOptionSeeder extends Seeder
         ]);
 
         DB::table('pricing_options')->insert([
+            // 'id' => rand(89999, 99999),
             'pricing_option' => "7 days/Rent",
             "status" => 1,
             "is_deleted" => 0,

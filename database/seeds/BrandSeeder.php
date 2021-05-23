@@ -14,6 +14,7 @@ class BrandSeeder extends Seeder
     public function run()
     {
         DB::table('brands')->insert([
+            // 'id' => rand(69999, 99999),
             'brand_name' => "Brand 001",
             'brand_description' => "test",
             'brand_slug' => "category_slug",
@@ -26,6 +27,7 @@ class BrandSeeder extends Seeder
         ]);
 
         DB::table('brands')->insert([
+            // 'id' => rand(69999, 99999),
             'brand_name' => "Brand 002",
             'brand_description' => "test",
             'brand_slug' => "category_slug",
@@ -38,6 +40,7 @@ class BrandSeeder extends Seeder
         ]);
 
         DB::table('brands')->insert([
+            // 'id' => rand(69999, 99999),
             'brand_name' => "Brand 003",
             'brand_description' => "test",
             'brand_slug' => "category_slug",
@@ -50,6 +53,7 @@ class BrandSeeder extends Seeder
         ]);
 
         DB::table('brands')->insert([
+            // 'id' => rand(69999, 99999),
             'brand_name' => "Brand 004",
             'brand_description' => "test",
             'brand_slug' => "category_slug",
@@ -62,6 +66,7 @@ class BrandSeeder extends Seeder
         ]);
 
         DB::table('brands')->insert([
+            // 'id' => rand(69999, 99999),
             'brand_name' => "Brand 005",
             'brand_description' => "test",
             'brand_slug' => "category_slug",

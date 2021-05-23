@@ -21,11 +21,14 @@ class CreateListingsTable extends Migration
             $table->string("listing_description", 300);
             $table->integer("list_type");
             $table->integer("category_id");
-            $table->integer("brand_id");
             $table->integer("pricing_option_id");
             $table->float("list_price", 18, 2);
+            $table->tinyInteger("is_published")->default(0);
+            $table->timestamp("published_at")->nullable($value = true);
             $table->tinyInteger("status")->default(0);
             $table->tinyInteger("is_deleted")->default(0);
+            $table->string("detailable_type")->nullable();
+            $table->integer("detailable_id")->default(0);
             $table->timestamps();
             $table->softDeletes($column = 'deleted_at', $precision = 0);
         });

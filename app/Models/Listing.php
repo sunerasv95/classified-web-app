@@ -12,6 +12,8 @@ class Listing extends Model
 {
     use SoftDeletes;
 
+    //protected $incrementing = false;
+
     protected $hidden = [
         "detailable_type"
     ];
@@ -23,20 +25,13 @@ class Listing extends Model
         "listing_description",
         "list_type",
         "category_id",
-        "brand_id",
         "pricing_option_id",
         "list_price",
-        "status"
+        "status",
+        "is_deleted",
+        "detailable_type",
+        "detailable_id"
     ];
-
-    protected $touches = [
-        "detail_attributes"
-    ];
-
-    public function brand(): BelongsTo
-    {
-        return $this->belongsTo(Brand::class);
-    }
 
     public function category(): BelongsTo
     {
@@ -53,16 +48,9 @@ class Listing extends Model
         return $this->hasMany(ListingImage::class, 'listing_id');
     }
 
-    // public function detailable()
-    // {
-    //     return $this->morphTo();
-    // }
-
-    public function detail_attributes()
+    public function detailable()
     {
-        return $this->belongsToMany(DetailAttribute::class, "listing_details", "listing_id", "attribute_id" )
-            ->as("attributes")
-            ->withPivot("attribute_value")
-            ->withTimestamps();
+        return $this->morphTo();
     }
+
 }

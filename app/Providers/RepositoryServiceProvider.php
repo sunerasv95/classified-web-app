@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use App\Repositories\BaseRepository;
+use App\Repositories\BoardDetailsRepository;
 use App\Repositories\BrandRepository;
 use App\Repositories\CategoryRepository;
 use App\Repositories\ListingRepository;
 use App\Repositories\Contracts\BaseRepositoryInterface;
+use App\Repositories\Contracts\BoardDetailsRepositoryInterface;
 use App\Repositories\Contracts\BrandRepositoryInterface;
 use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Repositories\Contracts\ListingImageRepositoryInterface;
@@ -41,5 +43,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(BrandRepositoryInterface::class, BrandRepository::class);
         $this->app->bind(PricingOptionRepositoryInterface::class, PricingOptionRepository::class);
         $this->app->bind(ListingImageRepositoryInterface::class, ListingImageRepository::class);
+        $this->app->bind(BoardDetailsRepositoryInterface::class, BoardDetailsRepository::class);
     }
 }

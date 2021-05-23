@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddDetailAttributeTable extends Migration
+class CreateBoardSkillLevelTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,10 @@ class AddDetailAttributeTable extends Migration
      */
     public function up()
     {
-        Schema::create('detail_attributes', function (Blueprint $table) {
+        Schema::create('board_skill_level', function (Blueprint $table) {
             $table->id();
-            $table->string("attribute_name");
-            // $table->integer("category_id");
-            $table->tinyInteger("status")->default(0);
-            $table->tinyInteger("is_deleted")->default(0);
+            $table->integer("board_detail_id");
+            $table->integer("skill_level_id");
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ class AddDetailAttributeTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('detail_attributes');
+        Schema::dropIfExists('board_skill_level');
     }
 }

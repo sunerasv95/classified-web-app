@@ -14,40 +14,42 @@ class ListingRepository extends BaseRepository implements ListingRepositoryInter
         parent::__construct($model);
     }
 
-    public function createWithRelationships(array $attributes, array $relations): Model
-    {
-        $detail_attr = null;
+    // public function createWithRelationships(array $attributes, array $relations): Model
+    // {
+    //     $detableId = 0;
+    //     $detailableType = null;
+    //     $boardDetailsData = array();
 
-        $newListing = $this->create($attributes);
-        $listingId  = $newListing->id;
 
-        if (isset($relations["details_attributes"])) $detail_attr = $relations["details_attributes"];
+    //     // $newListing = $this->create($attributes);
+    //     // $listingId  = $newListing->id;
+    //     //dd($relations["board_details"]);
 
-        if (isset($newListing) && isset($detail_attr)) {
-            foreach ($detail_attr as $k => $attr) {
-                $detail_attr[$k]["listing_id"] = $listingId;
-            }
-            $newListing->detail_attributes()->attach($detail_attr);
-        }
+    //     // if (isset($newListing) && isset($detail_attr)) {
+    //     //     foreach ($detail_attr as $k => $attr) {
+    //     //         $detail_attr[$k]["listing_id"] = $listingId;
+    //     //     }
+    //     //     $newListing->detail_attributes()->attach($detail_attr);
+    //     // }
 
-        return $newListing;
-    }
+    //    // return $newListing;
+    // }
 
     public function updateWithRelationships(Model $model, array $attributes, array $relations): bool
     {
-        $update_attr = null;
-        $listingUpdated = $this->update($model, $attributes);
+        // $listingUpdated = $this->update($model, $attributes);
 
-        if (isset($relations["details_attributes"])) $update_attr = $relations["details_attributes"];
+        // if (isset($relations["details_attributes"])) $update_attr = $relations["details_attributes"];
 
-        if (isset($listingUpdated) && isset($update_attr)) {
-            foreach ($update_attr as $k => $attr) {
-                $update_attr[$k]["listing_id"] = $model->id;
-            }
-            $model->detail_attributes()->sync($update_attr);
-        }
-
-        return $listingUpdated;
+        // if (isset($listingUpdated) && isset($update_attr)) {
+        //     foreach ($update_attr as $k => $attr) {
+        //         $update_attr[$k]["listing_id"] = $model->id;
+        //     }
+        //     $model->detail_attributes()->sync($update_attr);
+        // }
+        // dd(lis);
+        // return $listingUpdated;
+        return 0;
     }
 
 }

@@ -11,6 +11,8 @@ class Category extends Model
 {
     use SoftDeletes;
 
+    //protected $incrementing = false;
+
     protected $fillable = [
         "category_name",
         "category_description",

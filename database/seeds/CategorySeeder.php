@@ -15,6 +15,7 @@ class CategorySeeder extends Seeder
     public function run()
     {
         DB::table('categories')->insert([
+            // 'id' => rand(59999, 99999),
             'category_name' => "Surfboards",
             'category_description' => "test",
             'category_slug' => "category_slug",
@@ -28,6 +29,7 @@ class CategorySeeder extends Seeder
         ]);
 
         DB::table('categories')->insert([
+            // 'id' => rand(59999, 99999),
             'category_name' => "Paddleboards",
             'category_description' => "test",
             'category_slug' => "category_slug",
@@ -41,6 +43,7 @@ class CategorySeeder extends Seeder
         ]);
 
         DB::table('categories')->insert([
+            // 'id' => rand(59999, 99999),
             'category_name' => "Shortboards",
             'category_description' => "test",
             'category_slug' => "category_slug",
@@ -55,6 +58,7 @@ class CategorySeeder extends Seeder
 
 
         DB::table('categories')->insert([
+            // 'id' => rand(59999, 99999),
             'category_name' => "longboards",
             'category_description' => "test",
             'category_slug' => "category_slug",
@@ -69,6 +73,7 @@ class CategorySeeder extends Seeder
 
 
         DB::table('categories')->insert([
+            // 'id' => rand(59999, 99999),
             'category_name' => "Sup boards",
             'category_description' => "test",
             'category_slug' => "category_slug",

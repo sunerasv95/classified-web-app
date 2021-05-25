@@ -4,9 +4,11 @@ namespace App\Providers;
 
 use App\Models\AccessoriesDetails;
 use App\Models\BoardDetails;
+use App\Services\AuthService;
 use App\Services\ListingsService;
 use App\Services\BrandService;
 use App\Services\CategoryService;
+use App\Services\Contracts\AuthServiceInterface;
 use App\Services\Contracts\BrandServiceInterface;
 use App\Services\Contracts\CategoryServiceInterface;
 use App\Services\Contracts\FileServiceInterface;
@@ -43,6 +45,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(BrandServiceInterface::class, BrandService::class);
         $this->app->bind(PricingOptionServiceInterface::class, PricingOptionService::class);
         $this->app->bind(ListingImageServiceInterface::class, ListingImageService::class);
+
+        //Authentication
+        $this->app->bind(AuthServiceInterface::class, AuthService::class);
 
         //file service
         $this->app->bind(FileServiceInterface::class, FileService::class);

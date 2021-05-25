@@ -7,6 +7,9 @@ use App\Repositories\BoardDetailsRepository;
 use App\Repositories\BrandRepository;
 use App\Repositories\CategoryRepository;
 use App\Repositories\ListingRepository;
+use App\Repositories\ListingImageRepository;
+use App\Repositories\PricingOptionRepository;
+use App\Repositories\UserRepository;
 use App\Repositories\Contracts\BaseRepositoryInterface;
 use App\Repositories\Contracts\BoardDetailsRepositoryInterface;
 use App\Repositories\Contracts\BrandRepositoryInterface;
@@ -14,8 +17,8 @@ use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Repositories\Contracts\ListingImageRepositoryInterface;
 use App\Repositories\Contracts\ListingRepositoryInterface;
 use App\Repositories\Contracts\PricingOptionRepositoryInterface;
-use App\Repositories\ListingImageRepository;
-use App\Repositories\PricingOptionRepository;
+use App\Repositories\Contracts\UserRepositoryInterface;
+
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -44,5 +47,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(PricingOptionRepositoryInterface::class, PricingOptionRepository::class);
         $this->app->bind(ListingImageRepositoryInterface::class, ListingImageRepository::class);
         $this->app->bind(BoardDetailsRepositoryInterface::class, BoardDetailsRepository::class);
+        $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
+
     }
 }

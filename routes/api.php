@@ -2,7 +2,6 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Laravel\Socialite\Facades\Socialite;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,18 +20,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::prefix('/auth')->group(function(){
     Route::post('register', "Auth\AuthController@register");
     Route::post('login', "Auth\AuthController@login");
-
-    Route::group(["middleware" => "web"],function () {
-        Route::get('google/redirect', function () {
-            return Socialite::driver('google')->redirect();
-        });
-
-        Route::get('google/callback', function () {
-            $user = Socialite::driver('google')->user();
-            $user->token;
-        });
-    });
-
 });
 
 Route::prefix('/listings')->group(function () {

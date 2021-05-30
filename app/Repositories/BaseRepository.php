@@ -26,7 +26,7 @@ class BaseRepository implements BaseRepositoryInterface
         return $resources;
     }
 
-    public function getOneById(int $id, array $criteria = [], array $columns = ["*"], array $relations = []): Model
+    public function getOneById(int $id, array $criteria = [], array $columns = ["*"], array $relations = []): ?Model
     {
         $resource = $this->findByCriteria(array("id" => $id), $columns, $relations);
         return $resource;
@@ -37,9 +37,9 @@ class BaseRepository implements BaseRepositoryInterface
         return $this->newQuery()->select($columns)->with($relations)->where([])->get();
     }
 
-    public function findByCriteria(array $criteria = [], array $columns = ["*"], array $relations = []): Model
+    public function findByCriteria(array $criteria = [], array $columns = ["*"], array $relations = []): ?Model
     {
-        return $this->newQuery()->select($columns)->with($relations)->where($criteria)->firstOrFail();
+        return $this->newQuery()->select($columns)->with($relations)->where($criteria)->first();
     }
 
     public function create(array $attributes): Model

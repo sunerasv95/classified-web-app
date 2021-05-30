@@ -4,8 +4,12 @@ namespace App\Services\Contracts;
 
 interface AuthServiceInterface {
 
-    public function loginUser(array $payload);
+    public function loginUserWithUsernamePassword(array $payload);
 
-    public function registerUserWithUsernamePassword(array $payload);
+    public function loginWithSocialProvider(array $payload);
+
+    public function registerMemberWithUsernamePassword(array $payload);
+
+    public function registerMemberWithSocialProvider(array $payload);
 
 }

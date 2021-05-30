@@ -12,11 +12,11 @@ interface BaseRepositoryInterface
 
     public function getAll(array $criteria = [], array $columns = ["*"], array $relations=[]) : Collection;
 
-    public function getOneById(int $id, array $criteria = [], array $columns = ["*"], array $relations=[]) : Model;
+    public function getOneById(int $id, array $criteria = [], array $columns = ["*"], array $relations=[]) : ?Model;
 
     public function getByCriteria(array $criteria = [], array $columns = ["*"], array $relations=[]): Collection;
 
-    public function findByCriteria(array $criteria = [], array $columns = ["*"], array $relations=[]): Model;
+    public function findByCriteria(array $criteria = [], array $columns = ["*"], array $relations=[]): ?Model;
 
     public function create(array $attributes): Model;
 

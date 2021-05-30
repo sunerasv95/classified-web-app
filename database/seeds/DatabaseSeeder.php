@@ -22,5 +22,6 @@ class DatabaseSeeder extends Seeder
         $this->call(FinTypeSeeder::class);
         $this->call(WaveTypeSeeder::class);
         $this->call(MaterialSeeder::class);
+        $this->call(MemberTypeSeeder::class);
     }
 }

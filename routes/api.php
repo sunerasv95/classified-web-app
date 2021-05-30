@@ -1,5 +1,6 @@
 <?php
 
+use App\Util\Enums;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 /*
@@ -20,6 +21,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::prefix('/auth')->group(function(){
     Route::post('register', "Auth\AuthController@register");
     Route::post('login', "Auth\AuthController@login");
+    Route::post('{'.Enums::PROVIDER_NAME_PARAMETER.'}/register', "Auth\AuthController@socialResgister");
+    Route::post('{'.Enums::PROVIDER_NAME_PARAMETER.'}/login', "Auth\AuthController@socialLogin");
 });
 
 Route::prefix('/listings')->group(function () {

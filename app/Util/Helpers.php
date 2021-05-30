@@ -18,3 +18,31 @@ if (!function_exists('checkHashedPassword')) {
     }
 }
 
+
+//creates username wich has
+// at least 6 characters
+// numbers and letters
+if (!function_exists('makeUniqueUsernameWithEmail')) {
+    function makeUniqueUsernameWithEmail($email)
+    {
+        $fetchEmailUser = explode("@", trim($email));
+        $getCharacters = substr($fetchEmailUser[0], 0, 6);
+        $randomNumber = rand(199,999);
+
+        $username = $getCharacters.$randomNumber;
+        return $username;
+    }
+}
+
+// if (!function_exists('makeUniqueFirstAndLastNames')) {
+//     function makeUniqueFirstAndLastNames($fname, $lname)
+//     {
+//         $names = trim($fname).trim($lname);
+//         $getCharacters = substr($fetchEmailUser[0], 0, 6);
+//         $randomNumber = rand(199,999);
+
+//         $username = $getCharacters.$randomNumber;
+//         return $username;
+//     }
+// }
+

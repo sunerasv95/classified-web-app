@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
 if (!function_exists('makeHashedPassword')) {
@@ -31,6 +32,14 @@ if (!function_exists('makeUniqueUsernameWithEmail')) {
 
         $username = $getCharacters.$randomNumber;
         return $username;
+    }
+}
+
+
+if (!function_exists('getCurrentDateTime')) {
+    function getCurrentDateTime()
+    {
+        return Carbon::now();
     }
 }
 

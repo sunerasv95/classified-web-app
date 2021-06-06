@@ -153,6 +153,11 @@ trait ApiResponser
         return $this->respondError($message, 409);
     }
 
+    protected function respondInvalidRequestError($message = 'Bad Request')
+    {
+        return $this->respondError($message, 400);
+    }
+
     protected function respondNoContent($message = 'No Content Found')
     {
         return $this->apiResponse(['success' => false, 'message' => $message], 200);

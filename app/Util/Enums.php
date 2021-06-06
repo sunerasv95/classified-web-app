@@ -42,6 +42,7 @@ final class Enums {
 
     const STATUS_ACTIVE         = 1;
     const STATUS_YES            = 1;
+    const APPROVED_YES          = 1;
 
     const STATUS_NO             = 0;
     const NOT_DELETED           = 0;

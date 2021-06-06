@@ -36,7 +36,7 @@ class AdminService implements AdminServiceInterface
 
         $adminData['name']              = $payload['name'];
         $adminData['email']             = $email;
-        $adminData['role_id']           = 0;
+        $adminData['role_id']           = $payload['role_id'];
         $adminData['is_email_verified'] = Enums::STATUS_NO;
         $adminData['password']          = makeHashedPassword($payload['password']);
         $adminData['is_approved']       = Enums::STATUS_NO;
@@ -48,5 +48,35 @@ class AdminService implements AdminServiceInterface
         return $this->respondSuccess(HttpMessages::CREATED_SUCCESS_MESSAGE);
     }
 
+    public function approveAdminUser(int $userId, array $payload)
+    {
+        $approvalData = array();
+        $approvedByUser = null;
+
+        $approvedByUser = $payload['approved_user_id'];
+        if($userId === $approvedByUser) return $this->respondInvalidRequestError(HttpMessages::APPROVAL_REJECTED);
+
+        $adminUser = $this->adminRepository->getAdminById($userId, array("is_approved" => 0, "role_id" => 0));
+        if(!isset($adminUser)) return $this->respondNotFound(HttpMessages::NOT_FOUND_USER_MESSAGE);
+
+        $approvalData['is_approved']    = Enums::APPROVED_YES;
+        $approvalData['approved_date']  = getCurrentDateTime();
+        $result = $this->adminRepository->update($adminUser, $approvalData);
+
+        if($result > 0) return $this->respondSuccess(HttpMessages::SUCCESSFULLY_APPROVED_MESSAGE);
+        else return $this->respondInternalError();
+    }
+
+
+    // public function checkAdminUserStatus(array $user)
+    // {
+
+    //     switch($user){
+    //         case($user['is_approved'] == 1):
+    //             return $this->respondInvalidRequestError(HttpMessages::ALREADY_APPROVED_USER_MESSAGE);
+    //         case($user['is_blocked'] == 1):
+    //                 return $this->respondInvalidRequestError(HttpMessages::ALREADY_APPROVED_USER_MESSAGE);
+    //     }
+    // }
 
 }

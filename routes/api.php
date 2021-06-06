@@ -75,7 +75,10 @@ Route::prefix('/uploads')->group(function () {
 
 
 Route::prefix('/admin')->group(function(){
-    Route::post('users', [AdminController::class, 'create']);
+    Route::prefix('users')->group(function () {
+        Route::post('/', [AdminController::class, 'create']);
+        Route::post('{adminId}/appovals', [AdminController::class, 'approveAdminUser']);
+    });
 });
 
 

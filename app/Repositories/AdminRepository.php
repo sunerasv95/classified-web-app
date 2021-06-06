@@ -14,6 +14,12 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
         parent::__construct($model);
     }
 
+    public function getAdminById(int $id, array $criteria = [], array $columns = ["*"], array $relations = []): ?Model
+    {
+        $criteria['id'] = $id;
+        return $this->findByCriteria($criteria, $columns, $relations);
+    }
+
     public function getAdminByEmail(string $email, array $criteria = [], array $columns = ["*"], array $relations = []): ?Model
     {
         $criteria['email'] = $email;

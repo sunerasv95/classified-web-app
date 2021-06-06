@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\ApproveAdminUserRequest;
 use App\Http\Requests\Admin\CreateAdminRequest;
 use App\Services\Contracts\AdminServiceInterface;
 use Illuminate\Http\Request;
@@ -20,5 +21,11 @@ class AdminController extends Controller
     {
         $validatedData = $request->validated();
         return $this->adminService->createAdminUser($validatedData);
+    }
+
+    public function approveAdminUser($adminId, ApproveAdminUserRequest $request)
+    {
+        $validatedData = $request->validated();
+        return $this->adminService->approveAdminUser($adminId, $validatedData);
     }
 }

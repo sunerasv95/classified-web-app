@@ -17,7 +17,13 @@ class Admin extends Authenticatable
         'name',
         'email',
         'password',
-        'role_id'
+        'role_id',
+        'is_approved',
+        'is_active',
+        'is_blocked',
+        'is_deleted',
+        'approved_date',
+        'blocked_date'
     ];
 
     /**

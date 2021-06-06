@@ -32,16 +32,17 @@ class BoardDetailsRepository extends BaseRepository implements BoardDetailsRepos
         return $savedDetails;
     }
 
-    public function updateWithRelationships(Model $model, array $attributes, array $updateRelations) : bool
+    public function updateWithRelationships(BoardDetails $model, array $attributes, array $updateRelations) : bool
     {
         $skillDataArr = [];
+        $boardDetailId = $model->id;
 
         //update relationships if exists
         //skill levels
         if(isset($updateRelations['skill_levels'])) $skillDataArr = $updateRelations['skill_levels'];
         if(!empty($skillDataArr)){
             foreach($skillDataArr as $k => $skill){
-                $skillDataArr[$k]['board_detail_id'] = $model->id;
+                $skillDataArr[$k]['board_detail_id'] = $boardDetailId;
             }
             $model->skill_levels()->sync($skillDataArr);
         }

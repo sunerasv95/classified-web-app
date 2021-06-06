@@ -12,6 +12,7 @@ final class HttpMessages {
     ********************************/
 
     //Common
+    const RESPONSE_OKAY_MESSAGE                        = "OK";
     const CREATED_SUCCESS_MESSAGE                      = "Created successfully";
 
     /**************************
@@ -51,6 +52,16 @@ final class HttpMessages {
 
     const PERMISSION_CREATED                            = "Permission created successfully";
     const PERMISSION_UPDATED                            = "Permission updated successfully";
+
+
+    /**************************
+     ********* PERMISSION RELATED
+     ****/
+    const ROLE_NOT_FOUND                          = "Role not found";
+    const ROLE_ALREADY_EXISTS                     = "Role aleardy exists";
+
+    const ROLE_CREATED                            = "Role created successfully";
+    const ROLE_UPDATED                            = "Role updated successfully";
 
 
 }

@@ -10,6 +10,7 @@ use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\BrandsController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PricingOptionsController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UploadsController;
 /*
 |--------------------------------------------------------------------------
@@ -86,7 +87,12 @@ Route::prefix('/permissions')->group(function(){
     Route::post('/', [PermissionController::class, 'create']);
     Route::put('{permissionId}', [PermissionController::class, 'update']);
     Route::get('{permissionId}', [PermissionController::class, 'getOne']);
-
 });
 
+Route::prefix('/roles')->group(function(){
+    Route::get('/', [RoleController::class, 'getAll']);
+    Route::post('/', [RoleController::class, 'create']);
+    Route::put('{roleId}', [RoleController::class, 'update']);
+    Route::get('{roleId}', [RoleController::class, 'getOne']);
+});
 

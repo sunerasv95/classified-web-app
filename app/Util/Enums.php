@@ -41,7 +41,9 @@ final class Enums {
     *******************************/
 
     const STATUS_ACTIVE         = 1;
+    const STATUS_YES            = 1;
 
+    const STATUS_NO             = 0;
     const NOT_DELETED           = 0;
     const NOT_BLOCKED           = 0;
     const NOT_REVOKED           = 0;
@@ -56,7 +58,7 @@ final class Enums {
 
     const NOT_FOUND_USER_MESSAGE                        = "";
     const NOT_FOUND_USER_WITH_EMAIL_USERNAME_MESSAGE    = "No user found with that email or username";
-    const LOGIN_FAILED_MESSAGE                          = "Log in failed";
+    const LOGIN_FAILED_MESSAGE                          = "Logged in failed";
 
 
     const LOGIN_SUCCESS_MESSAGE                         = "Logged in successfully";

@@ -23,5 +23,9 @@ class DatabaseSeeder extends Seeder
         $this->call(WaveTypeSeeder::class);
         $this->call(MaterialSeeder::class);
         $this->call(MemberTypeSeeder::class);
+
+        $this->call(RoleSeeder::class);
+        $this->call(PermissionSeeder::class);
+        $this->call(RolePermissionSeeder::class);
     }
 }

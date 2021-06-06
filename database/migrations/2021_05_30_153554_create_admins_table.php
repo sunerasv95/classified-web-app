@@ -17,10 +17,18 @@ class CreateAdminsTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->integer('role_id');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->rememberToken();
+            $table->tinyInteger('is_email_verified')->default(0);
+            $table->tinyInteger('is_approved')->default(0);
+            $table->tinyInteger('is_active')->default(0);
+            $table->tinyInteger('is_blocked')->default(0);
+            $table->tinyInteger('is_deleted')->default(0);
+            $table->timestamp('approved_date')->nullable();
+            $table->timestamp('blocked_date')->nullable();
             $table->timestamps();
+            $table->softDeletes($column = 'deleted_at', $precision = 0);
         });
     }
 

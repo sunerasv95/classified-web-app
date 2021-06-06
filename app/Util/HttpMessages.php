@@ -36,5 +36,21 @@ final class HttpMessages {
 
 
 
+     /**************************
+     ********* LISTING RELATED
+     ****/
+
+    const LISTING_CREATED                             = "Listing created successfully";
+
+
+    /**************************
+     ********* PERMISSION RELATED
+     ****/
+    const PERMISSION_NOT_FOUND                          = "Permission not found";
+    const PERMISSION_ALREADY_EXISTS                     = "Permission aleardy exists";
+
+    const PERMISSION_CREATED                            = "Permission created successfully";
+    const PERMISSION_UPDATED                            = "Permission updated successfully";
+
 
 }

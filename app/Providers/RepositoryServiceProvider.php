@@ -19,10 +19,14 @@ use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Repositories\Contracts\ListingImageRepositoryInterface;
 use App\Repositories\Contracts\ListingRepositoryInterface;
 use App\Repositories\Contracts\MemberRepositoryInterface;
+use App\Repositories\Contracts\PermissionRepositoryInterface;
 use App\Repositories\Contracts\PricingOptionRepositoryInterface;
+use App\Repositories\Contracts\RoleRepositoryInterface;
 use App\Repositories\Contracts\SocialLoginRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\MemberRepository;
+use App\Repositories\PermissionRepository;
+use App\Repositories\RoleRepository;
 use App\Repositories\SocialLoginRepository;
 use Illuminate\Support\ServiceProvider;
 
@@ -48,6 +52,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(MemberRepositoryInterface::class, MemberRepository::class);
         $this->app->bind(AdminRepositoryInterface::class, AdminRepository::class);
+        $this->app->bind(RoleRepositoryInterface::class, RoleRepository::class);
+        $this->app->bind(PermissionRepositoryInterface::class, PermissionRepository::class);
 
         $this->app->bind(BaseRepositoryInterface::class, BaseRepository::class);
         $this->app->bind(ListingRepositoryInterface::class, ListingRepository::class);

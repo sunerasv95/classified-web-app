@@ -18,10 +18,14 @@ use App\Services\Contracts\CategoryServiceInterface;
 use App\Services\Contracts\FileServiceInterface;
 use App\Services\Contracts\ListingImageServiceInterface;
 use App\Services\Contracts\ListingsServiceInterface;
+use App\Services\Contracts\PermissionServiceInterface;
 use App\Services\Contracts\PricingOptionServiceInterface;
+use App\Services\Contracts\RoleServiceInterface;
 use App\Services\FileService;
 use App\Services\ListingImageService;
+use App\Services\PermissionService;
 use App\Services\PricingOptionService;
+use App\Services\RoleService;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
@@ -58,6 +62,8 @@ class AppServiceProvider extends ServiceProvider
         //Authentication
         $this->app->bind(AuthServiceInterface::class, AuthService::class);
         $this->app->bind(AdminAuthServiceInterface::class, AdminAuthService::class);
+        $this->app->bind(RoleServiceInterface::class, RoleService::class);
+        $this->app->bind(PermissionServiceInterface::class, PermissionService::class);
 
         //file service
         $this->app->bind(FileServiceInterface::class, FileService::class);

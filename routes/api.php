@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\ListingsController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\BrandsController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PricingOptionsController;
 use App\Http\Controllers\UploadsController;
 /*
@@ -38,8 +39,8 @@ Route::prefix('/auth')->group(function(){
 
 Route::prefix('/listings')->group(function () {
     Route::get('/', [ListingsController::class ,"getAll"]);
-    Route::get('{listingId}', [ListingsController::class, "getOne"]);
     Route::post('/', [ListingsController::class, "create"]);
+    Route::get('{listingId}', [ListingsController::class, "getOne"]);
     Route::put('{listingId}', [ListingsController::class, "updateOne"]);
     Route::delete('{listingId}', [ListingsController::class, "deleteOne"]);
     Route::post('uploads/images', [ListingsController::class, "uploadImage"]);
@@ -47,24 +48,24 @@ Route::prefix('/listings')->group(function () {
 
 Route::prefix('/categories')->group(function () {
     Route::get('/', [CategoriesController::class, "getAll"]);
-    Route::get('{categoryId}', [CategoriesController::class, "getOne"]);
     Route::post('/', [CategoriesController::class, "create"]);
+    Route::get('{categoryId}', [CategoriesController::class, "getOne"]);
     Route::put('{categoryId}', [CategoriesController::class, "updateOne"]);
     Route::delete('{categoryId}', [CategoriesController::class, "deleteOne"]);
 });
 
 Route::prefix('/brands')->group(function () {
     Route::get('/', [BrandsController::class, "getAll"]);
-    Route::get('{brandId}', [BrandsController::class, "getOne"]);
     Route::post('/', [BrandsController::class, "create"]);
+    Route::get('{brandId}', [BrandsController::class, "getOne"]);
     Route::put('{brandId}', [BrandsController::class, "updateOne"]);
     Route::delete('{brandId}', [BrandsController::class, "deleteOne"]);
 });
 
 Route::prefix('/pricing-options')->group(function () {
     Route::get('/', [PricingOptionsController::class, "getAll"]);
-    Route::get('{pricingId}', [PricingOptionsController::class, "getOne"]);
     Route::post('/', [PricingOptionsController::class, "create"]);
+    Route::get('{pricingId}', [PricingOptionsController::class, "getOne"]);
     Route::put('{pricingId}', [PricingOptionsController::class, "updateOne"]);
     Route::delete('{pricingId}', [PricingOptionsController::class, "deleteOne"]);
 });
@@ -73,12 +74,19 @@ Route::prefix('/uploads')->group(function () {
     Route::post('images', [UploadsController::class, "uploadImage"]);
 });
 
-
 Route::prefix('/admin')->group(function(){
     Route::prefix('users')->group(function () {
         Route::post('/', [AdminController::class, 'create']);
         Route::post('{adminId}/appovals', [AdminController::class, 'approveAdminUser']);
     });
+});
+
+Route::prefix('/permissions')->group(function(){
+    Route::get('/', [PermissionController::class, 'getAll']);
+    Route::post('/', [PermissionController::class, 'create']);
+    Route::put('{permissionId}', [PermissionController::class, 'update']);
+    Route::get('{permissionId}', [PermissionController::class, 'getOne']);
+
 });
 
 

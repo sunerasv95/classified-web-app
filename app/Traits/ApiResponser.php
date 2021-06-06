@@ -143,12 +143,15 @@ trait ApiResponser
         return $this->apiResponse(['success' => true, 'message' => $message]);
     }
 
-
     protected function respondCreated($data)
     {
         return $this->apiResponse($data, 201);
     }
 
+    protected function respondResourceAlreadyExistsError($message = 'Resource already exists')
+    {
+        return $this->respondError($message, 409);
+    }
 
     protected function respondNoContent($message = 'No Content Found')
     {
@@ -233,4 +236,16 @@ trait ApiResponser
             422
         );
     }
+
+    protected function respondWithAccessToken($token = null, $message = "")
+    {
+        return $this->apiResponse(array(
+            "success" => true,
+            "message" => $message,
+            "result" => [
+                "access_token" => $token
+            ]
+        ), 200);
+    }
+
 }

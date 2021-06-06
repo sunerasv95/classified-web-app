@@ -9,7 +9,6 @@ use App\Services\Contracts\AuthServiceInterface;
 use App\Traits\ApiResponser;
 use App\Util\Enums;
 use App\Util\HttpMessages;
-use Illuminate\Support\Facades\Http;
 
 class AuthService implements AuthServiceInterface
 {
@@ -44,14 +43,7 @@ class AuthService implements AuthServiceInterface
 
         if(checkHashedPassword($password, $user->password)) {
             $token = $user->createToken(Enums::PASSPORT_CLIENT)->accessToken;
-            $data = array(
-                "success" => true,
-                "message" => HttpMessages::LOGIN_SUCCESS_MESSAGE,
-                "result" => [
-                    "access_token" => $token
-                ]
-            );
-            return $this->respondCreated($data);
+            return $this->respondWithAccessToken($token, HttpMessages::LOGIN_SUCCESS_MESSAGE);
         }else {
             return $this->respondUnAuthorized(HttpMessages::PASSWORDS_MISMATCHED_MESSAGE);
         }
@@ -74,16 +66,8 @@ class AuthService implements AuthServiceInterface
         if(!isset($socialLogin)) return $this->respondUnAuthorized(HttpMessages::LOGIN_FAILED_MESSAGE);
 
         $token = $member->createToken(Enums::PASSPORT_CLIENT)->accessToken;
-        $data = array(
-            "success" => true,
-            "message" => HttpMessages::LOGIN_SUCCESS_MESSAGE,
-            "result" => [
-                "access_token" => $token
-            ]
-        );
-        return $this->respondCreated($data);
+        return $this->respondWithAccessToken($token, HttpMessages::LOGIN_SUCCESS_MESSAGE);
     }
-
 
     public function registerMemberWithUsernamePassword(array $payload)
     {
@@ -105,7 +89,6 @@ class AuthService implements AuthServiceInterface
         return $this->respondSuccess(HttpMessages::REGISTER_SUCCESS_MESSAGE);
     }
 
-
     public function registerMemberWithSocialProvider(array $payload)
     {
         $memberData = $socialAuthData =  $relationhips = array();
@@ -125,14 +108,7 @@ class AuthService implements AuthServiceInterface
         $socialLogin = $this->socialLoginsRepository->getSocialLoginByMemberId($memberId, array("provider"=>$provider, "is_revoked" => 0));
         if(isset($socialLogin)) {
             $token = $member->createToken(Enums::PASSPORT_CLIENT)->accessToken;
-            $data = array(
-                "success" => true,
-                "message" => HttpMessages::LOGIN_SUCCESS_MESSAGE,
-                "result" => [
-                    "access_token" => $token
-                ]
-            );
-            return $this->respondCreated($data);
+            return $this->respondWithAccessToken($token, HttpMessages::LOGIN_SUCCESS_MESSAGE);
         }
 
         $memberData['first_name']       = $payload['first_name'];

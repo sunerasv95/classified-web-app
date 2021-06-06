@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Repositories\AdminRepository;
 use App\Repositories\BaseRepository;
 use App\Repositories\BoardDetailsRepository;
 use App\Repositories\BrandRepository;
 use App\Repositories\CategoryRepository;
+use App\Repositories\Contracts\AdminRepositoryInterface;
 use App\Repositories\ListingRepository;
 use App\Repositories\ListingImageRepository;
 use App\Repositories\PricingOptionRepository;
@@ -43,6 +45,10 @@ class RepositoryServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
+        $this->app->bind(MemberRepositoryInterface::class, MemberRepository::class);
+        $this->app->bind(AdminRepositoryInterface::class, AdminRepository::class);
+
         $this->app->bind(BaseRepositoryInterface::class, BaseRepository::class);
         $this->app->bind(ListingRepositoryInterface::class, ListingRepository::class);
         $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
@@ -50,8 +56,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(PricingOptionRepositoryInterface::class, PricingOptionRepository::class);
         $this->app->bind(ListingImageRepositoryInterface::class, ListingImageRepository::class);
         $this->app->bind(BoardDetailsRepositoryInterface::class, BoardDetailsRepository::class);
-        $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
-        $this->app->bind(MemberRepositoryInterface::class, MemberRepository::class);
         $this->app->bind(SocialLoginRepositoryInterface::class, SocialLoginRepository::class);
 
     }

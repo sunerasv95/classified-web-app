@@ -4,10 +4,14 @@ namespace App\Providers;
 
 use App\Models\AccessoriesDetails;
 use App\Models\BoardDetails;
+use App\Services\AdminAuthService;
+use App\Services\AdminService;
 use App\Services\AuthService;
 use App\Services\ListingsService;
 use App\Services\BrandService;
 use App\Services\CategoryService;
+use App\Services\Contracts\AdminAuthServiceInterface;
+use App\Services\Contracts\AdminServiceInterface;
 use App\Services\Contracts\AuthServiceInterface;
 use App\Services\Contracts\BrandServiceInterface;
 use App\Services\Contracts\CategoryServiceInterface;
@@ -40,6 +44,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
+        //Admin
+        $this->app->bind(AdminServiceInterface::class, AdminService::class);
+
+
         $this->app->bind(ListingsServiceInterface::class, ListingsService::class);
         $this->app->bind(CategoryServiceInterface::class, CategoryService::class);
         $this->app->bind(BrandServiceInterface::class, BrandService::class);
@@ -48,6 +57,7 @@ class AppServiceProvider extends ServiceProvider
 
         //Authentication
         $this->app->bind(AuthServiceInterface::class, AuthService::class);
+        $this->app->bind(AdminAuthServiceInterface::class, AdminAuthService::class);
 
         //file service
         $this->app->bind(FileServiceInterface::class, FileService::class);

@@ -3,8 +3,11 @@
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
+use Illuminate\Database\Eloquent\Collection;
+
+
 if (!function_exists('makeHashedPassword')) {
-    function makeHashedPassword($string)
+    function makeHashedPassword(string $string)
     {
         $hashed = Hash::make($string);
         return $hashed;
@@ -12,7 +15,7 @@ if (!function_exists('makeHashedPassword')) {
 }
 
 if (!function_exists('checkHashedPassword')) {
-    function checkHashedPassword($plainPass, $hashedVal)
+    function checkHashedPassword(string $plainPass, string $hashedVal)
     {
         $checked = Hash::check($plainPass, $hashedVal);
         return $checked;
@@ -24,7 +27,7 @@ if (!function_exists('checkHashedPassword')) {
 // at least 6 characters
 // numbers and letters
 if (!function_exists('makeUniqueUsernameWithEmail')) {
-    function makeUniqueUsernameWithEmail($email)
+    function makeUniqueUsernameWithEmail(string $email)
     {
         $fetchEmailUser = explode("@", trim($email));
         $getCharacters = substr($fetchEmailUser[0], 0, 6);
@@ -40,6 +43,14 @@ if (!function_exists('getCurrentDateTime')) {
     function getCurrentDateTime()
     {
         return Carbon::now();
+    }
+}
+
+
+if (!function_exists('timeStampToDate')) {
+    function timestampToDate($dateObj)
+    {
+        return date_format($dateObj,'Y/m/d');
     }
 }
 

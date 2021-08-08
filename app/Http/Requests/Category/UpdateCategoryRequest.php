@@ -36,9 +36,9 @@ class UpdateCategoryRequest extends FormRequest
         return [
             "category_name" => "sometimes|string",
             "category_slug" => "sometimes|string",
-            "description" => "sometimes|string",
+            "category_description" => "sometimes|string",
             "is_parent" => "sometimes|integer",
-            "parent" => "sometimes|integer",
+            "parent_id" => "sometimes|integer",
             "status" => "sometimes|integer"
         ];
     }

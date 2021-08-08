@@ -25,7 +25,7 @@ class Category extends Model
 
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(Category::class, 'parent_id')->where('parent_id', 0);
+        return $this->belongsTo(Category::class, 'parent_id');
     }
 
     public function children(): HasMany

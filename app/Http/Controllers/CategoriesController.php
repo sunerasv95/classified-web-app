@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Repositories\Contracts\CategoryRepositoryInterface;
-use app\Services\Contracts\CategoryServiceInterface;
+use App\Services\Contracts\CategoryServiceInterface;
 use App\Http\Requests\Category\CreateCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
+use Illuminate\Http\Request;
 
 class CategoriesController extends Controller
 {
@@ -17,9 +18,13 @@ class CategoriesController extends Controller
         $this->categoryService = $categoryService;
     }
 
-    public function getAll()
+    public function getAll(Request $request)
     {
-        return $this->categoryService->getAllCategories();
+        $paginate = (array) $request->only(['limit', 'offset']);
+        $order = (array) $request->only(['sort', 'order']);
+
+        // dd([$order, $paginate]);
+        return $this->categoryService->getAllCategories($paginate, $order);
     }
 
     public function getOne($id)

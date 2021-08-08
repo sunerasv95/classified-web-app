@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\AccessoriesDetails;
 use App\Models\BoardDetails;
 use App\Services\AdminAuthService;
 use App\Services\AdminService;
@@ -10,6 +9,11 @@ use App\Services\AuthService;
 use App\Services\ListingsService;
 use App\Services\BrandService;
 use App\Services\CategoryService;
+use App\Services\FileService;
+use App\Services\ListingImageService;
+use App\Services\PermissionService;
+use App\Services\PricingOptionService;
+use App\Services\RoleService;
 use App\Services\Contracts\AdminAuthServiceInterface;
 use App\Services\Contracts\AdminServiceInterface;
 use App\Services\Contracts\AuthServiceInterface;
@@ -21,11 +25,6 @@ use App\Services\Contracts\ListingsServiceInterface;
 use App\Services\Contracts\PermissionServiceInterface;
 use App\Services\Contracts\PricingOptionServiceInterface;
 use App\Services\Contracts\RoleServiceInterface;
-use App\Services\FileService;
-use App\Services\ListingImageService;
-use App\Services\PermissionService;
-use App\Services\PricingOptionService;
-use App\Services\RoleService;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 

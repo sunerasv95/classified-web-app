@@ -15,19 +15,24 @@ class CategoryService implements CategoryServiceInterface
 
     public function __construct(
         CategoryRepositoryInterface $categoryRepository
-    ) {
+    )
+    {
         $this->categoryRepository = $categoryRepository;
     }
 
-    public function getAllCategories()
+    public function getAllCategories(array $paginate = [], array $orderby = [])
     {
-        $categories = $this->categoryRepository->getAll(array(), array("*"), array("children"));
+        $categories = $this->categoryRepository
+            ->getAll(array(), array("*"), array("parent"), $paginate, $orderby);
+
         return $this->respondWithResource(new CategoryResource($categories), "OK");
     }
 
     public function getCategoryById($id)
     {
-        $category = $this->categoryRepository->getOneById($id, array(), array("*"), array("children"));
+        $category = $this->categoryRepository
+            ->getOneById($id, array(), array("*"), array("parent"));
+
         return $this->respondWithResource(new CategoryResource($category), "OK");
     }
 

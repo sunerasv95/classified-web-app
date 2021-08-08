@@ -20,26 +20,66 @@ class BaseRepository implements BaseRepositoryInterface
         $this->model = $model;
     }
 
-    public function getAll(array $criteria = [], array $columns = ["*"], array $relations = []): Collection
+    public function getAll(
+        array $criteria = [],
+        array $columns = ["*"],
+        array $relations = [],
+        array $paginate = [],
+        array $orderBy = [],
+        array $group = []
+    ): Collection
     {
-        $resources = $this->getByCriteria($criteria, $columns, $relations);
+        $resources = $this->getByCriteria($criteria, $columns, $relations, $paginate, $orderBy, $group);
         return $resources;
     }
 
-    public function getOneById(int $id, array $criteria = [], array $columns = ["*"], array $relations = []): ?Model
+    public function getOneById(
+        int $id,
+        array $criteria = [],
+        array $columns = ["*"],
+        array $relations = []
+    ): ?Model
     {
         $resource = $this->findByCriteria(array("id" => $id), $columns, $relations);
         return $resource;
     }
 
-    public function getByCriteria(array $criteria = [], array $columns = ["*"], array $relations = []): Collection
+    public function getByCriteria(
+        array $criteria = [],
+        array $columns = ["*"],
+        array $relations = [],
+        array $paginate = [],
+        array $orderBy = [],
+        array $groupByCols = []
+    ): Collection
     {
-        return $this->newQuery()->select($columns)->with($relations)->where([])->get();
+        return $this->newQuery()
+            ->select($columns)
+            ->with($relations)
+            ->where([])
+            ->when(!empty($paginate), function($q) use($paginate){
+                return $this->handlePaginate($q, $paginate['offset'], $paginate['limit']);
+            })
+            ->when(!empty($orderBy), function($q) use($orderBy){
+                return $this->handleOrderBy($q, $orderBy['sort'], $orderBy['order']);
+            })
+            ->when(!empty($groupBy), function($q) use($groupByCols){
+                return $this->handleGroupBy($q, $groupByCols);
+            })
+            ->get();
     }
 
-    public function findByCriteria(array $criteria = [], array $columns = ["*"], array $relations = []): ?Model
+    public function findByCriteria(
+        array $criteria = [],
+        array $columns = ["*"],
+        array $relations = []
+    ): ?Model
     {
-        return $this->newQuery()->select($columns)->with($relations)->where($criteria)->first();
+        return $this->newQuery()
+            ->select($columns)
+            ->with($relations)
+            ->where($criteria)
+            ->first();
     }
 
     public function create(array $attributes): Model
@@ -63,5 +103,25 @@ class BaseRepository implements BaseRepositoryInterface
     public function newQuery(): Builder
     {
         return $this->model->newQuery();
+    }
+
+    public function getRecordsCount(Collection $collection) : int
+    {
+        return $collection->count();
+    }
+
+    protected function handlePaginate($query, int $offset, int $limit)
+    {
+        return $query->offset($offset)->limit($limit);
+    }
+
+    protected function handleOrderBy($query, string $orderByCol, string $order)
+    {
+        return $query->orderBy($orderByCol, $order);
+    }
+
+    protected function handleGroupBy($query, array $groupBy)
+    {
+        return $query->groupBy($groupBy);
     }
 }

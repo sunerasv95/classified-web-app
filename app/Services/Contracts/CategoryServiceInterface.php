@@ -4,7 +4,7 @@ namespace App\Services\Contracts;
 
 interface CategoryServiceInterface {
 
-    public function getAllCategories();
+    public function getAllCategories(array $paginate, array $orderBy);
 
     public function getCategoryById($id);
 

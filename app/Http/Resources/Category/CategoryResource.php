@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources\Category;
 
-use App\Repositories\Contracts\CategoryRepositoryInterface;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CategoryResource extends JsonResource

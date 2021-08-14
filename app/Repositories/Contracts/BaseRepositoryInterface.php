@@ -38,6 +38,16 @@ interface BaseRepositoryInterface
         array $relations=[]
     ): ?Model;
 
+    public function filterCriteria(
+        string $query,
+        array $filters = [],
+        array $columns = ["*"],
+        array $relations = [],
+        array $paginate = [],
+        array $orderBy = [],
+        array $groupByCols = []
+    ): Collection;
+
     public function getRecordsCount(Collection $collection) : int;
 
     public function create(array $attributes): Model;

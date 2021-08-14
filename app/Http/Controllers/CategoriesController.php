@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Services\Contracts\CategoryServiceInterface;
 use App\Http\Requests\Category\CreateCategoryRequest;
+use App\Http\Requests\Category\GetCategoriesRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use Illuminate\Http\Request;
 
@@ -18,18 +19,22 @@ class CategoriesController extends Controller
         $this->categoryService = $categoryService;
     }
 
-    public function getAll(Request $request)
+    public function getAll(GetCategoriesRequest $request)
     {
-        $paginate = (array) $request->only(['limit', 'offset']);
-        $order = (array) $request->only(['sort', 'order']);
-
-        // dd([$order, $paginate]);
-        return $this->categoryService->getAllCategories($paginate, $order);
+        $validatedData = $request->validated();
+        return $this->categoryService->getAllCategories($validatedData);
     }
 
     public function getOne($id)
     {
         return $this->categoryService->getCategoryById($id);
+    }
+
+    // public function search(Request $request)
+    public function search(GetCategoriesRequest $request)
+    {
+        $validatedData = $request->validated();
+        return $this->categoryService->filterCategories($validatedData);
     }
 
     public function create(CreateCategoryRequest $request)

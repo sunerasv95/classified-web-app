@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use phpDocumentor\Reflection\Types\Boolean;
+use Illuminate\Support\Facades\DB;
 
 class BaseRepository implements BaseRepositoryInterface
 {
@@ -18,6 +19,7 @@ class BaseRepository implements BaseRepositoryInterface
     public function __construct(Model $model)
     {
         $this->model = $model;
+        DB::enableQueryLog();
     }
 
     public function getAll(
@@ -56,7 +58,7 @@ class BaseRepository implements BaseRepositoryInterface
         return $this->newQuery()
             ->select($columns)
             ->with($relations)
-            ->where([])
+            ->where($criteria)
             ->when(!empty($paginate), function($q) use($paginate){
                 return $this->handlePaginate($q, $paginate['offset'], $paginate['limit']);
             })
@@ -75,11 +77,58 @@ class BaseRepository implements BaseRepositoryInterface
         array $relations = []
     ): ?Model
     {
-        return $this->newQuery()
+       //dd($relations, $criteria, $columns);
+       //$a = array("role" => ["id", "name"]);
+        $query = $this->newQuery()
             ->select($columns)
+            // ->when(!empty($a), function($q) use($a){
+            //     foreach($a as $k => $fields){
+            //         $q->with($k)
+            //     }
+            //})
             ->with($relations)
             ->where($criteria)
             ->first();
+        //dd(DB::getQueryLog());
+        return $query;
+    }
+
+    public function filterCriteria(
+        string $query,
+        array $queryCols = [],
+        array $filters = [],
+        array $columns = ["*"],
+        array $relations = [],
+        array $paginate = [],
+        array $orderBy = [],
+        array $groupByCols = []
+    ): Collection {
+        //dd($query,$queryCols,$filters,$columns,$relations,$paginate,$orderBy,$groupByCols);
+        $query = $this->newQuery()
+            ->select($columns)
+            ->with($relations)
+            ->when(!empty($filters), function ($q) use ($filters) {
+                return $q->where($filters);
+            })
+            ->when(!empty($queryCols) && !empty($query), function ($q) use ($queryCols, $query) {
+                foreach ($queryCols as $k => $col) {
+                    if ($k === 0) $q->where($col, "LIKE", "%{$query}%");
+                    else $q->orWhere($col, "LIKE", "%{$query}%");
+                }
+                return $q;
+            })
+            ->when(!empty($paginate), function ($q) use ($paginate) {
+                return $this->handlePaginate($q, $paginate['offset'], $paginate['limit']);
+            })
+            ->when(!empty($orderBy), function ($q) use ($orderBy) {
+                return $this->handleOrderBy($q, $orderBy['sort'], $orderBy['order']);
+            })
+            ->when(!empty($groupBy), function ($q) use ($groupByCols) {
+                return $this->handleGroupBy($q, $groupByCols);
+            })
+            ->get();
+        //dd(DB::getQueryLog());
+        return $query;
     }
 
     public function create(array $attributes): Model

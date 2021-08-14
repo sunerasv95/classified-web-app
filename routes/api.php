@@ -49,6 +49,7 @@ Route::prefix('users')
         Route::get('{userCode}', [AdminController::class, 'getOne']);
         //->middleware("ability:get-users");
         Route::post('/', [AdminController::class, 'create']);
+        Route::put('{userCode}', [AdminController::class, 'update']);
         //Route::post('{userId}/appovals', [AdminController::class, 'approveAdminUser']);
 });
 

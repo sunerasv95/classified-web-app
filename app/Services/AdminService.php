@@ -180,6 +180,28 @@ class AdminService implements AdminServiceInterface
         return $this->respondSuccess(HttpMessages::CREATED_SUCCESS_MESSAGE);
     }
 
+    public function updateAdminUser(string $userCode, array $payload)
+    {
+        if(empty($payload)) return $this->respondInvalidRequestError(
+            HttpMessages::BAD_REQUEST,
+            ErrorCodes::BAD_REQUEST
+        );
+
+        $adminUser = $this->adminRepository
+            ->findByUserCode(
+                $userCode,
+                array("is_approved" => 1),
+                array("*"),
+                array("role:id,name", "role.permissions:id,slug")
+            );
+
+        $result = $this->adminRepository->update($adminUser, $payload);
+
+        if ($result > 0) return $this->respondSuccess(HttpMessages::UPDATED_SUCCESSFULLY);
+        else return $this->respondInternalError(null, ErrorCodes::INTERNAL_SERVER_ERROR_CODE);
+    }
+
+
     public function approveAdminUser(int $userId, array $payload)
     {
         $approvalData = array();

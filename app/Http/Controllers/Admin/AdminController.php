@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\CreateAdminRequest;
 use App\Http\Requests\Admin\FilterAdminRequest;
 use App\Http\Requests\Admin\GetAdminUserRequest;
 use App\Http\Requests\Admin\GetAllAdminUsers;
+use App\Http\Requests\Admin\UpdateAdminRequest;
 use App\Services\Contracts\AdminServiceInterface;
 
 class AdminController extends Controller
@@ -44,6 +45,12 @@ class AdminController extends Controller
     {
         $validatedData = $request->validated();
         return $this->adminService->createAdminUser($validatedData);
+    }
+
+    public function update(string $userCode, UpdateAdminRequest $request)
+    {
+        $validatedData = $request->validated();
+        return $this->adminService->updateAdminUser($userCode, $validatedData);
     }
 
     public function approveAdminUser($adminId, ApproveAdminUserRequest $request)

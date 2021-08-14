@@ -27,9 +27,29 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::prefix('/admin/auth/')->group(function(){
+/*****************************************
+ * ************ ADMIN ROUTES *************
+*/
+Route::prefix('admin/auth/')->group(function(){
     Route::post('login', [AdminAuthController::class, "login"]);
 });
+
+// Route::prefix('/admin')->middleware(["client"])->group(function(){
+Route::prefix('admin')
+->middleware(["auth:api-admin"])
+->group(function () {
+    Route::prefix('users')
+    ->middleware("role:super-administrator,administrator")
+    ->group(function () {
+        Route::get('{userCode}', [AdminController::class, 'getOne'])->middleware("ability:get-users");
+        Route::post('/', [AdminController::class, 'create']);
+        Route::post('{adminId}/appovals', [AdminController::class, 'approveAdminUser']);
+    });
+});
+
+/*****************************************
+ * ************ MEMBER ROUTES *************
+*/
 
 Route::prefix('/auth')->group(function(){
     Route::post('register', [AuthController::class, "register"]);
@@ -37,6 +57,11 @@ Route::prefix('/auth')->group(function(){
     Route::post('{provider}/register', [AuthController::class, "socialResgister"]);
     Route::post('{provider}/login', [AuthController::class, "socialLogin"]);
 });
+
+
+/*****************************************
+ * ************ COMMON RESOUCES ROUTES ***
+*/
 
 Route::prefix('/listings')->group(function () {
     Route::get('/', [ListingsController::class ,"getAll"]);
@@ -49,10 +74,13 @@ Route::prefix('/listings')->group(function () {
 
 Route::prefix('/categories')->group(function () {
     Route::get('/', [CategoriesController::class, "getAll"]);
-    Route::post('/', [CategoriesController::class, "create"]);
+    Route::get('/search', [CategoriesController::class, "search"]);
     Route::get('{categoryId}', [CategoriesController::class, "getOne"]);
+
+    Route::post('/', [CategoriesController::class, "create"]);
     Route::put('{categoryId}', [CategoriesController::class, "updateOne"]);
     Route::delete('{categoryId}', [CategoriesController::class, "deleteOne"]);
+
 });
 
 Route::prefix('/brands')->group(function () {
@@ -73,13 +101,6 @@ Route::prefix('/pricing-options')->group(function () {
 
 Route::prefix('/uploads')->group(function () {
     Route::post('images', [UploadsController::class, "uploadImage"]);
-});
-
-Route::prefix('/admin')->group(function(){
-    Route::prefix('users')->group(function () {
-        Route::post('/', [AdminController::class, 'create']);
-        Route::post('{adminId}/appovals', [AdminController::class, 'approveAdminUser']);
-    });
 });
 
 Route::prefix('/permissions')->group(function(){

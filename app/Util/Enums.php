@@ -87,7 +87,9 @@ final class Enums {
     const START_DATE_QUERY_PARAM        = "startDate";
     const END_DATE_QUERY_PARAM          = "endDate";
 
-    //categories
     const CATEGORY_STATUS_PARAM         = "status";
+
+    const ADMIN_IS_ACTIVE_PARAM         = "active";
+    const ADMIN_ROLE_PARAM              = "role";
 
 }

@@ -27,10 +27,10 @@ class AdminService implements AdminServiceInterface
         $this->adminRepository = $adminRepository;
     }
 
-    public function getAllAdminUsers(array $requestParams)
+    public function getAllAdminUsers(array $reqParams)
     {
         $paginate =  $orderby = array();
-
+        //dd($reqParams);
         if (
             isset($reqParams[Enums::SORT_QUERY_PARAM]) &&
             isset($reqParams[Enums::SORT_ORDER_QUERY_PARAM])
@@ -66,7 +66,7 @@ class AdminService implements AdminServiceInterface
         $adminUser = null;
         //dd($userCode);
         $adminUser = $this->adminRepository
-            ->getAdminByUserCode(
+            ->findByUserCode(
                 $userCode,
                 array(),
                 array("*"),
@@ -89,7 +89,7 @@ class AdminService implements AdminServiceInterface
         $adminUser = null;
         //dd($userCode);
         $adminUser = $this->adminRepository
-            ->getAdminByUserCode(
+            ->findByUserCode(
                 $userCode,
                 array("is_approved" => 1),
                 array("*"),
@@ -107,6 +107,51 @@ class AdminService implements AdminServiceInterface
         );
     }
 
+    public function filterCategories(array $reqParams)
+    {
+        //dd($reqParams);
+        $keyword = null;
+        $filters = $paginate = $orderby = array();
+
+        if (isset($reqParams[Enums::SEARCH_QUERY_PARAM])) {
+            $keyword = $reqParams[Enums::SEARCH_QUERY_PARAM];
+        }
+        if (isset($reqParams[Enums::ADMIN_IS_ACTIVE_PARAM])) {
+            $filters["is_active"] = $reqParams[Enums::ADMIN_IS_ACTIVE_PARAM];
+        }
+        if (isset($reqParams[Enums::ADMIN_ROLE_PARAM])) {
+            $filters["role_id"] = $reqParams[Enums::ADMIN_ROLE_PARAM];
+        }
+        if (isset($reqParams[Enums::SORT_QUERY_PARAM]) &&
+            isset($reqParams[Enums::SORT_ORDER_QUERY_PARAM])
+        ) {
+            $orderby[Enums::SORT_QUERY_PARAM]       = $reqParams[Enums::SORT_QUERY_PARAM];
+            $orderby[Enums::SORT_ORDER_QUERY_PARAM] = $reqParams[Enums::SORT_ORDER_QUERY_PARAM];
+        }
+        if (isset($reqParams[Enums::LIMIT_QUERY_PARAM]) &&
+            isset($reqParams[Enums::OFFSET_QUERY_PARAM])
+        ) {
+            $paginate[Enums::LIMIT_QUERY_PARAM]  = $reqParams[Enums::LIMIT_QUERY_PARAM];
+            $paginate[Enums::OFFSET_QUERY_PARAM] = $reqParams[Enums::OFFSET_QUERY_PARAM];
+        }
+
+        $adminUsers = $this->adminRepository
+            ->applyFilters(
+                $keyword,
+                $filters,
+                array("*"),
+                array("role:id,name"),
+                $paginate,
+                $orderby,
+                array()
+            );
+
+        return $this->respondWithResource(
+            new AdminResource($adminUsers),
+            HttpMessages::RESPONSE_OKAY_MESSAGE
+        );
+    }
+
     public function createAdminUser(array $payload)
     {
         $adminUser = $email = null;
@@ -114,7 +159,7 @@ class AdminService implements AdminServiceInterface
 
         $email = $payload['email'];
 
-        $adminUser = $this->adminRepository->getAdminByEmail($email);
+        $adminUser = $this->adminRepository->findByEmail($email);
         if(!empty($adminUser)) return $this->respondResourceAlreadyExistsError(
             HttpMessages::EMAIL_IS_ALREADY_EXISTS,
             ErrorCodes::RESOURCE_EXISTS_ERROR_CODE
@@ -146,7 +191,7 @@ class AdminService implements AdminServiceInterface
             ErrorCodes::INVALID_REQUEST
         );
 
-        $adminUser = $this->adminRepository->getAdminById($userId, array("is_approved" => 0, "role_id" => 0));
+        $adminUser = $this->adminRepository->findById($userId, array("is_approved" => 0, "role_id" => 0));
         if(empty($adminUser)) return $this->respondNotFound(
             HttpMessages::NOT_FOUND_USER_MESSAGE,
             ErrorCodes::INVALID_REQUEST

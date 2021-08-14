@@ -31,6 +31,8 @@ class BaseRepository implements BaseRepositoryInterface
         array $group = []
     ): Collection
     {
+        //dd($criteria,$columns,$relations,$paginate,$orderBy,$group);
+
         $resources = $this->getByCriteria($criteria, $columns, $relations, $paginate, $orderBy, $group);
         return $resources;
     }
@@ -55,7 +57,8 @@ class BaseRepository implements BaseRepositoryInterface
         array $groupByCols = []
     ): Collection
     {
-        return $this->newQuery()
+        //dd($criteria,$columns,$relations,$paginate,$orderBy,$groupByCols);
+        $query = $this->newQuery()
             ->select($columns)
             ->with($relations)
             ->where($criteria)
@@ -69,6 +72,7 @@ class BaseRepository implements BaseRepositoryInterface
                 return $this->handleGroupBy($q, $groupByCols);
             })
             ->get();
+        return $query;
     }
 
     public function findByCriteria(

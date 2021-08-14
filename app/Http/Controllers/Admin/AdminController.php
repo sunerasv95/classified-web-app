@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ApproveAdminUserRequest;
 use App\Http\Requests\Admin\CreateAdminRequest;
+use App\Http\Requests\Admin\FilterAdminRequest;
 use App\Http\Requests\Admin\GetAdminUserRequest;
+use App\Http\Requests\Admin\GetAllAdminUsers;
 use App\Services\Contracts\AdminServiceInterface;
-use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
@@ -18,10 +19,9 @@ class AdminController extends Controller
         $this->adminService = $adminService;
     }
 
-    public function getAll(GetAdminUserRequest $request)
+    public function getAll(GetAllAdminUsers $request)
     {
         $validatedData = $request->validated();
-
         return $this->adminService->getAllAdminUsers($validatedData);
     }
 
@@ -32,6 +32,12 @@ class AdminController extends Controller
             return $this->adminService->getApprovedAdminUserByCode($userCode);
         }
         return $this->adminService->getAdminUserByCode($userCode);
+    }
+
+    public function search(FilterAdminRequest $request)
+    {
+        $validatedData = $request->validated();
+        return $this->adminService->filterCategories($validatedData);
     }
 
     public function create(CreateAdminRequest $request)

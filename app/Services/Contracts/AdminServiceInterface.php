@@ -10,6 +10,8 @@ interface AdminServiceInterface
 
     public function getApprovedAdminUserByCode(string $userCode);
 
+    public function filterCategories(array $reqParams);
+
     public function createAdminUser(array $payload);
 
     public function approveAdminUser(int $userId, array $payload);

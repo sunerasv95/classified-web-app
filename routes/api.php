@@ -23,37 +23,17 @@ use App\Http\Controllers\UploadsController;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
-/*****************************************
- * ************ ADMIN ROUTES *************
-*/
-Route::prefix('admin/auth/')->group(function(){
+
+Route::prefix('admin/auth/')->group(function () {
     Route::post('login', [AdminAuthController::class, "login"]);
 });
 
-// Route::prefix('/admin')->middleware(["client"])->group(function(){
-Route::prefix('admin')
-//->middleware(["auth:api-admin"])
-->group(function () {
-    Route::prefix('users')
-    //->middleware("role:super-administrator,administrator")
-    ->group(function () {
-        Route::get('/', [AdminController::class, 'getAll']);
-        Route::get('{userCode}', [AdminController::class, 'getOne']);
-        //->middleware("ability:get-users");
-        Route::post('/', [AdminController::class, 'create']);
-        //Route::post('{userId}/appovals', [AdminController::class, 'approveAdminUser']);
-    });
-});
 
-/*****************************************
- * ************ MEMBER ROUTES *************
-*/
-
-Route::prefix('/auth')->group(function(){
+Route::prefix('/auth')->group(function () {
     Route::post('register', [AuthController::class, "register"]);
     Route::post('login', [AuthController::class, "login"]);
     Route::post('{provider}/register', [AuthController::class, "socialResgister"]);
@@ -61,12 +41,19 @@ Route::prefix('/auth')->group(function(){
 });
 
 
-/*****************************************
- * ************ COMMON RESOUCES ROUTES ***
-*/
+Route::prefix('users')
+    //->middleware("role:super-administrator,administrator")
+    ->group(function () {
+        Route::get('/', [AdminController::class, 'getAll']);
+        Route::get('/search', [AdminController::class, "search"]);
+        Route::get('{userCode}', [AdminController::class, 'getOne']);
+        //->middleware("ability:get-users");
+        Route::post('/', [AdminController::class, 'create']);
+        //Route::post('{userId}/appovals', [AdminController::class, 'approveAdminUser']);
+});
 
 Route::prefix('/listings')->group(function () {
-    Route::get('/', [ListingsController::class ,"getAll"]);
+    Route::get('/', [ListingsController::class, "getAll"]);
     Route::post('/', [ListingsController::class, "create"]);
     Route::get('{listingId}', [ListingsController::class, "getOne"]);
     Route::put('{listingId}', [ListingsController::class, "updateOne"]);
@@ -82,7 +69,6 @@ Route::prefix('/categories')->group(function () {
     Route::post('/', [CategoriesController::class, "create"]);
     Route::put('{categoryId}', [CategoriesController::class, "updateOne"]);
     Route::delete('{categoryId}', [CategoriesController::class, "deleteOne"]);
-
 });
 
 Route::prefix('/brands')->group(function () {
@@ -105,17 +91,16 @@ Route::prefix('/uploads')->group(function () {
     Route::post('images', [UploadsController::class, "uploadImage"]);
 });
 
-Route::prefix('/permissions')->group(function(){
+Route::prefix('/permissions')->group(function () {
     Route::get('/', [PermissionController::class, 'getAll']);
     Route::post('/', [PermissionController::class, 'create']);
     Route::put('{permissionId}', [PermissionController::class, 'update']);
     Route::get('{permissionId}', [PermissionController::class, 'getOne']);
 });
 
-Route::prefix('/roles')->group(function(){
+Route::prefix('/roles')->group(function () {
     Route::get('/', [RoleController::class, 'getAll']);
     Route::post('/', [RoleController::class, 'create']);
     Route::put('{roleId}', [RoleController::class, 'update']);
     Route::get('{roleId}', [RoleController::class, 'getOne']);
 });
-

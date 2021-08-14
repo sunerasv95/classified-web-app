@@ -26,6 +26,13 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
         return $this->findByCriteria($criteria, $columns, $relations);
     }
 
+    public function getAdminByUserCode(string $userCode, array $criteria = [], array $columns = ["*"], array $relations = []): ?Model
+    {
+        //dd($userCode,$criteria, $columns, $relations);
+        $criteria['user_code'] = $userCode;
+        return $this->findByCriteria($criteria, $columns, $relations);
+    }
+
     public function createWithRelationships(array $attributes, array $relationships)
     {
 

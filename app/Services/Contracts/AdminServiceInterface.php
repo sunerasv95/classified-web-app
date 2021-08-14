@@ -2,7 +2,11 @@
 
 namespace App\Services\Contracts;
 
-interface AdminServiceInterface {
+interface AdminServiceInterface
+{
+    public function getAdminUserByCode(string $userCode);
+    
+    public function getApprovedAdminUserByCode(string $userCode);
 
     public function createAdminUser(array $payload);
 

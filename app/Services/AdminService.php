@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Resources\Admin\AdminResource;
 use App\Http\Resources\Brand\BrandResource;
 use App\Repositories\Contracts\AdminRepositoryInterface;
 use App\Services\Contracts\BrandServiceInterface;
@@ -24,18 +25,53 @@ class AdminService implements AdminServiceInterface
         $this->adminRepository = $adminRepository;
     }
 
+    public function getAdminUserByCode(string $userCode)
+    {
+        $adminUser = null;
+        //dd($userCode);
+        $adminUser = $this->adminRepository
+            ->getAdminByUserCode(
+                $userCode,
+                array(),
+                array("*"),
+                array("role")
+            );
+        //dd($adminUser);
+        if(empty($adminUser)) return $this->respondNotFound(HttpMessages::NOT_FOUND_USER_MESSAGE);
+
+        return $this->respondWithResource(new AdminResource($adminUser), HttpMessages::RESPONSE_OKAY_MESSAGE);
+    }
+
+    public function getApprovedAdminUserByCode(string $userCode)
+    {
+        $adminUser = null;
+        //dd($userCode);
+        $adminUser = $this->adminRepository
+            ->getAdminByUserCode(
+                $userCode,
+                array("is_approved" => 1),
+                array("*"),
+                array("role:id,name", "role.permissions:id,slug")
+            );
+        //dd($adminUser);
+        if(empty($adminUser)) return $this->respondNotFound(HttpMessages::NOT_FOUND_USER_MESSAGE);
+
+        return $this->respondWithResource(new AdminResource($adminUser), HttpMessages::RESPONSE_OKAY_MESSAGE);
+    }
+
     public function createAdminUser(array $payload)
     {
-        $email = null;
+        $adminUser = $email = null;
         $adminData = array();
 
         $email = $payload['email'];
 
         $adminUser = $this->adminRepository->getAdminByEmail($email);
-        if(isset($adminUser)) return $this->respondResourceAlreadyExistsError(HttpMessages::EMAIL_IS_ALREADY_EXISTS);
+        if(empty($adminUser)) return $this->respondResourceAlreadyExistsError(HttpMessages::EMAIL_IS_ALREADY_EXISTS);
 
         $adminData['name']              = $payload['name'];
         $adminData['email']             = $email;
+        $adminData['user_code']         = Enums::ADMIN_CODE_PREFIX. rand(1000, 5000);
         $adminData['role_id']           = $payload['role_id'];
         $adminData['is_email_verified'] = Enums::STATUS_NO;
         $adminData['password']          = makeHashedPassword($payload['password']);
@@ -51,13 +87,13 @@ class AdminService implements AdminServiceInterface
     public function approveAdminUser(int $userId, array $payload)
     {
         $approvalData = array();
-        $approvedByUser = null;
+        $adminUser = $approvedByUser = null;
 
         $approvedByUser = $payload['approved_user_id'];
         if($userId === $approvedByUser) return $this->respondInvalidRequestError(HttpMessages::APPROVAL_REJECTED);
 
         $adminUser = $this->adminRepository->getAdminById($userId, array("is_approved" => 0, "role_id" => 0));
-        if(!isset($adminUser)) return $this->respondNotFound(HttpMessages::NOT_FOUND_USER_MESSAGE);
+        if(empty($adminUser)) return $this->respondNotFound(HttpMessages::NOT_FOUND_USER_MESSAGE);
 
         $approvalData['is_approved']    = Enums::APPROVED_YES;
         $approvalData['approved_date']  = getCurrentDateTime();

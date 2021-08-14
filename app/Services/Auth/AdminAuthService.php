@@ -9,6 +9,7 @@ use App\Repositories\Contracts\AdminRepositoryInterface;
 use App\Services\Contracts\AdminAuthServiceInterface;
 use App\Traits\ApiResponser;
 use App\Util\Enums;
+use App\Util\ErrorCodes;
 use App\Util\HttpMessages;
 
 class AdminAuthService implements AdminAuthServiceInterface
@@ -35,7 +36,10 @@ class AdminAuthService implements AdminAuthServiceInterface
 
         $adminUser = $this->adminRepository->getAdminByEmail($email); //todo: check whether user account is active/blocked/not email verified
         //dd(Role::find(1)->permissions()->get()->toArray());
-        if (!isset($adminUser)) return $this->respondUnAuthorized(HttpMessages::INVALID_LOGIN_CREDENTIALS);
+        if (!isset($adminUser)) return $this->respondUnAuthorized(
+            HttpMessages::INVALID_LOGIN_CREDENTIALS,
+            ErrorCodes::INVALID_LOGIN_CREDENTIALS
+        );
 
         if (checkHashedPassword($password, $adminUser->password)) {
             $token = $adminUser->createToken(Enums::PASSPORT_PASSWORD_GRANT_CLIENT)->accessToken;
@@ -45,7 +49,10 @@ class AdminAuthService implements AdminAuthServiceInterface
             // elseif ($adminUser->is_blocked) return $this->respondUnAuthorized(HttpMessages::BLOCKED_USER_MESSAGE);
             // else return $this->respondWithResource(new AdminAuthResource($adminUser), HttpMessages::RESPONSE_OKAY_MESSAGE);
         } else {
-            return $this->respondUnAuthorized(HttpMessages::INVALID_LOGIN_CREDENTIALS);
+            return $this->respondUnAuthorized(
+                HttpMessages::INVALID_LOGIN_CREDENTIALS,
+                ErrorCodes::INVALID_LOGIN_CREDENTIALS
+            );
         }
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Resources\Category\CategoryResource;
 use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Services\Contracts\CategoryServiceInterface;
 use App\Util\Enums;
+use App\Util\ErrorCodes;
 
 class CategoryService implements CategoryServiceInterface
 {
@@ -122,7 +123,7 @@ class CategoryService implements CategoryServiceInterface
         $result = $this->categoryRepository->update($category, $data);
 
         if ($result > 0) return $this->respondSuccess("Category updated successfully");
-        else return $this->respondInternalError();
+        else return $this->respondInternalError(null, ErrorCodes::INTERNAL_SERVER_ERROR_CODE);
     }
 
     public function deleteCategoryById($id)
@@ -132,6 +133,6 @@ class CategoryService implements CategoryServiceInterface
         $result = $this->categoryRepository->delete($category);
 
         if ($updateDeleted && $result) return $this->respondSuccess("Category deleted successfully");
-        else return $this->respondInternalError();
+        else return $this->respondInternalError(null, ErrorCodes::INTERNAL_SERVER_ERROR_CODE);
     }
 }

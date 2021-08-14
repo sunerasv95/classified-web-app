@@ -18,6 +18,13 @@ class AdminController extends Controller
         $this->adminService = $adminService;
     }
 
+    public function getAll(GetAdminUserRequest $request)
+    {
+        $validatedData = $request->validated();
+
+        return $this->adminService->getAllAdminUsers($validatedData);
+    }
+
     public function getOne($userCode, GetAdminUserRequest $request)
     {
         $validatedData = $request->validated();

@@ -36,14 +36,16 @@ Route::prefix('admin/auth/')->group(function(){
 
 // Route::prefix('/admin')->middleware(["client"])->group(function(){
 Route::prefix('admin')
-->middleware(["auth:api-admin"])
+//->middleware(["auth:api-admin"])
 ->group(function () {
     Route::prefix('users')
-    ->middleware("role:super-administrator,administrator")
+    //->middleware("role:super-administrator,administrator")
     ->group(function () {
-        Route::get('{userCode}', [AdminController::class, 'getOne'])->middleware("ability:get-users");
+        Route::get('/', [AdminController::class, 'getAll']);
+        Route::get('{userCode}', [AdminController::class, 'getOne']);
+        //->middleware("ability:get-users");
         Route::post('/', [AdminController::class, 'create']);
-        Route::post('{adminId}/appovals', [AdminController::class, 'approveAdminUser']);
+        //Route::post('{userId}/appovals', [AdminController::class, 'approveAdminUser']);
     });
 });
 

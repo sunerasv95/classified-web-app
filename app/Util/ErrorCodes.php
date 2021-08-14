@@ -17,7 +17,8 @@ final class ErrorCodes {
     const EXPIRED_TOKEN_ERROR_CODE              = 1024;
 
     const UNAUTHORIZED_ACTION_ERROR_CODE        = 4022;
-
+    const INVALID_LOGIN_CREDENTIALS             = 4025;
+    const INVALID_REQUEST                       = 4030;
 
 
     /********************************
@@ -43,6 +44,7 @@ final class ErrorCodes {
      *
     *********************************/
 
-    const RESOURCE_NOT_FOUND_ERROR_CODE        = 2201;
+    const RESOURCE_NOT_FOUND_ERROR_CODE         = 2201;
+    const RESOURCE_EXISTS_ERROR_CODE            = 2204;
 
 }

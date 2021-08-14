@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Resources\Admin\AdminAuthResource;
 use App\Http\Resources\Admin\AdminResource;
 use App\Http\Resources\Brand\BrandResource;
 use App\Repositories\Contracts\AdminRepositoryInterface;
@@ -10,6 +11,7 @@ use App\Repositories\Contracts\BrandRepositoryInterface;
 use App\Services\Contracts\AdminServiceInterface;
 use App\Traits\ApiResponser;
 use App\Util\Enums;
+use App\Util\ErrorCodes;
 use App\Util\HttpMessages;
 use Illuminate\Support\Facades\Http;
 
@@ -25,6 +27,40 @@ class AdminService implements AdminServiceInterface
         $this->adminRepository = $adminRepository;
     }
 
+    public function getAllAdminUsers(array $requestParams)
+    {
+        $paginate =  $orderby = array();
+
+        if (
+            isset($reqParams[Enums::SORT_QUERY_PARAM]) &&
+            isset($reqParams[Enums::SORT_ORDER_QUERY_PARAM])
+        ) {
+            $orderby[Enums::SORT_QUERY_PARAM]       = $reqParams[Enums::SORT_QUERY_PARAM];
+            $orderby[Enums::SORT_ORDER_QUERY_PARAM] = $reqParams[Enums::SORT_ORDER_QUERY_PARAM];
+        }
+        if (
+            isset($reqParams[Enums::LIMIT_QUERY_PARAM]) &&
+            isset($reqParams[Enums::OFFSET_QUERY_PARAM])
+        ) {
+            $paginate[Enums::LIMIT_QUERY_PARAM]  = $reqParams[Enums::LIMIT_QUERY_PARAM];
+            $paginate[Enums::OFFSET_QUERY_PARAM] = $reqParams[Enums::OFFSET_QUERY_PARAM];
+        }
+
+        $adminUsers = $this->adminRepository
+            ->getAll(
+                array(),
+                array("*"),
+                array("role:id,name"),
+                $paginate,
+                $orderby
+            );
+
+        return $this->respondWithResource(
+            new AdminResource($adminUsers),
+            HttpMessages::RESPONSE_OKAY_MESSAGE
+        );
+    }
+
     public function getAdminUserByCode(string $userCode)
     {
         $adminUser = null;
@@ -37,9 +73,15 @@ class AdminService implements AdminServiceInterface
                 array("role")
             );
         //dd($adminUser);
-        if(empty($adminUser)) return $this->respondNotFound(HttpMessages::NOT_FOUND_USER_MESSAGE);
+        if(empty($adminUser)) return $this->respondNotFound(
+            HttpMessages::NOT_FOUND_USER_MESSAGE,
+            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
+        );
 
-        return $this->respondWithResource(new AdminResource($adminUser), HttpMessages::RESPONSE_OKAY_MESSAGE);
+        return $this->respondWithResource(
+            new AdminResource($adminUser),
+            HttpMessages::RESPONSE_OKAY_MESSAGE
+        );
     }
 
     public function getApprovedAdminUserByCode(string $userCode)
@@ -54,9 +96,15 @@ class AdminService implements AdminServiceInterface
                 array("role:id,name", "role.permissions:id,slug")
             );
         //dd($adminUser);
-        if(empty($adminUser)) return $this->respondNotFound(HttpMessages::NOT_FOUND_USER_MESSAGE);
+        if(empty($adminUser)) return $this->respondNotFound(
+            HttpMessages::NOT_FOUND_USER_MESSAGE,
+            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
+        );
 
-        return $this->respondWithResource(new AdminResource($adminUser), HttpMessages::RESPONSE_OKAY_MESSAGE);
+        return $this->respondWithResource(
+            new AdminAuthResource($adminUser),
+            HttpMessages::RESPONSE_OKAY_MESSAGE
+        );
     }
 
     public function createAdminUser(array $payload)
@@ -67,7 +115,10 @@ class AdminService implements AdminServiceInterface
         $email = $payload['email'];
 
         $adminUser = $this->adminRepository->getAdminByEmail($email);
-        if(empty($adminUser)) return $this->respondResourceAlreadyExistsError(HttpMessages::EMAIL_IS_ALREADY_EXISTS);
+        if(!empty($adminUser)) return $this->respondResourceAlreadyExistsError(
+            HttpMessages::EMAIL_IS_ALREADY_EXISTS,
+            ErrorCodes::RESOURCE_EXISTS_ERROR_CODE
+        );
 
         $adminData['name']              = $payload['name'];
         $adminData['email']             = $email;
@@ -90,17 +141,23 @@ class AdminService implements AdminServiceInterface
         $adminUser = $approvedByUser = null;
 
         $approvedByUser = $payload['approved_user_id'];
-        if($userId === $approvedByUser) return $this->respondInvalidRequestError(HttpMessages::APPROVAL_REJECTED);
+        if($userId === $approvedByUser) return $this->respondInvalidRequestError(
+            HttpMessages::APPROVAL_REJECTED,
+            ErrorCodes::INVALID_REQUEST
+        );
 
         $adminUser = $this->adminRepository->getAdminById($userId, array("is_approved" => 0, "role_id" => 0));
-        if(empty($adminUser)) return $this->respondNotFound(HttpMessages::NOT_FOUND_USER_MESSAGE);
+        if(empty($adminUser)) return $this->respondNotFound(
+            HttpMessages::NOT_FOUND_USER_MESSAGE,
+            ErrorCodes::INVALID_REQUEST
+        );
 
         $approvalData['is_approved']    = Enums::APPROVED_YES;
         $approvalData['approved_date']  = getCurrentDateTime();
         $result = $this->adminRepository->update($adminUser, $approvalData);
 
         if($result > 0) return $this->respondSuccess(HttpMessages::SUCCESSFULLY_APPROVED_MESSAGE);
-        else return $this->respondInternalError();
+        else return $this->respondInternalError(null, ErrorCodes::INTERNAL_SERVER_ERROR_CODE);
     }
 
 

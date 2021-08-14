@@ -13,7 +13,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
         parent::__construct($model);
     }
 
-    public function filterCategories(
+    public function applyFilters(
         string $query,
         array $filters = [],
         array $columns = ["*"],

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface CategoryRepositoryInterface extends BaseRepositoryInterface
 {
-    public function filterCategories(
+    public function applyFilters(
         string $query,
         // array $queryCols = [],
         array $filters = [],

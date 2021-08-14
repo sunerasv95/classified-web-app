@@ -2,6 +2,8 @@
 
 namespace App\Traits;
 
+use App\Util\Enums;
+use App\Util\ErrorCodes;
 use Error;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -11,40 +13,6 @@ use Illuminate\Validation\ValidationException;
 
 trait ApiResponser
 {
-
-    // protected function resonseWithJsonResource(
-    //     bool $error,
-    //     JsonResource $jsonResource,
-    //     int $statusCode,
-    //     string $message
-    // )
-    // {
-    //     return response()->json([
-    //         "error" => $error,
-    //         "message" => $message,
-    //         "data" => $jsonResource,
-    //         "status_code" => $statusCode,
-    //     ]);
-    // }
-
-    // protected function successResponse(bool $error = false, $data = [], int $statusCode = null, string $message)
-    // {
-    //     return response()->json([
-    //         "error" => $error,
-    //         "message" => $message,
-    //         "status_code" => $statusCode,
-    //         "data" => $data
-    //     ]);
-    // }
-
-    // public static function failResponse(int $errorCode , string $message, int $statusCode = 500)
-    // {
-    //     return response()->json([
-    //         "error" => true,
-    //         "error_code" => $errorCode,
-    //         "message" => $message
-    //     ], $statusCode);
-    // }
 
     protected function respondWithResource(
         JsonResource $resource,
@@ -107,7 +75,6 @@ trait ApiResponser
         return ["content" => $responseStructure, "statusCode" => $statusCode, "headers" => $headers];
     }
 
-
     protected function apiResponse(
         $data = [],
         $statusCode = 200,
@@ -120,7 +87,6 @@ trait ApiResponser
             $result['content'], $result['statusCode'], $result['headers']
         );
     }
-
 
     protected function respondWithResourceCollection(
         ResourceCollection $resourceCollection,
@@ -137,7 +103,6 @@ trait ApiResponser
         );
     }
 
-
     protected function respondSuccess($message = '')
     {
         return $this->apiResponse(['success' => true, 'message' => $message]);
@@ -148,14 +113,14 @@ trait ApiResponser
         return $this->apiResponse($data, 201);
     }
 
-    protected function respondResourceAlreadyExistsError($message = 'Resource already exists')
+    protected function respondResourceAlreadyExistsError($message = 'Resource already exists', $errorCode)
     {
-        return $this->respondError($message, 409);
+        return $this->respondError($message, 409,  $errorCode);
     }
 
-    protected function respondInvalidRequestError($message = 'Bad Request')
+    protected function respondInvalidRequestError($message = 'Bad Request', $errorCode)
     {
-        return $this->respondError($message, 400);
+        return $this->respondError($message, 400, $errorCode);
     }
 
     protected function respondNoContent($message = 'No Content Found')
@@ -175,17 +140,17 @@ trait ApiResponser
     //     return $this->respondWithResourceCollection(new EmptyResourceCollection([]), $message);
     // }
 
-    protected function respondUnAuthorized($message = 'Unauthorized')
+    protected function respondUnAuthorized($message = 'Unauthorized', $errorCode)
     {
-        return $this->respondError($message, 401);
+        return $this->respondError($message, 401, $errorCode);
     }
 
 
     protected function respondError(
         $message,
         int $statusCode = 400,
-        Exception $exception = null,
-        int $error_code = 1
+        int $error_code = ErrorCodes::UNDEFINED_ERROR_CODE,
+        Exception $exception = null
     )
     {
         return $this->apiResponse(
@@ -199,15 +164,15 @@ trait ApiResponser
     }
 
 
-    protected function respondForbidden($message = 'Forbidden')
+    protected function respondForbidden($message = 'Forbidden', $errorCode)
     {
-        return $this->respondError($message, 403);
+        return $this->respondError($message, 403, $errorCode);
     }
 
 
-    protected function respondNotFound($message = 'Not Found')
+    protected function respondNotFound($message = 'Not Found', $errorCode)
     {
-        return $this->respondError($message, 404);
+        return $this->respondError($message, 404, $errorCode);
     }
 
     // /**
@@ -225,18 +190,22 @@ trait ApiResponser
     // }
 
 
-    protected function respondInternalError($message = 'Internal Error')
+    protected function respondInternalError($message = 'Internal Error', $errorCode)
     {
-        return $this->respondError($message, 500);
+        return $this->respondError($message, 500, $errorCode);
     }
 
-    protected function respondValidationErrors(ValidationException $exception)
+    protected function respondValidationErrors(
+        ValidationException $exception,
+        $errorCode = ErrorCodes::VALIDATION_ERROR_CODE
+    )
     {
         return $this->apiResponse(
             [
                 'success' => false,
                 'message' => $exception->getMessage(),
-                'errors' => $exception->errors()
+                'errors' => $exception->errors(),
+                "error_code" => $errorCode
             ],
             422
         );
@@ -248,7 +217,10 @@ trait ApiResponser
             "success" => true,
             "message" => $message,
             "result" => [
-                "access_token" => $token
+                "data" => [
+                    "access_token" => $token,
+                    "token_type" => Enums::PASSPORT_TOKEN_TYPE
+                ]
             ]
         ), 200);
     }

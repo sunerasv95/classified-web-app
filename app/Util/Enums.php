@@ -11,7 +11,8 @@ final class Enums {
      *
     *********************************/
 
-    const PASSPORT_CLIENT       = "Laravel Password Grant Client";
+    const PASSPORT_PASSWORD_GRANT_CLIENT        = "Laravel Password Grant Client";
+    const PASSPORT_TOKEN_TYPE                   = "Bearer";
 
 
     /********************************
@@ -25,6 +26,13 @@ final class Enums {
 
     const REGULAR_MEMBER_TYPE   = 1;
 
+    /********************************
+     *
+     * PREFIXES
+     *
+    *********************************/
+
+    const ADMIN_CODE_PREFIX = "ADM";
 
     /********************************
      *
@@ -36,7 +44,7 @@ final class Enums {
 
     /*******************************
      *
-     * SYSTEM STATUS
+     *  STATUS
      *
     *******************************/
 
@@ -53,7 +61,7 @@ final class Enums {
 
     /*******************************
      *
-     * SYSTEM MESSAGES
+     *  MESSAGES
      *
     ********************************/
 
@@ -65,5 +73,21 @@ final class Enums {
     const LOGIN_SUCCESS_MESSAGE                         = "Logged in successfully";
 
 
+    /*******************************
+     *
+     *  HTTP REQUESTS
+     *
+    ********************************/
+
+    const SEARCH_QUERY_PARAM            = "qry";
+    const SORT_QUERY_PARAM              = "sort";
+    const SORT_ORDER_QUERY_PARAM        = "order";
+    const LIMIT_QUERY_PARAM             = "limit";
+    const OFFSET_QUERY_PARAM            = "offset";
+    const START_DATE_QUERY_PARAM        = "startDate";
+    const END_DATE_QUERY_PARAM          = "endDate";
+
+    //categories
+    const CATEGORY_STATUS_PARAM         = "status";
 
 }

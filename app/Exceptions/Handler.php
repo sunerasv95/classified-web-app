@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use App\Traits\ApiResponser;
+use App\Util\ErrorCodes;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -55,10 +56,13 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if(get_class($exception) == "Illuminate\Database\Eloquent\ModelNotFoundException"){
-             return $this->respondNotFound("Resource not found!");
+             return $this->respondNotFound("Resource not found!", ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE);
         }
         if(get_class($exception) == "Illuminate\Validation\ValidationException"){
             return $this->respondValidationErrors($exception);
+        }
+        if(get_class($exception) == "Illuminate\Auth\AuthenticationException"){
+            return $this->respondUnAuthorized('Unauthorized', ErrorCodes::INVALID_TOKEN_ERROR_CODE);
         }
         return parent::render($request, $exception);
     }

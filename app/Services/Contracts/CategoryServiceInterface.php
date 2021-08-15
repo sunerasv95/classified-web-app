@@ -10,9 +10,9 @@ interface CategoryServiceInterface {
 
     public function filterCategories(array $requestParams);
 
-    public function createCategory(array $data);
+    public function createCategory(array $payload);
 
-    public function updateCategoryById($id, array $data);
+    public function updateCategoryById(int $id, array $payload);
 
-    public function deleteCategoryById($id);
+    public function deleteCategoryById(int $id);
 }

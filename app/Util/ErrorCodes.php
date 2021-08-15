@@ -19,6 +19,7 @@ final class ErrorCodes {
     const UNAUTHORIZED_ACTION_ERROR_CODE        = 4022;
     const INVALID_LOGIN_CREDENTIALS             = 4025;
     const INVALID_REQUEST                       = 4030;
+    const BAD_REQUEST                           = 4040;
 
 
     /********************************

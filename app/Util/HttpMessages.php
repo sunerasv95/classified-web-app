@@ -38,31 +38,26 @@ final class HttpMessages {
     const APPROVAL_REJECTED                             = "Approval request has been rejected";
 
 
-     /**************************
-     ********* LISTING RELATED
+
+    /**************************
+     ********* RESOURCE RELATED
      ****/
 
-    const LISTING_CREATED                             = "Listing created successfully";
+    const UPDATED_SUCCESSFULLY              = "Updated Successfully";
+    const CREATED_SUCCESSFULLY              = "Created Successfully";
+
+    const RESOURCE_CREATION_FAILED          = "Creation Failed";
+    const RESOURCE_UPDATION_FAILED          = "Creation Failed";
+
+    const BAD_REQUEST                       = "Bad Request";
+    const RESOURCE_NOT_FOUND                = "Resource Not Found";
+    const RESOURCE_EXISTS                   = "Resource exists";
 
 
     /**************************
-     ********* PERMISSION RELATED
+     ********* COMMON
      ****/
-    const PERMISSION_NOT_FOUND                          = "Permission not found";
-    const PERMISSION_ALREADY_EXISTS                     = "Permission aleardy exists";
 
-    const PERMISSION_CREATED                            = "Permission created successfully";
-    const PERMISSION_UPDATED                            = "Permission updated successfully";
-
-
-    /**************************
-     ********* PERMISSION RELATED
-     ****/
-    const ROLE_NOT_FOUND                          = "Role not found";
-    const ROLE_ALREADY_EXISTS                     = "Role aleardy exists";
-
-    const ROLE_CREATED                            = "Role created successfully";
-    const ROLE_UPDATED                            = "Role updated successfully";
-
+     const INTERNAL_SERVER_ERROR            = "Internal Server Error";
 
 }

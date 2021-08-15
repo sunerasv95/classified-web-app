@@ -8,6 +8,8 @@ use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Services\Contracts\CategoryServiceInterface;
 use App\Util\Enums;
 use App\Util\ErrorCodes;
+use App\Util\HttpMessages;
+use Error;
 
 class CategoryService implements CategoryServiceInterface
 {
@@ -48,15 +50,26 @@ class CategoryService implements CategoryServiceInterface
                 $orderby
             );
 
-        return $this->respondWithResource(new CategoryResource($categories), "OK");
+        return $this->respondWithResource(
+            new CategoryResource($categories),
+            HttpMessages::RESPONSE_OKAY_MESSAGE
+        );
     }
 
-    public function getCategoryById($id)
+    public function getCategoryById(int $id)
     {
         $category = $this->categoryRepository
-            ->getOneById($id, array(), array("*"), array("parent"));
+            ->getOneById(
+                $id,
+                array(),
+                array("*"),
+                array("parent")
+            );
 
-        return $this->respondWithResource(new CategoryResource($category), "OK");
+        return $this->respondWithResource(
+            new CategoryResource($category),
+            HttpMessages::RESPONSE_OKAY_MESSAGE
+        );
     }
 
     public function filterCategories(array $reqParams)
@@ -84,7 +97,7 @@ class CategoryService implements CategoryServiceInterface
         }
 
         $categories = $this->categoryRepository
-            ->filterCategories(
+            ->applyFilters(
                 $keyword,
                 $filters,
                 array("*"),
@@ -94,41 +107,65 @@ class CategoryService implements CategoryServiceInterface
                 array()
             );
 
-        return $this->respondWithResource(new CategoryResource($categories), "OK");
+        return $this->respondWithResource(
+            new CategoryResource($categories),
+            HttpMessages::RESPONSE_OKAY_MESSAGE
+        );
     }
 
-    public function createCategory(array $data)
+    public function createCategory(array $payload)
     {
-        $newCategory = $this->categoryRepository->create($data)->toArray();
+        $newCategory = $this->categoryRepository->create($payload);
         if ($newCategory) {
             $data = array(
                 "success" => true,
-                "message" => "Category created successfully",
-                "result" => $newCategory
+                "message" => HttpMessages::CREATED_SUCCESSFULLY,
+                "result" => new CategoryResource($newCategory)//$newCategory
             );
-        } else {
-            $data = array(
-                "success" => false,
-                "message" => "Category creation failed",
-                "result" => null
-            );
+
+            return $this->respondCreated($data);
         }
 
-        return $this->respondCreated($data);
+        return $this->respondInternalError(
+            HttpMessages::INTERNAL_SERVER_ERROR,
+            ErrorCodes::INTERNAL_SERVER_ERROR_CODE
+        );
     }
 
-    public function updateCategoryById($id, array $data)
+    public function updateCategoryById($id, array $payload)
     {
-        $category = $this->categoryRepository->getOneById($id, array(), array("*"), array());
-        $result = $this->categoryRepository->update($category, $data);
+        if(empty($payload)) return $this->respondInvalidRequestError(
+            HttpMessages::BAD_REQUEST,
+            ErrorCodes::BAD_REQUEST
+        );
 
-        if ($result > 0) return $this->respondSuccess("Category updated successfully");
-        else return $this->respondInternalError(null, ErrorCodes::INTERNAL_SERVER_ERROR_CODE);
+        $category = $this->categoryRepository
+            ->getOneById(
+                $id,
+                array(),
+                array("*"),
+                array()
+            );
+        $result = $this->categoryRepository->update($category, $payload);
+
+        if ($result > 0) return $this->respondSuccess(
+            HttpMessages::UPDATED_SUCCESSFULLY
+        );
+        else return $this->respondInternalError(
+            null,
+            ErrorCodes::INTERNAL_SERVER_ERROR_CODE
+        );
     }
 
     public function deleteCategoryById($id)
     {
-        $category = $this->categoryRepository->getOneById($id, array(), array("*"), array());
+        $category = $this->categoryRepository
+            ->getOneById(
+                $id,
+                array(),
+                array("*"),
+                array()
+            );
         $updateDeleted = $this->categoryRepository->update($category, array("is_deleted" => 1));
         $result = $this->categoryRepository->delete($category);
 

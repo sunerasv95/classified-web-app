@@ -16,6 +16,7 @@ class Brand extends Model
         "brand_name",
         "brand_description",
         "brand_slug",
+        "brand_code",
         "brand_image_url",
         "is_parent",
         "parent_id",

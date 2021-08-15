@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Brand;
 
+use App\Util\Enums;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 
@@ -10,7 +11,8 @@ class CreateBrandRequest extends FormRequest
     protected function prepareForValidation()
     {
         return $this->merge([
-            "brand_slug" => Str::slug($this->brand_name)
+            "brand_slug" => Str::slug($this->brand_name),
+            "brand_code" => Enums::BRAND_CODE_PREFIX.rand(1000, 3999)
         ]);
     }
     /**
@@ -33,6 +35,7 @@ class CreateBrandRequest extends FormRequest
         return [
             "brand_name" => "required|string",
             "brand_slug" => "required|string",
+            "brand_code" => "required|string",
             "brand_description" => "required|string",
             "status" => "required|integer"
         ];

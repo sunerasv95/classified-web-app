@@ -1,9 +1,10 @@
 <?php
 
+use App\Util\Enums;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class CategorySeeder extends Seeder
 {
@@ -14,76 +15,44 @@ class CategorySeeder extends Seeder
      */
     public function run()
     {
-        DB::table('categories')->insert([
-            // 'id' => rand(59999, 99999),
-            'category_name' => "Surfboards",
-            'category_description' => "test",
-            'category_slug' => "category_slug",
-            'is_parent' => 1,
-            "parent_id" => 0,
-            "status" => 1,
-            "is_deleted" => 0,
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-            "deleted_at" => null
-        ]);
+        $categories = array(
+            "Surfboards", "Paddleboards", "Accessories", "Surf Shops", "Surf Camps"
+        );
 
-        DB::table('categories')->insert([
-            // 'id' => rand(59999, 99999),
-            'category_name' => "Paddleboards",
-            'category_description' => "test",
-            'category_slug' => "category_slug",
-            'is_parent' => 1,
-            "parent_id" => 0,
-            "status" => 1,
-            "is_deleted" => 0,
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-            "deleted_at" => null
-        ]);
+        $subCategories  = array(
+            "Shortboards", "Longboards", "Fishboards", "Funboards"
+        );
 
-        DB::table('categories')->insert([
-            // 'id' => rand(59999, 99999),
-            'category_name' => "Shortboards",
-            'category_description' => "test",
-            'category_slug' => "category_slug",
-            'is_parent' => 0,
-            "parent_id" => 1,
-            "status" => 1,
-            "is_deleted" => 0,
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-            "deleted_at" => null
-        ]);
+        foreach($categories as $cat){
+            DB::table('categories')->insert([
+                'category_name' => $cat,
+                'category_description' => "test",
+                'category_slug' => Str::slug($cat),
+                'category_code' => Enums::CATEGORY_CODE_PREFIX.rand(1000, 3999),
+                'is_parent' => 1,
+                "parent_id" => 0,
+                "status" => 1,
+                "is_deleted" => 0,
+                "created_at" => Carbon::now(),
+                "updated_at" => Carbon::now(),
+                "deleted_at" => null
+            ]);
+        }
 
-
-        DB::table('categories')->insert([
-            // 'id' => rand(59999, 99999),
-            'category_name' => "longboards",
-            'category_description' => "test",
-            'category_slug' => "category_slug",
-            'is_parent' => 0,
-            "parent_id" => 1,
-            "status" => 1,
-            "is_deleted" => 0,
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-            "deleted_at" => null
-        ]);
-
-
-        DB::table('categories')->insert([
-            // 'id' => rand(59999, 99999),
-            'category_name' => "Sup boards",
-            'category_description' => "test",
-            'category_slug' => "category_slug",
-            'is_parent' => 0,
-            "parent_id" => 2,
-            "status" => 1,
-            "is_deleted" => 0,
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-            "deleted_at" => null
-        ]);
+        foreach($subCategories as $subCat){
+            DB::table('categories')->insert([
+                'category_name' => $subCat,
+                'category_description' => "test",
+                'category_slug' => Str::slug($subCat),
+                'category_code' => Enums::CATEGORY_CODE_PREFIX.rand(1000, 3999),
+                'is_parent' => 0,
+                "parent_id" => 1,
+                "status" => 1,
+                "is_deleted" => 0,
+                "created_at" => Carbon::now(),
+                "updated_at" => Carbon::now(),
+                "deleted_at" => null
+            ]);
+        }
     }
 }

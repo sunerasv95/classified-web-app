@@ -59,12 +59,38 @@ class CategoryService implements CategoryServiceInterface
     public function getCategoryById(int $id)
     {
         $category = $this->categoryRepository
-            ->getOneById(
+            ->findById(
                 $id,
                 array(),
                 array("*"),
                 array("parent")
             );
+
+        if (empty($category)) return $this->respondNotFound(
+            HttpMessages::RESOURCE_NOT_FOUND,
+            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
+        );
+
+        return $this->respondWithResource(
+            new CategoryResource($category),
+            HttpMessages::RESPONSE_OKAY_MESSAGE
+        );
+    }
+
+    public function getCategoryByCode(string $categoryCode)
+    {
+        $category = $this->categoryRepository
+            ->findByCategoryCode(
+                $categoryCode,
+                array(),
+                array("*"),
+                array("parent")
+            );
+
+        if (empty($category)) return $this->respondNotFound(
+            HttpMessages::RESOURCE_NOT_FOUND,
+            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
+        );
 
         return $this->respondWithResource(
             new CategoryResource($category),
@@ -120,7 +146,7 @@ class CategoryService implements CategoryServiceInterface
             $data = array(
                 "success" => true,
                 "message" => HttpMessages::CREATED_SUCCESSFULLY,
-                "result" => new CategoryResource($newCategory)//$newCategory
+                "result" => new CategoryResource($newCategory)
             );
 
             return $this->respondCreated($data);
@@ -132,20 +158,26 @@ class CategoryService implements CategoryServiceInterface
         );
     }
 
-    public function updateCategoryById($id, array $payload)
+    public function updateCategoryById(int $id, array $payload)
     {
-        if(empty($payload)) return $this->respondInvalidRequestError(
+        if (empty($payload)) return $this->respondInvalidRequestError(
             HttpMessages::BAD_REQUEST,
             ErrorCodes::BAD_REQUEST
         );
 
         $category = $this->categoryRepository
-            ->getOneById(
+            ->findById(
                 $id,
                 array(),
                 array("*"),
                 array()
             );
+
+        if (empty($category)) return $this->respondNotFound(
+            HttpMessages::RESOURCE_NOT_FOUND,
+            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
+        );
+
         $result = $this->categoryRepository->update($category, $payload);
 
         if ($result > 0) return $this->respondSuccess(
@@ -157,19 +189,56 @@ class CategoryService implements CategoryServiceInterface
         );
     }
 
-    public function deleteCategoryById($id)
+    public function updateCategoryByCode(string $categoryCode, array $payload)
     {
+        if (empty($payload)) return $this->respondInvalidRequestError(
+            HttpMessages::BAD_REQUEST,
+            ErrorCodes::BAD_REQUEST
+        );
+
         $category = $this->categoryRepository
-            ->getOneById(
-                $id,
+            ->findByCategoryCode(
+                $categoryCode,
                 array(),
                 array("*"),
                 array()
             );
+
+        if (empty($category)) return $this->respondNotFound(
+            HttpMessages::RESOURCE_NOT_FOUND,
+            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
+        );
+
+        $result = $this->categoryRepository->update($category, $payload);
+
+        if ($result > 0) return $this->respondSuccess(
+            HttpMessages::UPDATED_SUCCESSFULLY
+        );
+        else return $this->respondInternalError(
+            null,
+            ErrorCodes::INTERNAL_SERVER_ERROR_CODE
+        );
+    }
+
+    public function deleteCategoryByCode(string $categoryCode)
+    {
+        $category = $this->categoryRepository
+            ->findByCategoryCode(
+                $categoryCode,
+                array(),
+                array("*"),
+                array()
+            );
+
+        if (empty($category)) return $this->respondNotFound(
+            HttpMessages::RESOURCE_NOT_FOUND,
+            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
+        );
+
         $updateDeleted = $this->categoryRepository->update($category, array("is_deleted" => 1));
         $result = $this->categoryRepository->delete($category);
 
-        if ($updateDeleted && $result) return $this->respondSuccess("Category deleted successfully");
+        if ($updateDeleted && $result) return $this->respondSuccess(HttpMessages::DELETED_SUCCESSFULLY);
         else return $this->respondInternalError(null, ErrorCodes::INTERNAL_SERVER_ERROR_CODE);
     }
 }

@@ -23,6 +23,7 @@ class CategoryResource extends JsonResource
                     $data['id']             = $category['id'];
                     $data['name']           = $category['category_name'];
                     $data['description']    = $category['category_description'];
+                    $data['code']           = $category['category_code'];
                     $data['is_parent']      = $category['is_parent'];
                     $data['parent_id']      = isset($category['parent']) ? $category['parent']['id'] : null;
                     $data['parent']         = isset($category['parent']) ? $category['parent']['category_name'] : null;
@@ -38,6 +39,7 @@ class CategoryResource extends JsonResource
             $data['id']             = $resourceResponse['id'];
             $data['name']           = $resourceResponse['category_name'];
             $data['description']    = $resourceResponse['category_description'];
+            $data['code']           = $resourceResponse['category_code'];
             $data['is_parent']      = $resourceResponse['is_parent'];
             $data['parent_id']      = isset($resourceResponse['parent']) ? $resourceResponse['parent']['id'] : null;
             $data['parent']         = isset($resourceResponse['parent']) ? $resourceResponse['parent']['category_name'] : null;

@@ -8,11 +8,15 @@ interface CategoryServiceInterface {
 
     public function getCategoryById(int $id);
 
+    public function getCategoryByCode(string $categoryCode);
+
     public function filterCategories(array $requestParams);
 
     public function createCategory(array $payload);
 
     public function updateCategoryById(int $id, array $payload);
 
-    public function deleteCategoryById(int $id);
+    public function updateCategoryByCode(string $categoryCode, array $payload);
+
+    public function deleteCategoryByCode(string $categoryCode);
 }

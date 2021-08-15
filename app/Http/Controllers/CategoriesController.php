@@ -25,9 +25,9 @@ class CategoriesController extends Controller
         return $this->categoryService->getAllCategories($validatedData);
     }
 
-    public function getOne($id)
+    public function getOne(string $categoryCode)
     {
-        return $this->categoryService->getCategoryById($id);
+        return $this->categoryService->getCategoryByCode($categoryCode);
     }
 
     // public function search(Request $request)
@@ -43,15 +43,15 @@ class CategoriesController extends Controller
         return $this->categoryService->createCategory($validatedData);
     }
 
-    public function updateOne($id, UpdateCategoryRequest $request)
+    public function updateOne(string $categoryCode, UpdateCategoryRequest $request)
     {
         $validatedData = $request->validated();
-        return $this->categoryService->updateCategoryById($id, $validatedData);
+        return $this->categoryService->updateCategoryByCode($categoryCode, $validatedData);
     }
 
-    public function deleteOne($id)
+    public function deleteOne($categoryCode)
     {
-        return $this->categoryService->deleteCategoryById($id);
+        return $this->categoryService->deleteCategoryByCode($categoryCode);
     }
 
 

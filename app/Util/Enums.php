@@ -32,8 +32,9 @@ final class Enums {
      *
     *********************************/
 
-    const ADMIN_CODE_PREFIX = "ADM";
-    const BRAND_CODE_PREFIX = "CBR";
+    const ADMIN_CODE_PREFIX     = "ADM";
+    const BRAND_CODE_PREFIX     = "CBR";
+    const CATEGORY_CODE_PREFIX  = "CAT";
 
     /********************************
      *

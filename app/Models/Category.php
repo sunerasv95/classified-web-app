@@ -17,6 +17,7 @@ class Category extends Model
         "category_name",
         "category_description",
         "category_slug",
+        "category_code",
         "is_parent",
         "parent_id",
         "status",

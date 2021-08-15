@@ -18,6 +18,7 @@ class CreateCategoriesTable extends Migration
             $table->string("category_name", 100);
             $table->string("category_description", 200);
             $table->string("category_slug", 100);
+            $table->string("category_code", 10);
             $table->tinyInteger("is_parent");
             $table->integer("parent_id");
             $table->tinyInteger("status")->default(0);

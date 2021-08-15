@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Brand\CreateBrandRequest;
+use App\Http\Requests\Brand\GetBrandsRequest;
 use App\Http\Requests\Brand\UpdateBrandRequest;
 use App\Services\Contracts\BrandServiceInterface;
 
@@ -15,14 +16,21 @@ class BrandsController extends Controller
         $this->brandService = $brandService;
     }
 
-    public function getAll()
+    public function getAll(GetBrandsRequest $request)
     {
-        return $this->brandService->getAllBrands();
+        $validatedData = $request->validated();
+        return $this->brandService->getAllBrands($validatedData);
     }
 
-    public function getOne($id)
+    public function getOne(string $brandCode)
     {
-        return $this->brandService->getBrandById($id);
+        return $this->brandService->getBrandByCode($brandCode);
+    }
+
+    public function search(GetBrandsRequest $request)
+    {
+        $validatedData = $request->validated();
+        return $this->brandService->filterBrands($validatedData);
     }
 
     public function create(CreateBrandRequest $request)
@@ -31,14 +39,14 @@ class BrandsController extends Controller
         return $this->brandService->createBrand($validatedData);
     }
 
-    public function updateOne($id, UpdateBrandRequest $request)
+    public function updateOne(string $brandCode, UpdateBrandRequest $request)
     {
         $validatedData = $request->validated();
-        return $this->brandService->updateBrandById($id, $validatedData);
+        return $this->brandService->updateBrandByCode($brandCode, $validatedData);
     }
 
-    public function deleteOne($id)
+    public function deleteOne(string $brandCode)
     {
-        return $this->brandService->deleteBrandById($id);
+        return $this->brandService->deleteBrandByCode($brandCode);
     }
 }

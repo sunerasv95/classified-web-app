@@ -1,8 +1,10 @@
 <?php
 
+use App\Util\Enums;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class BrandSeeder extends Seeder
 {
@@ -13,69 +15,21 @@ class BrandSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('brands')->insert([
-            // 'id' => rand(69999, 99999),
-            'brand_name' => "Brand 001",
-            'brand_description' => "test",
-            'brand_slug' => "category_slug",
-            "brand_image_url" => "",
-            "status" => 1,
-            "is_deleted" => 0,
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-            "deleted_at" => null
-        ]);
-
-        DB::table('brands')->insert([
-            // 'id' => rand(69999, 99999),
-            'brand_name' => "Brand 002",
-            'brand_description' => "test",
-            'brand_slug' => "category_slug",
-            "brand_image_url" => "",
-            "status" => 1,
-            "is_deleted" => 0,
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-            "deleted_at" => null
-        ]);
-
-        DB::table('brands')->insert([
-            // 'id' => rand(69999, 99999),
-            'brand_name' => "Brand 003",
-            'brand_description' => "test",
-            'brand_slug' => "category_slug",
-            "brand_image_url" => "",
-            "status" => 1,
-            "is_deleted" => 0,
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-            "deleted_at" => null
-        ]);
-
-        DB::table('brands')->insert([
-            // 'id' => rand(69999, 99999),
-            'brand_name' => "Brand 004",
-            'brand_description' => "test",
-            'brand_slug' => "category_slug",
-            "brand_image_url" => "",
-            "status" => 1,
-            "is_deleted" => 0,
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-            "deleted_at" => null
-        ]);
-
-        DB::table('brands')->insert([
-            // 'id' => rand(69999, 99999),
-            'brand_name' => "Brand 005",
-            'brand_description' => "test",
-            'brand_slug' => "category_slug",
-            "brand_image_url" => "",
-            "status" => 1,
-            "is_deleted" => 0,
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-            "deleted_at" => null
-        ]);
+        $count = 10;
+        for($i = 1; $i <= $count; $i++){
+            $brandName =  "Brand". "00".$i;
+            DB::table('brands')->insert([
+                'brand_name' =>$brandName,
+                'brand_description' => "test",
+                'brand_slug' => Str::slug($brandName),
+                "brand_code" => Enums::BRAND_CODE_PREFIX.rand(1000, 5000),
+                "brand_image_url" => "",
+                "status" => 1,
+                "is_deleted" => 0,
+                "created_at" => Carbon::now(),
+                "updated_at" => Carbon::now(),
+                "deleted_at" => null
+            ]);
+        }
     }
 }

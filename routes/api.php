@@ -64,7 +64,7 @@ Route::prefix('/listings')->group(function () {
 
 Route::prefix('/categories')->group(function () {
     Route::get('/', [CategoriesController::class, "getAll"]);
-    Route::get('/search', [CategoriesController::class, "search"]);
+    Route::get('search', [CategoriesController::class, "search"]);
     Route::get('{categoryId}', [CategoriesController::class, "getOne"]);
 
     Route::post('/', [CategoriesController::class, "create"]);
@@ -75,9 +75,10 @@ Route::prefix('/categories')->group(function () {
 Route::prefix('/brands')->group(function () {
     Route::get('/', [BrandsController::class, "getAll"]);
     Route::post('/', [BrandsController::class, "create"]);
-    Route::get('{brandId}', [BrandsController::class, "getOne"]);
-    Route::put('{brandId}', [BrandsController::class, "updateOne"]);
-    Route::delete('{brandId}', [BrandsController::class, "deleteOne"]);
+    Route::get('search', [BrandsController::class, "search"]);
+    Route::get('{brandCode}', [BrandsController::class, "getOne"]);
+    Route::put('{brandCode}', [BrandsController::class, "updateOne"]);
+    Route::delete('{brandCode}', [BrandsController::class, "deleteOne"]);
 });
 
 Route::prefix('/pricing-options')->group(function () {

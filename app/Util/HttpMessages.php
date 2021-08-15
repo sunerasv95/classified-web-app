@@ -45,9 +45,12 @@ final class HttpMessages {
 
     const UPDATED_SUCCESSFULLY              = "Updated Successfully";
     const CREATED_SUCCESSFULLY              = "Created Successfully";
+    const DELETED_SUCCESSFULLY              = "Deleted Successfully";
 
     const RESOURCE_CREATION_FAILED          = "Creation Failed";
-    const RESOURCE_UPDATION_FAILED          = "Creation Failed";
+    const RESOURCE_UPDATION_FAILED          = "Updation Failed";
+    const RESOURCE_DELETION_FAILED          = "Deletion Failed";
+
 
     const BAD_REQUEST                       = "Bad Request";
     const RESOURCE_NOT_FOUND                = "Resource Not Found";

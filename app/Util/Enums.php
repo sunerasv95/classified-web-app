@@ -33,6 +33,7 @@ final class Enums {
     *********************************/
 
     const ADMIN_CODE_PREFIX = "ADM";
+    const BRAND_CODE_PREFIX = "CBR";
 
     /********************************
      *
@@ -88,6 +89,8 @@ final class Enums {
     const END_DATE_QUERY_PARAM          = "endDate";
 
     const CATEGORY_STATUS_PARAM         = "status";
+
+    const BRAND_STATUS_PARAM            = "status";
 
     const ADMIN_IS_ACTIVE_PARAM         = "active";
     const ADMIN_ROLE_PARAM              = "role";

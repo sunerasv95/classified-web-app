@@ -95,9 +95,10 @@ Route::prefix('/uploads')->group(function () {
 
 Route::prefix('/permissions')->group(function () {
     Route::get('/', [PermissionController::class, 'getAll']);
+    Route::get('search', [PermissionController::class, 'search']);
+    Route::get('{permissionCode}', [PermissionController::class, 'getOne']);
     Route::post('/', [PermissionController::class, 'create']);
-    Route::put('{permissionId}', [PermissionController::class, 'update']);
-    Route::get('{permissionId}', [PermissionController::class, 'getOne']);
+    Route::put('{permissionCode}', [PermissionController::class, 'update']);
 });
 
 Route::prefix('/roles')->group(function () {

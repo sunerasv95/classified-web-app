@@ -14,60 +14,21 @@ class PermissionSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('permissions')->insert([
-            'name' => "Create Member",
-            'slug' => Str::slug("Create Member"),
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-        ]);
+        $actions = array("View", "Create", "Update", "Delete");
+        $models = array("Member", "Listing", "Category", "Roles", "Permission", "Brand");
 
-        DB::table('permissions')->insert([
-            'name' => "Update Member",
-            'slug' => Str::slug("Update Member"),
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-        ]);
-
-        DB::table('permissions')->insert([
-            'name' => "Create Listing",
-            'slug' => Str::slug("Update Listing"),
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-        ]);
-
-        DB::table('permissions')->insert([
-            'name' => "Update Listing",
-            'slug' => Str::slug("Update Listing"),
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-        ]);
-
-        DB::table('permissions')->insert([
-            'name' => "Publish Listing",
-            'slug' => Str::slug("Publish Listing"),
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-        ]);
-
-        DB::table('permissions')->insert([
-            'name' => "Remove Listing",
-            'slug' => Str::slug("Remove Listing"),
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-        ]);
-
-        DB::table('permissions')->insert([
-            'name' => "Create Category",
-            'slug' => Str::slug("Update Category"),
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-        ]);
-
-        DB::table('permissions')->insert([
-            'name' => "Update Category",
-            'slug' => Str::slug("Update Category"),
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-        ]);
+        foreach ($models as $k => $model) {
+            foreach ($actions as $k => $action) {
+                $permissionName = $action." ".$model;
+                DB::table('permissions')->insert([
+                    'permission_name' => $permissionName,
+                    'permission_slug' => Str::slug($permissionName),
+                    'permission_code' => rand(3000, 6999),
+                    "status" => 1,
+                    "created_at" => Carbon::now(),
+                    "updated_at" => Carbon::now(),
+                ]);
+            }
+        }
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Permission\CreatePermissionRequest;
+use App\Http\Requests\Permission\GetPermissionRequest;
 use App\Http\Requests\Permission\UpdatePermissionRequest;
 use App\Services\Contracts\PermissionServiceInterface;
 use Illuminate\Http\Request;
@@ -16,14 +17,21 @@ class PermissionController extends Controller
         $this->permissionService = $permissionService;
     }
 
-    public function getAll()
+    public function getAll(GetPermissionRequest $request)
     {
-        return $this->permissionService->getAllPermissions();
+        $validatedData = $request->validated();
+        return $this->permissionService->getAllPermissions($validatedData);
     }
 
-    public function getOne($id)
+    public function getOne(string $permissionCode)
     {
-        return $this->permissionService->getPermissionById($id);
+        return $this->permissionService->getPermissionByCode($permissionCode);
+    }
+
+    public function search(GetPermissionRequest $request)
+    {
+        $validatedData = $request->validated();
+        return $this->permissionService->filterPermissions($validatedData);
     }
 
     public function create(CreatePermissionRequest $request)
@@ -32,14 +40,14 @@ class PermissionController extends Controller
         return $this->permissionService->createPermission($validatedData);
     }
 
-    public function update($id, UpdatePermissionRequest $request)
+    public function update(string $permissionCode, UpdatePermissionRequest $request)
     {
         $validatedData = $request->validated();
-        return $this->permissionService->updatePermissionById($id, $validatedData);
+        return $this->permissionService->updatePermissionByCode($permissionCode, $validatedData);
     }
 
-    public function delete($id)
+    public function delete($permissionCode)
     {
-        return $this->permissionService->deletePermissionById($id);
+        return $this->permissionService->deletePermissionById($permissionCode);
     }
 }

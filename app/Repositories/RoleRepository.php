@@ -5,19 +5,78 @@ namespace App\Repositories;
 use App\Models\Role;
 use App\Repositories\BaseRepository;
 use App\Repositories\Contracts\RoleRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Mockery\Matcher\Any;
 
 class RoleRepository extends BaseRepository implements RoleRepositoryInterface  {
 
-    public function __construct(Role $model)
+    private $permissionRepository;
+
+    public function __construct(
+        Role $model,
+        PermissionRepository $permissionRepository
+    )
     {
         parent::__construct($model);
+        $this->permissionRepository = $permissionRepository;
     }
 
-    public function getRoleBySlug(string $slug, array $criteria = [], array $columns = ["*"], array $relations = []): ?Model
+    public function findById(
+        int $id,
+        array $criteria = [],
+        array $columns = ["*"],
+        array $relations = []
+    ): ?Model
     {
-        $criteria['slug'] = $slug;
+        $criteria['id'] = $id;
         return $this->findByCriteria($criteria, $columns, $relations);
+    }
+
+    public function findByRoleSlug(
+        string $slug,
+        array $criteria = [],
+        array $columns = ["*"],
+        array $relations = []
+    ): ?Model
+    {
+        $criteria['role_slug'] = $slug;
+        return $this->findByCriteria($criteria, $columns, $relations);
+    }
+
+    public function findByRoleCode(
+        string $roleCode,
+        array $criteria = [],
+        array $columns = ["*"],
+        array $relations = []
+    ): ?Model
+    {
+        //dd($roleCode,$criteria, $columns, $relations);
+        $criteria['role_code'] = $roleCode;
+        return $this->findByCriteria($criteria, $columns, $relations);
+    }
+
+    public function applyFilters(
+        string $query,
+        array $filters = [],
+        array $columns = ["*"],
+        array $relations = [],
+        array $paginate = [],
+        array $orderBy = [],
+        array $groupByCols = []
+    ): Collection
+    {
+        $queryCols = ["role_name", "role_slug", "role_code"];
+        return $this->filterCriteria(
+            $query,
+            $queryCols,
+            $filters,
+            $columns,
+            $relations,
+            $paginate,
+            $orderBy,
+            $groupByCols
+        );
     }
 
     public function createWithRelationships(array $attributes, array $relationships):Model
@@ -50,5 +109,23 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface  
 
         $updatedRole  = $this->update($model, $attributes);
         return $updatedRole;
+    }
+
+    public function updateRolePermissions(
+        Role $model,
+        array $permissions
+    )
+    {
+        $roleId = $model->id;
+        $permissionsToUpdate = array();
+        foreach($permissions as $permission){
+            //dd($permission);
+            $data = [];
+            $pmsId = $this->permissionRepository->findByPermissionCode($permission['permission_code'])->id;
+            $data['permission_id'] = $pmsId;
+            $data['role_id'] =$roleId;
+            array_push($permissionsToUpdate,$data);
+        }
+        $model->permissions()->sync($permissionsToUpdate);
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Util\Enums;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -14,18 +15,17 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('roles')->insert([
-            'name' => "Super Administrator",
-            'slug' => Str::slug("Super Administrator"),
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-        ]);
+        $roles = array("Super Administrator", "Administrator", "Employee");
 
-        DB::table('roles')->insert([
-            'name' => "Administrator",
-            'slug' => Str::slug("Administrator"),
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-        ]);
+        foreach($roles as $role){
+            DB::table('roles')->insert([
+                'role_name'     => $role,
+                'role_slug'     => Str::slug($role),
+                'role_code'     => rand(8000,9999),
+                'status'        => 1,
+                "created_at"    => Carbon::now(),
+                "updated_at"    => Carbon::now(),
+            ]);
+        }
     }
 }

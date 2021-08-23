@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Role\CreateRoleRequest;
+use App\Http\Requests\Role\GetRoleRequest;
 use App\Http\Requests\Role\UpdateRoleRequest;
 use App\Services\Contracts\RoleServiceInterface;
 use Illuminate\Http\Request;
@@ -16,14 +17,21 @@ class RoleController extends Controller
         $this->roleService = $roleService;
     }
 
-    public function getAll()
+    public function getAll(GetRoleRequest $request)
     {
-        return $this->roleService->getAllRoles();
+        $validatedData = $request->validated();
+        return $this->roleService->getAllRoles($validatedData);
     }
 
-    public function getOne($id)
+    public function getOne(string $roleCode)
     {
-        return $this->roleService->getRoleById($id);
+        return $this->roleService->getRoleByCode($roleCode);
+    }
+
+    public function search(GetRoleRequest $request)
+    {
+        $validatedData = $request->validated();
+        return $this->roleService->filterRoles($validatedData);
     }
 
     public function create(CreateRoleRequest $request)
@@ -32,14 +40,15 @@ class RoleController extends Controller
         return $this->roleService->createRole($validatedData);
     }
 
-    public function update($id, UpdateRoleRequest $request)
+    public function update(string $roleCode, UpdateRoleRequest $request)
     {
         $validatedData = $request->validated();
-        return $this->roleService->updateRoleById($id, $validatedData);
+        return $this->roleService->updateRoleWithPermissionsByCode($roleCode, $validatedData);
+        //->updateRoleByCode($roleCode, $validatedData);
     }
 
-    public function delete($id)
+    public function delete(string $roleCode)
     {
-        return $this->roleService->deleteRoleById($id);
+        return $this->roleService->deleteRoleByCode($roleCode);
     }
 }

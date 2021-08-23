@@ -93,6 +93,8 @@ final class Enums {
 
     const BRAND_STATUS_PARAM            = "status";
 
+    const ROLES_STATUS_PARAM            = "status";
+
     const PERMISSION_STATUS_PARAM       = "status";
 
     const ADMIN_IS_ACTIVE_PARAM         = "active";

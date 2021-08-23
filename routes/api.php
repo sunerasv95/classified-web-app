@@ -103,7 +103,8 @@ Route::prefix('/permissions')->group(function () {
 
 Route::prefix('/roles')->group(function () {
     Route::get('/', [RoleController::class, 'getAll']);
+    Route::get('search', [RoleController::class, 'search']);
+    Route::get('{roleCode}', [RoleController::class, 'getOne']);
     Route::post('/', [RoleController::class, 'create']);
-    Route::put('{roleId}', [RoleController::class, 'update']);
-    Route::get('{roleId}', [RoleController::class, 'getOne']);
+    Route::put('{roleCode}', [RoleController::class, 'update']);
 });

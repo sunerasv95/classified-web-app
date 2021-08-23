@@ -9,8 +9,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Role extends Model
 {
     protected $fillable = [
-        "name",
-        "slug"
+        "role_name",
+        "role_slug",
+        "role_code",
+        "status"
     ];
 
     public function admins(): HasMany
@@ -36,7 +38,7 @@ class Role extends Model
         if(is_array($permissions)){
             //dd($permissions);
             foreach($permissions as $permission){
-                if ($this->permissions()->where('slug', $permission)->first()) return true;
+                if ($this->permissions()->where('permission_slug', $permission)->first()) return true;
             }
         }
         return false;

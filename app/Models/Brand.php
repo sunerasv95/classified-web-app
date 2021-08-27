@@ -24,6 +24,10 @@ class Brand extends Model
         "is_deleted"
     ];
 
+    public static $defaultSearchQueryColumns = [
+            "brand_name", "brand_code"
+    ];
+
     // public function listings(): HasMany
     // {
     //     return $this->hasMany(Listing::class, 'brand_id');

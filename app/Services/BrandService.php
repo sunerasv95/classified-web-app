@@ -27,14 +27,12 @@ class BrandService implements BrandServiceInterface
         $paginate = $orderby = array();
 
         if (isset($reqParams[Enums::SORT_QUERY_PARAM]) &&
-            isset($reqParams[Enums::SORT_ORDER_QUERY_PARAM])
-        ) {
+            isset($reqParams[Enums::SORT_ORDER_QUERY_PARAM])) {
             $orderby[Enums::SORT_QUERY_PARAM]       = $reqParams[Enums::SORT_QUERY_PARAM];
             $orderby[Enums::SORT_ORDER_QUERY_PARAM] = $reqParams[Enums::SORT_ORDER_QUERY_PARAM];
         }
         if (isset($reqParams[Enums::LIMIT_QUERY_PARAM]) &&
-            isset($reqParams[Enums::OFFSET_QUERY_PARAM])
-        ) {
+            isset($reqParams[Enums::OFFSET_QUERY_PARAM])) {
             $paginate[Enums::LIMIT_QUERY_PARAM]  = $reqParams[Enums::LIMIT_QUERY_PARAM];
             $paginate[Enums::OFFSET_QUERY_PARAM] = $reqParams[Enums::OFFSET_QUERY_PARAM];
         }
@@ -55,7 +53,7 @@ class BrandService implements BrandServiceInterface
 
     public function getBrandById(int $id)
     {
-        $brand = $this->brandRepository->findById($id, array(), array("*"), array());
+        $brand = $this->brandRepository->findById($id);
         if(empty($brand)) return $this->respondNotFound(
             HttpMessages::RESOURCE_NOT_FOUND,
             ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
@@ -69,7 +67,7 @@ class BrandService implements BrandServiceInterface
 
     public function getBrandByCode(string $brandCode)
     {
-        $brand = $this->brandRepository->findByBrandCode($brandCode, array(), array("*"), array());
+        $brand = $this->brandRepository->findByBrandCode($brandCode);
         if(empty($brand)) return $this->respondNotFound(
             HttpMessages::RESOURCE_NOT_FOUND,
             ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
@@ -93,14 +91,12 @@ class BrandService implements BrandServiceInterface
             $filters[Enums::BRAND_STATUS_PARAM] = $reqParams[Enums::BRAND_STATUS_PARAM];
         }
         if (isset($reqParams[Enums::SORT_QUERY_PARAM]) &&
-            isset($reqParams[Enums::SORT_ORDER_QUERY_PARAM])
-        ) {
+            isset($reqParams[Enums::SORT_ORDER_QUERY_PARAM])) {
             $orderby[Enums::SORT_QUERY_PARAM]       = $reqParams[Enums::SORT_QUERY_PARAM];
             $orderby[Enums::SORT_ORDER_QUERY_PARAM] = $reqParams[Enums::SORT_ORDER_QUERY_PARAM];
         }
         if (isset($reqParams[Enums::LIMIT_QUERY_PARAM]) &&
-            isset($reqParams[Enums::OFFSET_QUERY_PARAM])
-        ) {
+            isset($reqParams[Enums::OFFSET_QUERY_PARAM])) {
             $paginate[Enums::LIMIT_QUERY_PARAM]  = $reqParams[Enums::LIMIT_QUERY_PARAM];
             $paginate[Enums::OFFSET_QUERY_PARAM] = $reqParams[Enums::OFFSET_QUERY_PARAM];
         }
@@ -147,7 +143,7 @@ class BrandService implements BrandServiceInterface
             ErrorCodes::BAD_REQUEST
         );
 
-        $brand = $this->brandRepository->findById($id, array(), array("*"), array());
+        $brand = $this->brandRepository->findById($id);
         if(empty($brand)) return $this->respondNotFound(
             HttpMessages::RESOURCE_NOT_FOUND,
             ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
@@ -168,7 +164,7 @@ class BrandService implements BrandServiceInterface
             ErrorCodes::BAD_REQUEST
         );
 
-        $brand = $this->brandRepository->findByBrandCode($brandCode, array(), array("*"), array());
+        $brand = $this->brandRepository->findByBrandCode($brandCode);
         if(empty($brand)) return $this->respondNotFound(
             HttpMessages::RESOURCE_NOT_FOUND,
             ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
@@ -186,7 +182,7 @@ class BrandService implements BrandServiceInterface
     {
         $brand = null;
 
-        $brand = $this->brandRepository->findById($id, array(), array("*"), array());
+        $brand = $this->brandRepository->findById($id);
         if(empty($brand)) return $this->respondNotFound(
             HttpMessages::RESOURCE_NOT_FOUND,
             ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
@@ -206,7 +202,7 @@ class BrandService implements BrandServiceInterface
     {
         $brand = null;
 
-        $brand = $this->brandRepository->findByBrandCode($brandCode, array(), array("*"), array());
+        $brand = $this->brandRepository->findByBrandCode($brandCode);
         if(empty($brand)) return $this->respondNotFound(
             HttpMessages::RESOURCE_NOT_FOUND,
             ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE

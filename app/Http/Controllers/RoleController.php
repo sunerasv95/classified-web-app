@@ -44,7 +44,6 @@ class RoleController extends Controller
     {
         $validatedData = $request->validated();
         return $this->roleService->updateRoleWithPermissionsByCode($roleCode, $validatedData);
-        //->updateRoleByCode($roleCode, $validatedData);
     }
 
     public function delete(string $roleCode)

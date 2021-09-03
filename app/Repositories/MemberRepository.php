@@ -19,13 +19,13 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
     public function getMemberByEmail(string $email, array $criteria = [], array $columns = ["*"], array $relations = []): ?Model
     {
         $criteria['email'] = $email;
-        return $this->findByCriteria($criteria, $columns, $relations);
+        return $this->getOne($criteria, $columns, $relations);
     }
 
     public function getMemberByUsername(string $username, array $criteria = [], array $columns = ["*"], array $relations = []): ?Model
     {
         $criteria['username'] = $username;
-        return $this->findByCriteria($criteria, $columns, $relations);
+        return $this->getOne($criteria, $columns, $relations);
     }
 
     public function createWithRelationships(array $attributes, array $relationships): Model

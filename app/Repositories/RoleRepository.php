@@ -30,7 +30,7 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface  
     ): ?Model
     {
         $criteria['id'] = $id;
-        return $this->findByCriteria($criteria, $columns, $relations);
+        return $this->getOne($criteria, $columns, $relations);
     }
 
     public function findByRoleSlug(
@@ -41,7 +41,7 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface  
     ): ?Model
     {
         $criteria['role_slug'] = $slug;
-        return $this->findByCriteria($criteria, $columns, $relations);
+        return $this->getOne($criteria, $columns, $relations);
     }
 
     public function findByRoleCode(
@@ -53,7 +53,7 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface  
     {
         //dd($roleCode,$criteria, $columns, $relations);
         $criteria['role_code'] = $roleCode;
-        return $this->findByCriteria($criteria, $columns, $relations);
+        return $this->getOne($criteria, $columns, $relations);
     }
 
     public function applyFilters(

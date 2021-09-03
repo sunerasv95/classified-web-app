@@ -33,19 +33,25 @@ class BaseRepository implements BaseRepositoryInterface
     ): Collection
     {
         //dd($criteria,$columns,$relations,$paginate,$orderBy,$group);
+        $resources = $this->getByCriteria(
+            $criteria,
+            $columns,
+            $relations,
+            $paginate,
+            $orderBy,
+            $group
+        );
 
-        $resources = $this->getByCriteria($criteria, $columns, $relations, $paginate, $orderBy, $group);
         return $resources;
     }
 
-    public function getOneById(
-        int $id,
+    public function getOne(
         array $criteria = [],
         array $columns = ["*"],
         array $relations = []
     ): ?Model
     {
-        $resource = $this->findByCriteria(array("id" => $id), $columns, $relations);
+        $resource = $this->findByCriteria($criteria, $columns, $relations);
         return $resource;
     }
 

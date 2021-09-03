@@ -22,7 +22,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
     ): ?Model
     {
         $criteria['id'] = $id;
-        return $this->findByCriteria($criteria, $columns, $relations);
+        return $this->getOne($criteria, $columns, $relations);
     }
 
     public function findByCategoryCode(
@@ -34,7 +34,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
     {
         //dd($categoryCode,$criteria, $columns, $relations);
         $criteria['category_code'] = $categoryCode;
-        return $this->findByCriteria($criteria, $columns, $relations);
+        return $this->getOne($criteria, $columns, $relations);
     }
 
     public function applyFilters(

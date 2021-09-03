@@ -17,7 +17,7 @@ class SocialLoginRepository extends BaseRepository implements SocialLoginReposit
     public function getSocialLoginByMemberId(string $memberId, array $criteria = [], array $columns = ["*"], array $relations = []): ?Model
     {
         $criteria['member_id'] = $memberId;
-        return $this->findByCriteria($criteria, $columns, $relations);
+        return $this->getOne($criteria, $columns, $relations);
     }
 
 }

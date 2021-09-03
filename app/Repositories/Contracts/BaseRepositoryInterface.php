@@ -19,12 +19,11 @@ interface BaseRepositoryInterface
         array $group = []
     ) : Collection;
 
-    public function getOneById(
-        int $id,
+    public function getOne(
         array $criteria = [],
         array $columns = ["*"],
-        array $relations=[]
-    ) : ?Model;
+        array $relations = []
+    ): ?Model;
 
     public function getByCriteria(
         array $criteria = [],

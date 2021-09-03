@@ -22,7 +22,7 @@ class BoardDetailsRepository extends BaseRepository implements BoardDetailsRepos
     ): ?Model
     {
         $criteria['id'] = $id;
-        return $this->findByCriteria($criteria, $columns, $relations);
+        return $this->getOne($criteria, $columns, $relations);
     }
 
 

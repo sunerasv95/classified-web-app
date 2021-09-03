@@ -27,7 +27,7 @@ class ListingRepository extends BaseRepository implements ListingRepositoryInter
     ): ?Model
     {
         $criteria['id'] = $id;
-        return $this->findByCriteria($criteria, $columns, $relations);
+        return $this->getOne($criteria, $columns, $relations);
     }
 
     public function findBySlug(
@@ -38,7 +38,7 @@ class ListingRepository extends BaseRepository implements ListingRepositoryInter
     ): ?Model
     {
         $criteria['listing_slug'] = $slug;
-        return $this->findByCriteria($criteria, $columns, $relations);
+        return $this->getOne($criteria, $columns, $relations);
     }
 
     public function findByReferenceId(
@@ -49,7 +49,7 @@ class ListingRepository extends BaseRepository implements ListingRepositoryInter
     ): ?Model
     {
         $criteria['listing_ref_number'] = $referenceId;
-        return $this->findByCriteria($criteria, $columns, $relations);
+        return $this->getOne($criteria, $columns, $relations);
     }
 
 

@@ -16,23 +16,38 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
         parent::__construct($model);
     }
 
-    public function findById(int $id, array $criteria = [], array $columns = ["*"], array $relations = []): ?Model
+    public function findById(
+        int $id,
+        array $criteria = [],
+        array $columns = ["*"],
+        array $relations = []
+    ): ?Model
     {
         $criteria['id'] = $id;
-        return $this->findByCriteria($criteria, $columns, $relations);
+        return $this->getOne($criteria, $columns, $relations);
     }
 
-    public function findByEmail(string $email, array $criteria = [], array $columns = ["*"], array $relations = []): ?Model
+    public function findByEmail(
+        string $email,
+        array $criteria = [],
+        array $columns = ["*"],
+        array $relations = []
+    ): ?Model
     {
         $criteria['email'] = $email;
-        return $this->findByCriteria($criteria, $columns, $relations);
+        return $this->getOne($criteria, $columns, $relations);
     }
 
-    public function findByUserCode(string $userCode, array $criteria = [], array $columns = ["*"], array $relations = []): ?Model
+    public function findByUserCode(
+        string $userCode,
+        array $criteria = [],
+        array $columns = ["*"],
+        array $relations = []
+    ): ?Model
     {
         //dd($userCode,$criteria, $columns, $relations);
         $criteria['user_code'] = $userCode;
-        return $this->findByCriteria($criteria, $columns, $relations);
+        return $this->getOne($criteria, $columns, $relations);
     }
 
     public function applyFilters(

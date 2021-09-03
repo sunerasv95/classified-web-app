@@ -23,7 +23,7 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
     ): ?Model
     {
         $criteria['id'] = $id;
-        return $this->findByCriteria($criteria, $columns, $relations);
+        return $this->getOne($criteria, $columns, $relations);
     }
 
     public function findByPermissionCode(
@@ -34,7 +34,7 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
     ): ?Model
     {
         $criteria['permission_code'] = $permissionCode;
-        return $this->findByCriteria($criteria, $columns, $relations);
+        return $this->getOne($criteria, $columns, $relations);
     }
 
     public function findByPermissionBySlug(
@@ -45,7 +45,7 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
     ): ?Model
     {
         $criteria['permission_slug'] = $slug;
-        return $this->findByCriteria($criteria, $columns, $relations);
+        return $this->getOne($criteria, $columns, $relations);
     }
 
     public function applyFilters(

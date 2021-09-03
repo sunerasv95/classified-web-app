@@ -26,7 +26,7 @@ class BrandRepository extends BaseRepository implements BrandRepositoryInterface
     ): ?Model
     {
         $criteria['id'] = $id;
-        return $this->findByCriteria($criteria, $columns, $relations);
+        return $this->getOne($criteria, $columns, $relations);
     }
 
     public function findByBrandCode(
@@ -38,7 +38,7 @@ class BrandRepository extends BaseRepository implements BrandRepositoryInterface
     {
         //dd($brandCode,$criteria, $columns, $relations);
         $criteria['brand_code'] = $brandCode;
-        return $this->findByCriteria($criteria, $columns, $relations);
+        return $this->getOne($criteria, $columns, $relations);
     }
 
     public function applyFilters(

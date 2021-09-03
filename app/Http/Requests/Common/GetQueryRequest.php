@@ -26,18 +26,22 @@ class GetQueryRequest extends FormRequest
     public function rules()
     {
         return [
-            Enums::SEARCH_QUERY_PARAM       => "nullable|string",
-            Enums::SORT_QUERY_PARAM         => "nullable|string",
-            Enums::SORT_ORDER_QUERY_PARAM   => "required_with:sort|string",
-            Enums::LIMIT_QUERY_PARAM        => "nullable|integer",
-            Enums::OFFSET_QUERY_PARAM       => "required_with:limit|integer"
+            "qry"       => "nullable|string",
+            "sort"      => "nullable|string",
+            "order"     => "required_with:sort|string",
+            "limit"     => "nullable|string",
+            "offset"    => "required_with:limit|string"
         ];
     }
 
     protected function prepareForValidation()
     {
         $this->merge([
-            Enums::SEARCH_QUERY_PARAM => Str::replaceArray("+", [" "], $this->qry)
+            "qry"       => Str::replaceArray("+", [" "], strval(trim($this->qry))),
+            "sort"      => strval(trim($this->sort)),
+            "order"     => strval(trim($this->order)),
+            "limit"     => strval(trim($this->limit)),
+            "offset"    => strval(trim($this->offset))
         ]);
     }
 }

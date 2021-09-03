@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\TransactionType;
+use App\Util\Enums;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -14,80 +16,29 @@ class ListingSeeder extends Seeder
      */
     public function run()
     {
-        // DB::table('listings')->insert([
-        //     'id' => rand(1000000000, 9999999999),
-        //     'listing_ref_number' => "PST".rand(10000, 99999),
-        //     'listing_title' => Str::random(20),
-        //     'listing_slug' => Str::random(20),
-        //     'listing_description' => Str::random(10),
-        //     'list_type' => 1,
-        //     'category_id' => 3,
-        //     'pricing_option_id' => 1,
-        //     'list_price' => 1000,
-        //     "status" => 1,
-        //     "is_deleted" => 0,
-        //     "detailable_type" => "BOARD_LISTING",
-        //     "detailable_id" => 1,
-        //     "created_at" => Carbon::now(),
-        //     "updated_at" => Carbon::now(),
-        //     "deleted_at" => null
-        // ]);
+        for ($l = 1; $l <= 5; $l++) {
 
-        DB::table('listings')->insert([
-            // 'id' => rand(1000000000, 9999999999),
-            'listing_ref_number' => "PST".rand(10000, 99999),
-            'listing_title' => Str::random(20),
-            'listing_slug' => Str::random(20),
-            'listing_description' => Str::random(10),
-            'list_type' => 2,
-            'category_id' => 3,
-            'pricing_option_id' => 2,
-            'list_price' => 100,
-            "status" => 1,
-            "is_deleted" => 0,
-            "detailable_type" => null,
-            "detailable_id" => 0,
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-            "deleted_at" => null
-        ]);
+            $ref = Enums::LISTING_REFERENCE_PREFIX . rand(10000000, 99999999);
+            $title = "This is a test listing title for ".$ref;
 
-        // DB::table('listings')->insert([
-        //     'id' => rand(1000000000, 9999999999),
-        //     'listing_ref_number' => "PST".rand(10000, 99999),
-        //     'listing_title' => Str::random(20),
-        //     'listing_slug' => Str::random(20),
-        //     'listing_description' => Str::random(10),
-        //     'list_type' => 2,
-        //     'category_id' => 3,
-        //     'pricing_option_id' => 3,
-        //     'list_price' => 200,
-        //     "status" => 1,
-        //     "is_deleted" => 0,
-        //     "detailable_type" => "BOARD_LISTING",
-        //     "detailable_id" => 2,
-        //     "created_at" => Carbon::now(),
-        //     "updated_at" => Carbon::now(),
-        //     "deleted_at" => null
-        // ]);
-
-        DB::table('listings')->insert([
-            // 'id' => rand(1000000000, 9999999999),
-            'listing_ref_number' => "PST".rand(10000, 99999),
-            'listing_title' => Str::random(20),
-            'listing_slug' => Str::random(20),
-            'listing_description' => Str::random(10),
-            'list_type' => 2,
-            'category_id' => 4,
-            'pricing_option_id' => 4,
-            'list_price' => 600,
-            "status" => 1,
-            "is_deleted" => 0,
-            "detailable_type" => null,
-            "detailable_id" => 0,
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-            "deleted_at" => null
-        ]);
+            DB::table('listings')->insert([
+                'listing_ref_number' => $ref,
+                'listing_title' => $title,
+                'listing_slug' => Str::slug($title),
+                'listing_description' => "Test description with some testing ? * & @ % /// punctuation marks and chaaaracters",
+                'listing_thumbnail_url' => "https://picsum.photos/200/300",
+                'category_id' => 1,
+                'transaction_type' => TransactionType::SALE,
+                'pricing_option_id' => 1,
+                'list_price' => doubleval(1000),
+                "status" => 1,
+                "detailable_type" => null,
+                "detailable_id" => 0,
+                "is_deleted" => 0,
+                "created_at" => Carbon::now(),
+                "updated_at" => Carbon::now(),
+                "deleted_at" => null
+            ]);
+        }
     }
 }

@@ -18,8 +18,9 @@ class CreatePermissionsTable extends Migration
             $table->string('permission_name', 50);
             $table->string('permission_slug', 50)->unique();
             $table->string('permission_code', 10)->unique();
-            $table->tinyInteger('status')->default(0);
+            $table->tinyInteger("is_deleted")->default(0);
             $table->timestamps();
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

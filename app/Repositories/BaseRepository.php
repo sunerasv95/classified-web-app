@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Repositories\Contracts\BaseRepositoryInterface;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -19,7 +20,7 @@ class BaseRepository implements BaseRepositoryInterface
     public function __construct(Model $model)
     {
         $this->model = $model;
-        DB::enableQueryLog();
+        //DB::enableQueryLog();
     }
 
     public function getAll(
@@ -60,6 +61,8 @@ class BaseRepository implements BaseRepositoryInterface
         //dd($criteria,$columns,$relations,$paginate,$orderBy,$groupByCols);
         $query = $this->newQuery()
             ->select($columns)
+            ->where("is_deleted", 0)
+            ->whereNull('deleted_at')
             ->with($relations)
             ->where($criteria)
             ->when(!empty($paginate), function($q) use($paginate){
@@ -85,11 +88,8 @@ class BaseRepository implements BaseRepositoryInterface
        //$a = array("role" => ["id", "name"]);
         $query = $this->newQuery()
             ->select($columns)
-            // ->when(!empty($a), function($q) use($a){
-            //     foreach($a as $k => $fields){
-            //         $q->with($k)
-            //     }
-            //})
+            ->where("is_deleted", 0)
+            ->whereNull('deleted_at')
             ->with($relations)
             ->where($criteria)
             ->first();
@@ -110,6 +110,8 @@ class BaseRepository implements BaseRepositoryInterface
         //dd($query,$queryCols,$filters,$columns,$relations,$paginate,$orderBy,$groupByCols);
         $query = $this->newQuery()
             ->select($columns)
+            ->where("is_deleted", 0)
+            ->whereNull('deleted_at')
             ->with($relations)
             ->when(!empty($filters), function ($q) use ($filters) {
                 return $q->where($filters);
@@ -150,6 +152,12 @@ class BaseRepository implements BaseRepositoryInterface
     public function delete(Model $model): bool
     {
         $result = $model->delete($model);
+        return $result;
+    }
+
+    public function softDelete(Model $model): bool
+    {
+        $result = $this->update($model, ['is_deleted' => 1, "deleted_at" => Carbon::now()]);
         return $result;
     }
 

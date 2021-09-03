@@ -18,27 +18,30 @@ class Member extends Authenticatable
         'username',
         'email',
         'password',
-        'member_type_id',
-        'organization_name',
-        'is_organization',
-        'avatar_url',
-        'bio',
         'is_email_verified',
-        'is_active',
-        'is_blocked',
+        'membership_type_id',
+        'is_store',
+        'store_name',
+        'store_description',
+        'avatar_url',
+        'address_line_1',
+        'address_line_2',
+        'city_id',
+        'geo_location',
+        'status',
         'is_deleted',
         'email_verified_at',
         'blocked_at',
+        'deleted_at'
     ];
 
     protected $hidden = [
-        'password', //'remember_token',
+        'password',
     ];
 
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'blocked_at' => 'datetime'
     ];
 
 

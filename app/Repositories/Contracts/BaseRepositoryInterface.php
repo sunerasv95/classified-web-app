@@ -56,6 +56,8 @@ interface BaseRepositoryInterface
 
     public function delete(Model $model): bool;
 
+    public function softDelete(Model $model): bool;
+
     public function newQuery(): Builder;
 
 }

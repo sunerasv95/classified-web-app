@@ -24,7 +24,7 @@ class CreateCategoriesTable extends Migration
             $table->tinyInteger("status")->default(0);
             $table->tinyInteger("is_deleted")->default(0);
             $table->timestamps();
-            $table->softDeletes($column = 'deleted_at', $precision = 0);
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

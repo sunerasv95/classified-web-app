@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\SkillLevels;
+use App\Enums\WaveTypes;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -14,48 +16,41 @@ class BoardDetailsSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('board_details')->insert([
-            // 'id' => rand(1000000000, 9999999999),
-            'width' => "150 cm",
-            'length' => "200cm",
-            'thickness' => "20cm",
-            'rail' => "20cm",
-            'volume' => "20l",
-            "wave_type_id" => 1,
-            "material_id" => 1,
-            "fin_type_id" => 1,
-            "brand_id" => 1,
-            "functionalities" => json_encode([
-                "has_leash" => 1,
-                "has_fins" => 1
-            ]),
-            "status" => 1,
-            "created_at" => now(),
-            "updated_at" => now(),
-            "deleted_at" => null
-        ]);
+        for($i=1;$i <= 3;$i++){
+            DB::table('board_details')->insert([
+                'length_ft' => 7.000,
+                'length_in' => 12.000,
+                'width_in' => 6.000,
+                'thickness_cm' => 12.000,
+                'rail_cm' => 12.000,
+                'volume_ltr' => 2000.9,
+                'capacity_lbs' => 2000.0,
+                "material_id" => 0,
+                "fin_type_id" => 0,
+                "brand_id" => 0,
+                "status" => 1,
+                "is_deleted" => 0,
+                "created_at" => now(),
+                "updated_at" => now(),
+                "deleted_at" => null
+            ]);
 
+            DB::table('board_skill_level')->insert([
+                'board_detail_id' => $i,
+                'skill_level_id' => 1,
+                'is_deleted' => 0,
+                "created_at" => now(),
+                "updated_at" => now(),
+            ]);
 
-        DB::table('board_details')->insert([
-            // 'id' => rand(1000000000, 9999999999),
-            'width' => "100 cm",
-            'length' => "200 m",
-            'thickness' => "10c",
-            'rail' => "20cm",
-            'volume' => "50l",
-            "wave_type_id" => 2,
-            "material_id" => 1,
-            "fin_type_id" => 2,
-            "brand_id" => 1,
-            "functionalities" => json_encode([
-                "has_leash" => 1,
-                "has_fins" => 1
-            ]),
-            "status" => 1,
-            "created_at" => now(),
-            "updated_at" => now(),
-            "deleted_at" => null
-        ]);
+            DB::table('board_wave_type')->insert([
+                'board_detail_id' => $i,
+                'wave_type_id' => 1,
+                'is_deleted' => 0,
+                "created_at" => now(),
+                "updated_at" => now()
+            ]);
 
+        }
     }
 }

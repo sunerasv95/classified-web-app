@@ -16,14 +16,11 @@ class DatabaseSeeder extends Seeder
         $this->call(PricingOptionSeeder::class);
         $this->call(ListingSeeder::class);
         $this->call(ListingImageSeeder::class);
-        //$this->call(BoardDetailsSeeder::class);
         $this->call(SkillLevelSeeder::class);
-        //$this->call(BoardSkillLevelSeeder::class);
         $this->call(FinTypeSeeder::class);
         $this->call(WaveTypeSeeder::class);
         $this->call(MaterialSeeder::class);
         $this->call(MemberTypeSeeder::class);
-
         $this->call(RoleSeeder::class);
         $this->call(PermissionSeeder::class);
         $this->call(RolePermissionSeeder::class);

@@ -49,8 +49,5 @@ class BrandResource extends JsonResource
                 "data" =>  $data
             ];
         }
-        return [
-            "brands" => $this->resource
-        ];
     }
 }

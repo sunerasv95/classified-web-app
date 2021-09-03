@@ -177,7 +177,7 @@ class AdminService implements AdminServiceInterface
         $adminData['is_deleted']        = Enums::NOT_DELETED;
 
         $this->adminRepository->create($adminData);
-        return $this->respondSuccess(HttpMessages::CREATED_SUCCESS_MESSAGE);
+        return $this->respondSuccess(HttpMessages::CREATED_SUCCESSFULLY);
     }
 
     public function updateAdminUser(string $userCode, array $payload)

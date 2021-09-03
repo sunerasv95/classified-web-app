@@ -18,10 +18,9 @@ class Brand extends Model
         "brand_slug",
         "brand_code",
         "brand_image_url",
-        "is_parent",
-        "parent_id",
         "status",
-        "is_deleted"
+        "is_deleted",
+        "deleted_at"
     ];
 
     public static $defaultSearchQueryColumns = [

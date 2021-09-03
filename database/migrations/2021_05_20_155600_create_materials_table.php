@@ -17,7 +17,9 @@ class CreateMaterialsTable extends Migration
             $table->id();
             $table->string("material_name");
             $table->string("description");
+            $table->tinyInteger("is_deleted")->default(0);
             $table->timestamps();
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

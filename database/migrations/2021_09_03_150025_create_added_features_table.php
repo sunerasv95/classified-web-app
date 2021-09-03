@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFinTypesTable extends Migration
+class CreateAddedFeaturesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,10 @@ class CreateFinTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('fin_types', function (Blueprint $table) {
+        Schema::create('added_features', function (Blueprint $table) {
             $table->id();
-            $table->string("fin_type_name");
+            $table->string("feature_name");
+            $table->tinyInteger("status")->default(1);
             $table->tinyInteger("is_deleted")->default(0);
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
@@ -29,6 +30,6 @@ class CreateFinTypesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('fin_types');
+        Schema::dropIfExists('added_features');
     }
 }

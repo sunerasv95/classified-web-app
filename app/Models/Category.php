@@ -21,7 +21,8 @@ class Category extends Model
         "is_parent",
         "parent_id",
         "status",
-        "is_deleted"
+        "is_deleted",
+        "deleted_at"
     ];
 
     public function parent(): BelongsTo

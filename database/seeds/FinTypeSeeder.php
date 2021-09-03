@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -12,39 +13,16 @@ class FinTypeSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('fin_types')->insert([
-            // "id" => rand(4999, 5999),
-            'fin_type_name' => "Twin Fin",
-            "created_at" => now(),
-            "updated_at" => now(),
-        ]);
+        $fins = ["Twin Fin", "Single Fin", "Thruster Fin", "Quad Fin", "Other"];
 
-        DB::table('fin_types')->insert([
-            // "id" => rand(4999, 6999),
-            'fin_type_name' => "Single Fin",
-            "created_at" => now(),
-            "updated_at" => now(),
-        ]);
-
-        DB::table('fin_types')->insert([
-            // "id" => rand(4999, 6999),
-            'fin_type_name' => "Thruster Fin",
-            "created_at" => now(),
-            "updated_at" => now(),
-        ]);
-
-        DB::table('fin_types')->insert([
-            // "id" => rand(4999, 6999),
-            'fin_type_name' => "Quad Fin",
-            "created_at" => now(),
-            "updated_at" => now(),
-        ]);
-
-        DB::table('fin_types')->insert([
-            // "id" => rand(4999, 6999),
-            'fin_type_name' => "Other",
-            "created_at" => now(),
-            "updated_at" => now(),
-        ]);
+        foreach($fins as $fin){
+            DB::table('fin_types')->insert([
+                "fin_type_name" => $fin,
+                "is_deleted" => 0,
+                "created_at" => Carbon::now(),
+                "updated_at" => Carbon::now(),
+                "deleted_at" => null
+            ]);
+        }
     }
 }

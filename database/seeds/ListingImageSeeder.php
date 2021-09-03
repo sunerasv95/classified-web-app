@@ -13,44 +13,17 @@ class ListingImageSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('listing_images')->insert([
-            'listing_img_url' => "https://picsum.photos/200/300",
-            'listing_id' => 1,
-            "status" => 1,
-            "is_deleted" => 0,
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-            "deleted_at" => null
-        ]);
 
-        DB::table('listing_images')->insert([
-            'listing_img_url' => "https://picsum.photos/200/300",
-            'listing_id' => 1,
-            "status" => 1,
-            "is_deleted" => 0,
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-            "deleted_at" => null
-        ]);
+        for($i=1; $i <=5; $i++){
+            DB::table('listing_images')->insert([
+                'listing_img_url' => "https://picsum.photos/200/300",
+                'listing_id' => 1,
+                "is_deleted" => 0,
+                "created_at" => Carbon::now(),
+                "updated_at" => Carbon::now(),
+                "deleted_at" => null
+            ]);
+        }
 
-        DB::table('listing_images')->insert([
-            'listing_img_url' => "https://picsum.photos/200/300",
-            'listing_id' => 2,
-            "status" => 1,
-            "is_deleted" => 0,
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-            "deleted_at" => null
-        ]);
-
-        DB::table('listing_images')->insert([
-            'listing_img_url' => "https://picsum.photos/200/300",
-            'listing_id' => 3,
-            "status" => 1,
-            "is_deleted" => 0,
-            "created_at" => Carbon::now(),
-            "updated_at" => Carbon::now(),
-            "deleted_at" => null
-        ]);
     }
 }

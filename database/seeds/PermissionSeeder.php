@@ -24,9 +24,10 @@ class PermissionSeeder extends Seeder
                     'permission_name' => $permissionName,
                     'permission_slug' => Str::slug($permissionName),
                     'permission_code' => rand(3000, 6999),
-                    "status" => 1,
+                    "is_deleted" => 0,
                     "created_at" => Carbon::now(),
                     "updated_at" => Carbon::now(),
+                    "deleted_at" => null
                 ]);
             }
         }

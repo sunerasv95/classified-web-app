@@ -20,20 +20,23 @@ class CreateMembersTable extends Migration
             $table->string("username")->unique();
             $table->string("email")->unique();
             $table->string("password");
-            $table->string('is_organization')->default(0);
-            $table->string('organization_name')->nullable();
-            $table->integer("member_type_id");
-            $table->text('bio')->nullable();
-            $table->string('avatar_url')->nullable();
-            $table->geometry('location')->nullable();
             $table->tinyInteger('is_email_verified')->default(0);
-            $table->tinyInteger("is_active")->default(1);
-            $table->tinyInteger("is_blocked")->default(0);
+            $table->string("member_code")->unique();
+            $table->tinyInteger("member_type_id")->nullable();
+            $table->string('is_store')->default(0);
+            $table->string('store_name')->nullable();
+            $table->text('store_description')->nullable();
+            $table->string('avatar_url')->nullable();
+            $table->string('address_line_1')->nullable();
+            $table->string('address_line_2')->nullable();
+            $table->integer('city_id')->nullable();
+            $table->geometry('geo_location')->nullable();
+            $table->tinyInteger("status")->default(0);
             $table->tinyInteger("is_deleted")->default(0);
+            $table->timestamps();
             $table->timestamp("email_verified_at")->nullable();
             $table->timestamp("blocked_at")->nullable();
-            $table->timestamps();
-            $table->softDeletes($column = 'deleted_at', $precision = 0);
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

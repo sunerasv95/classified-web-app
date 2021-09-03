@@ -20,6 +20,7 @@ class CreateMemberTypesTable extends Migration
             $table->tinyInteger("status")->default(1);
             $table->tinyInteger("is_deleted")->default(0);
             $table->timestamps();
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

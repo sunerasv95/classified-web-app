@@ -5,12 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Listing extends Model
 {
-    use SoftDeletes;
 
     //protected $incrementing = false;
 
@@ -19,18 +17,31 @@ class Listing extends Model
     ];
 
     protected $fillable = [
+        "listing_ref_number",
         "listing_title",
         "listing_slug",
-        "listing_ref_number",
         "listing_description",
-        "list_type",
         "category_id",
+        "transaction_type",
         "pricing_option_id",
         "list_price",
+        "listing_thumbnail_url",
+        "detailable_type",
+        "detailable_id",
         "status",
         "is_deleted",
-        "detailable_type",
-        "detailable_id"
+        "published_at",
+        "deleted_at"
+    ];
+
+    public static $defaultSearchQueryColumns = [
+            "listing_title"
+    ];
+
+    public static $filters = [
+        "status" => "status",
+        "category" => "category_id",
+        "price" => "list_price"
     ];
 
     public function category(): BelongsTo

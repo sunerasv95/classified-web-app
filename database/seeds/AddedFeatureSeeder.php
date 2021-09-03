@@ -4,7 +4,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class PricingOptionSeeder extends Seeder
+class AddedFeatureSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,16 +13,17 @@ class PricingOptionSeeder extends Seeder
      */
     public function run()
     {
-        $options = [
-            "Sale Price",
-            "Day/Rent",
-            "7 days/Rent",
-            "10 days/Rent"
+        $features = [
+            "Has Leash",
+            "Has Fins",
+            "Has Daybag",
+            "Has Boardsocks",
+            "Has Roof racks"
         ];
 
-        foreach($options as $option){
-            DB::table('pricing_options')->insert([
-                'pricing_option' => $option,
+        foreach($features as $feature){
+            DB::table('added_features')->insert([
+                'feature_name' => $feature,
                 "status" => 1,
                 "is_deleted" => 0,
                 "created_at" => Carbon::now(),

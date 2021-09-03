@@ -17,7 +17,9 @@ class CreateRolePermissionTable extends Migration
             $table->id();
             $table->integer('role_id');
             $table->integer('permission_id');
+            $table->tinyInteger("is_deleted")->default(0);
             $table->timestamps();
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

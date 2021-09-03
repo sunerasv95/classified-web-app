@@ -13,8 +13,8 @@ class ListingImage extends Model
     protected $fillable = [
         "listing_img_url",
         "listing_id",
-        "status",
-        "is_deleted"
+        "is_deleted",
+        "deleted_at"
     ];
 
     public function listing(): BelongsTo

@@ -22,9 +22,10 @@ class RoleSeeder extends Seeder
                 'role_name'     => $role,
                 'role_slug'     => Str::slug($role),
                 'role_code'     => rand(8000,9999),
-                'status'        => 1,
+                'is_deleted'    => 0,
                 "created_at"    => Carbon::now(),
                 "updated_at"    => Carbon::now(),
+                "deleted_at"    => null
             ]);
         }
     }

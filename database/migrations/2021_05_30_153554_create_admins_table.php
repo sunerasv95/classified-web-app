@@ -22,14 +22,12 @@ class CreateAdminsTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->tinyInteger('is_email_verified')->default(0);
-            $table->tinyInteger('is_approved')->default(0);
-            $table->tinyInteger('is_active')->default(0);
-            $table->tinyInteger('is_blocked')->default(0);
-            $table->tinyInteger('is_deleted')->default(0);
+            $table->tinyInteger('status')->default(0);
+            $table->tinyInteger("is_deleted")->default(0);
+            $table->timestamps();
             $table->timestamp('approved_date')->nullable();
             $table->timestamp('blocked_date')->nullable();
-            $table->timestamps();
-            $table->softDeletes($column = 'deleted_at', $precision = 0);
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

@@ -12,32 +12,16 @@ class SkillLevelSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('skill_levels')->insert([
-            // 'id' => rand(59999, 79999),
-            'skill_level_name' => "Beginner",
-            "created_at" => now(),
-            "updated_at" => now(),
-        ]);
+        $skills = ["BEGINNER", "INTERMIDIATE", "ADVANCED", "PROFESSIONAL"];
 
-        DB::table('skill_levels')->insert([
-            // 'id' => rand(59999, 79999),
-            'skill_level_name' => "Intermidiate",
-            "created_at" => now(),
-            "updated_at" => now(),
-        ]);
-
-        DB::table('skill_levels')->insert([
-            // 'id' => rand(59999, 79999),
-            'skill_level_name' => "Expert",
-            "created_at" => now(),
-            "updated_at" => now(),
-        ]);
-
-        DB::table('skill_levels')->insert([
-            // 'id' => rand(59999, 79999),
-            'skill_level_name' => "Pro",
-            "created_at" => now(),
-            "updated_at" => now(),
-        ]);
+        foreach($skills as $skill){
+            DB::table('skill_levels')->insert([
+                'skill_level' => $skill,
+                "is_deleted" => 0,
+                "created_at" => now(),
+                "updated_at" => now(),
+                "deleted_at" => null
+            ]);
+        }
     }
 }

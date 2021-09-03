@@ -26,15 +26,19 @@ final class Enums {
 
     const REGULAR_MEMBER_TYPE   = 1;
 
+    const SALE_LISTING_TYPE     = 1;
+    const RENT_LISTING_TYPE     = 2;
+
     /********************************
      *
      * PREFIXES
      *
     *********************************/
 
-    const ADMIN_CODE_PREFIX     = "ADM";
-    const BRAND_CODE_PREFIX     = "CBR";
-    const CATEGORY_CODE_PREFIX  = "CAT";
+    const ADMIN_CODE_PREFIX         = "ADM";
+    const BRAND_CODE_PREFIX         = "CBR";
+    const CATEGORY_CODE_PREFIX      = "CAT";
+    const LISTING_REFERENCE_PREFIX  = "CSLR";
 
     /********************************
      *
@@ -51,7 +55,6 @@ final class Enums {
     *******************************/
 
     const STATUS_ACTIVE         = 1;
-    const STATUS_YES            = 1;
     const APPROVED_YES          = 1;
 
     const STATUS_NO             = 0;

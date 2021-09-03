@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -12,28 +13,18 @@ class MaterialSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('materials')->insert([
-            // 'id' => rand(1000, 2000),
-            'material_name' => "Epoxy",
-            'description' => "tesfdfdfdf",
-            "created_at" => now(),
-            "updated_at" => now(),
-        ]);
+        $materials = ["Epoxy", "Wood", "Other"];
 
-        DB::table('materials')->insert([
-            // 'id' => rand(1000, 2000),
-            'material_name' => "Wood",
-            'description' => "tesfdfdfdf",
-            "created_at" => now(),
-            "updated_at" => now(),
-        ]);
+        foreach($materials as $material){
+            DB::table('materials')->insert([
+                'material_name' => $material,
+                'description' => "tesfdfdfdf",
+                "is_deleted" => 0,
+                "created_at" => Carbon::now(),
+                "updated_at" => Carbon::now(),
+                "deleted_at" => null
+            ]);
+        }
 
-        DB::table('materials')->insert([
-            // 'id' => rand(1000, 2000),
-            'material_name' => "Ploester",
-            'description' => "tesfdfdfdf",
-            "created_at" => now(),
-            "updated_at" => now(),
-        ]);
     }
 }

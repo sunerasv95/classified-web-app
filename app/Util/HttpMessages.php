@@ -11,10 +11,6 @@ final class HttpMessages {
      *
     ********************************/
 
-    //Common
-    const RESPONSE_OKAY_MESSAGE                        = "OK";
-    const CREATED_SUCCESS_MESSAGE                      = "Created successfully";
-
     /**************************
      ********* AUTH RELATED
      ****/
@@ -39,9 +35,8 @@ final class HttpMessages {
 
 
 
-    /**************************
-     ********* RESOURCE RELATED
-     ****/
+    
+    const RESPONSE_OKAY_MESSAGE             = "OK";
 
     const UPDATED_SUCCESSFULLY              = "Updated Successfully";
     const CREATED_SUCCESSFULLY              = "Created Successfully";
@@ -55,12 +50,8 @@ final class HttpMessages {
     const BAD_REQUEST                       = "Bad Request";
     const RESOURCE_NOT_FOUND                = "Resource Not Found";
     const RESOURCE_EXISTS                   = "Resource exists";
+    const INVALID_PAYLOAD                   = "Invalid payload passed";
 
-
-    /**************************
-     ********* COMMON
-     ****/
-
-     const INTERNAL_SERVER_ERROR            = "Internal Server Error";
+    const INTERNAL_SERVER_ERROR            = "Internal Server Error";
 
 }

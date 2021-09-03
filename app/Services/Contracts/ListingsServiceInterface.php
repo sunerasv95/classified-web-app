@@ -4,14 +4,20 @@ namespace App\Services\Contracts;
 
 interface ListingsServiceInterface {
 
-    public function getAllListings();
+    public function getAllListings(array $reqParams);
 
-    public function getListingById($id);
+    public function filterListings(array $reqParams);
 
-    public function createListing(array $data);
+    public function getListingById(int $id);
 
-    public function updateListingById($id, array $data);
+    public function getListingBySlug(string $slug);
 
-    public function deleteListingById($id);
+    public function createListing(array $payload);
+
+    public function updateListingByReferenceId(string $referenceId, array $payload);
+
+    // public function deleteListingById(int $id);
+
+    public function deleteListingByReferenceId(string $referenceId);
 
 }

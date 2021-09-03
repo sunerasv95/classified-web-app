@@ -49,16 +49,17 @@ Route::prefix('users')
         Route::get('{userCode}', [AdminController::class, 'getOne']);
         //->middleware("ability:get-users");
         Route::post('/', [AdminController::class, 'create']);
-        Route::put('{userCode}', [AdminController::class, 'update']);
+        Route::patch('{userCode}', [AdminController::class, 'update']);
         //Route::post('{userId}/appovals', [AdminController::class, 'approveAdminUser']);
 });
 
 Route::prefix('/listings')->group(function () {
     Route::get('/', [ListingsController::class, "getAll"]);
+    Route::get('/search', [ListingsController::class, "search"]);
+    Route::get('{listingSlug}', [ListingsController::class, "getOne"]);
     Route::post('/', [ListingsController::class, "create"]);
-    Route::get('{listingId}', [ListingsController::class, "getOne"]);
-    Route::put('{listingId}', [ListingsController::class, "updateOne"]);
-    Route::delete('{listingId}', [ListingsController::class, "deleteOne"]);
+    Route::patch('{listingReferenceId}', [ListingsController::class, "updateOne"]);
+    Route::delete('{listingReferenceId}', [ListingsController::class, "deleteOne"]);
     Route::post('uploads/images', [ListingsController::class, "uploadImage"]);
 });
 
@@ -68,7 +69,7 @@ Route::prefix('/categories')->group(function () {
     Route::get('{categoryId}', [CategoriesController::class, "getOne"]);
 
     Route::post('/', [CategoriesController::class, "create"]);
-    Route::put('{categoryId}', [CategoriesController::class, "updateOne"]);
+    Route::patch('{categoryId}', [CategoriesController::class, "updateOne"]);
     Route::delete('{categoryId}', [CategoriesController::class, "deleteOne"]);
 });
 
@@ -77,7 +78,7 @@ Route::prefix('/brands')->group(function () {
     Route::post('/', [BrandsController::class, "create"]);
     Route::get('search', [BrandsController::class, "search"]);
     Route::get('{brandCode}', [BrandsController::class, "getOne"]);
-    Route::put('{brandCode}', [BrandsController::class, "updateOne"]);
+    Route::patch('{brandCode}', [BrandsController::class, "updateOne"]);
     Route::delete('{brandCode}', [BrandsController::class, "deleteOne"]);
 });
 
@@ -85,7 +86,7 @@ Route::prefix('/pricing-options')->group(function () {
     Route::get('/', [PricingOptionsController::class, "getAll"]);
     Route::post('/', [PricingOptionsController::class, "create"]);
     Route::get('{pricingId}', [PricingOptionsController::class, "getOne"]);
-    Route::put('{pricingId}', [PricingOptionsController::class, "updateOne"]);
+    Route::patch('{pricingId}', [PricingOptionsController::class, "updateOne"]);
     Route::delete('{pricingId}', [PricingOptionsController::class, "deleteOne"]);
 });
 
@@ -98,7 +99,7 @@ Route::prefix('/permissions')->group(function () {
     Route::get('search', [PermissionController::class, 'search']);
     Route::get('{permissionCode}', [PermissionController::class, 'getOne']);
     Route::post('/', [PermissionController::class, 'create']);
-    Route::put('{permissionCode}', [PermissionController::class, 'update']);
+    Route::patch('{permissionCode}', [PermissionController::class, 'update']);
 });
 
 Route::prefix('/roles')->group(function () {
@@ -106,5 +107,5 @@ Route::prefix('/roles')->group(function () {
     Route::get('search', [RoleController::class, 'search']);
     Route::get('{roleCode}', [RoleController::class, 'getOne']);
     Route::post('/', [RoleController::class, 'create']);
-    Route::put('{roleCode}', [RoleController::class, 'update']);
+    Route::patch('{roleCode}', [RoleController::class, 'update']);
 });

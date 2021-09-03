@@ -29,6 +29,7 @@ final class ErrorCodes {
     *********************************/
 
     const VALIDATION_ERROR_CODE                 = 3006;
+    const INVALID_PAYLOAD_ERROR_CODE            = 3009;
 
 
      /********************************

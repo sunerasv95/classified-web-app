@@ -3,27 +3,28 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Symfony\Component\CssSelector\Node\FunctionNode;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class BoardDetails extends Model
 {
+
     protected $touches = ['skill_levels'];
 
-    //protected $incrementing = false;
-
     protected $fillable = [
-        "width",
-        "length",
-        "thickness",
-        "rail",
-        "volume",
-        "wave_type_id",
+        "length_ft",
+        "length_in",
+        "width_in",
+        "thickness_cm",
+        "rail_cm",
+        "volume_ltr",
+        "capacity_lbs",
         "material_id",
         "fin_type_id",
         "brand_id",
-        "functionalities",
         "status",
-        "is_deleted"
+        "is_deleted",
+        "deleted_at"
     ];
 
     public function listing()
@@ -31,29 +32,48 @@ class BoardDetails extends Model
         return $this->morphOne(Listing::class, "detailable");
     }
 
-    public function brand()
+    public function brand(): BelongsTo
     {
         return $this->belongsTo(Brand::class);
     }
 
-    public function fin_type()
+    public function fin_type() : BelongsTo
     {
         return $this->belongsTo(FinType::class);
     }
 
-    public function material()
+    public function material(): BelongsTo
     {
         return $this->belongsTo(Material::class);
     }
 
-    public function wave_type()
+    public function wave_type(): BelongsToMany
     {
-        return $this->belongsTo(WaveType::class);
+        return $this->belongsToMany(
+            WaveType::class,
+            "board_wave_type",
+            "board_detail_id",
+            "wave_type_id"
+        )->withTimestamps();
     }
 
-    public function skill_levels()
+    public function skill_levels(): BelongsToMany
     {
-        return $this->belongsToMany(SkillLevel::class, "board_skill_level", "board_detail_id", "skill_level_id")
-            ->withTimestamps();
+        return $this->belongsToMany(
+            SkillLevel::class,
+            "board_skill_level",
+            "board_detail_id",
+            "skill_level_id"
+        )->withTimestamps();
+    }
+
+    public function added_features(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            AddedFeature::class,
+            "board_added_feature",
+            "board_detail_id",
+            "feature_id"
+        )->withTimestamps();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Enums\DetailableType;
 use App\Models\BoardDetails;
 use App\Services\AdminAuthService;
 use App\Services\AdminService;
@@ -68,7 +69,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(FileServiceInterface::class, FileService::class);
 
         Relation::morphMap([
-            "BOARD_LISTING" => BoardDetails::class
+            DetailableType::BOARD_LST => BoardDetails::class
         ]);
     }
 }

@@ -14,41 +14,176 @@ class BoardDetailsRepository extends BaseRepository implements BoardDetailsRepos
         parent::__construct($model);
     }
 
-    public function createWithRelationships(array $attributes, array $relationships): Model
+    public function findById(
+        int $id,
+        array $criteria = [],
+        array $columns = ["*"],
+        array $relations = []
+    ): ?Model
     {
-        $detailId = null;
+        $criteria['id'] = $id;
+        return $this->findByCriteria($criteria, $columns, $relations);
+    }
 
+
+    public function createWithRelationships(
+        array $attributes,
+        array $relationships =[]
+    ): Model
+    {
         $savedDetails = $this->create($attributes);
-        $detailId = $savedDetails->id;
 
-        if(isset($relationships['skill_levels'])){
-            $skillsArr = $relationships['skill_levels'];
-            foreach($skillsArr as $k => $skill){
-                $skillsArr[$k]['board_detail_id'] = $detailId;
-            }
-            $savedDetails->skill_levels()->attach($skillsArr);
+        if(isset($relationships['skills'])) {
+            $this->createOrUpdateBoardSkillLevels(
+                $savedDetails,
+                $relationships['skills'],
+                "CREATE_ACTION"
+            );
         }
-
+        if(isset($relationships['wave_types'])) {
+            $this->createOrUpdateBoardWaveTypes(
+                $savedDetails,
+                $relationships['wave_types'],
+                "CREATE_ACTION"
+            );
+        }
+        if(isset($relationships['added_accessories'])) {
+            $this->createOrUpdateBoardAddedFeatures(
+                $savedDetails,
+                $relationships['added_accessories'],
+                "CREATE_ACTION"
+            );
+        }
         return $savedDetails;
     }
 
-    public function updateWithRelationships(BoardDetails $model, array $attributes, array $updateRelations) : bool
+    public function updateWithRelationships(
+        BoardDetails $updateDetail,
+        array $attributes,
+        array $updateRelationships
+    ) : bool
     {
-        $skillDataArr = [];
-        $boardDetailId = $model->id;
+        $updatedResult = 0;
+        // dd($updateDetail,$attributes, $updateRelationships);
+        $this->update($updateDetail, $attributes);
 
-        //update relationships if exists
-        //skill levels
-        if(isset($updateRelations['skill_levels'])) $skillDataArr = $updateRelations['skill_levels'];
-        if(!empty($skillDataArr)){
-            foreach($skillDataArr as $k => $skill){
-                $skillDataArr[$k]['board_detail_id'] = $boardDetailId;
-            }
-            $model->skill_levels()->sync($skillDataArr);
+        if(isset($updateRelationships['skills'])) {
+            $this->createOrUpdateBoardSkillLevels(
+                $updateDetail,
+                $updateRelationships['skills'],
+                "UPDATE_ACTION"
+            );
+        }
+        if(isset($updateRelationships['wave_types'])) {
+            $this->createOrUpdateBoardWaveTypes(
+                $updateDetail,
+                $updateRelationships['wave_types'],
+                "UPDATE_ACTION"
+            );
+        }
+        if(isset($updateRelationships['added_accessories'])) {
+            $this->createOrUpdateBoardAddedFeatures(
+                $updateDetail,
+                $updateRelationships['added_accessories'],
+                "UPDATE_ACTION"
+            );
         }
 
-        return $this->update($model, $attributes);
+        return $updatedResult;
+    }
 
+    private function createOrUpdateBoardSkillLevels(
+        BoardDetails $boardDetail,
+        array $skills,
+        $action="CREATE_ACTION"
+    )
+    {
+        $detailId = $result = null;
+        $boardSkills = [];
+
+        $detailId = $boardDetail->id;
+
+        foreach($skills as $skill){
+            $data['board_detail_id'] = $detailId;
+            $data['skill_level_id'] = $skill;
+            array_push($boardSkills, $data);
+        }
+
+        switch($action){
+            case $action == "CREATE_ACTION";
+                $result = $boardDetail->skill_levels()->attach($boardSkills);
+            break;
+
+            case $action == "UPDATE_ACTION";
+                $result = $boardDetail->skill_levels()->sync($boardSkills);
+            break;
+            default:
+                $result = $boardDetail->skill_levels()->attach($boardSkills);
+        }
+        return $result;
+    }
+
+    private function createOrUpdateBoardWaveTypes(
+        BoardDetails $boardDetail,
+        array $waveTypes,
+        $action="CREATE_ACTION"
+    )
+    {
+        $detailId = $result = null;
+        $boardWaveTypes = [];
+
+        $detailId = $boardDetail->id;
+
+        foreach($waveTypes as $wave){
+            $data['board_detail_id'] = $detailId;
+            $data['wave_type_id'] = $wave;
+            array_push($boardWaveTypes, $data);
+        }
+
+        switch($action){
+            case $action == "CREATE_ACTION";
+                $result = $boardDetail->wave_type()->attach($boardWaveTypes);
+            break;
+
+            case $action == "UPDATE_ACTION";
+                $result = $boardDetail->wave_type()->sync($boardWaveTypes);
+            break;
+            default:
+                $result = $boardDetail->wave_type()->attach($boardWaveTypes);
+        }
+
+        return $result;
+    }
+
+    private function createOrUpdateBoardAddedFeatures(
+        BoardDetails $boardDetail,
+        array $addedFeatures,
+        $action="CREATE_ACTION"
+    )
+    {
+        $detailId = $result = null;
+        $boardAddedFeatures = [];
+
+        $detailId = $boardDetail->id;
+
+        foreach($addedFeatures as $feature){
+            $data['board_detail_id'] = $detailId;
+            $data['feature_id'] = $feature;
+            array_push($boardAddedFeatures, $data);
+        }
+
+        switch($action){
+            case $action == "CREATE_ACTION";
+                $result = $boardDetail->added_features()->attach($boardAddedFeatures);
+            break;
+            case $action == "UPDATE_ACTION";
+                $result = $boardDetail->added_features()->sync($boardAddedFeatures);
+            break;
+            default:
+                $result = $boardDetail->added_features()->attach($boardAddedFeatures);
+        }
+
+        return $result;
     }
 
 }

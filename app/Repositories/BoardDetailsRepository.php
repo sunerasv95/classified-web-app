@@ -63,10 +63,6 @@ class BoardDetailsRepository extends BaseRepository implements BoardDetailsRepos
         array $updateRelationships
     ) : bool
     {
-        $updatedResult = 0;
-        // dd($updateDetail,$attributes, $updateRelationships);
-        $this->update($updateDetail, $attributes);
-
         if(isset($updateRelationships['skills'])) {
             $this->createOrUpdateBoardSkillLevels(
                 $updateDetail,
@@ -89,8 +85,17 @@ class BoardDetailsRepository extends BaseRepository implements BoardDetailsRepos
             );
         }
 
+        $updatedResult = $this->update($updateDetail, $attributes);
         return $updatedResult;
     }
+
+    // public function deletedWithRelationships(
+    //     BoardDetails $deleteDetail,
+    //     array $deleteRelationships
+    // )
+    // {
+
+    // }
 
     private function createOrUpdateBoardSkillLevels(
         BoardDetails $boardDetail,

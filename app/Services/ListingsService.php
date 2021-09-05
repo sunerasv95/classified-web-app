@@ -224,92 +224,93 @@ class ListingsService implements ListingsServiceInterface
         $updateListingAttr = $updateDetailAttr = $updateRelations = [];
         $updateDetailId = $detailableType = null;
 
-        if(empty($payload))return $this->respondInvalidRequestError(
+        if (empty($payload)) return $this->respondInvalidRequestError(
             HttpMessages::INVALID_PAYLOAD,
             ErrorCodes::INVALID_PAYLOAD_ERROR_CODE
         );
 
         $updateListing = $this->listingRepository->findByReferenceId($referenceId);
-        if(empty($updateListing)) return $this->respondNotFound(
+        if (empty($updateListing)) return $this->respondNotFound(
             HttpMessages::RESOURCE_NOT_FOUND,
             ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
         );
 
-        if(isset($payload['listing_title'])) {
+        if (isset($payload['listing_title'])) {
             $updateListingAttr['listing_title'] = $payload['listing_title'];
         }
-        if(isset($payload['listing_description'])) {
+        if (isset($payload['listing_description'])) {
             $updateListingAttr['listing_description'] = $payload['listing_description'];
         }
-        if(isset($payload['transaction_type'])) {
+        if (isset($payload['transaction_type'])) {
             $updateListingAttr['transaction_type'] = $payload['transaction_type'];
         }
-        if(isset($payload['pricing_option_id'])) {
+        if (isset($payload['pricing_option_id'])) {
             $updateListingAttr['pricing_option_id'] = $payload['pricing_option_id'];
         }
-        if(isset($payload['list_price'])) {
+        if (isset($payload['list_price'])) {
             $updateListingAttr['list_price'] = $payload['list_price'];
         }
-        if(isset($payload['status'])) {
+        if (isset($payload['status'])) {
             $updateListingAttr['status'] = $payload['status'];
         }
 
-        if(isset($payload['board_specs']) && !empty($payload['board_specs'])) {
+        if (isset($payload['board_specs']) && !empty($payload['board_specs'])) {
             $updateDetailId = $updateListing->detailable_id;
             $detailableType = $updateListing->detailable_type;
-            if(($updateDetailId != 0 || $updateDetailId != null) && $detailableType === DetailableType::BOARD_LST){
+            if (($updateDetailId != 0 || $updateDetailId != null) && $detailableType === DetailableType::BOARD_LST) {
 
-                    if(isset($payload['board_specs']['width'])) {
-                        $updateDetailAttr['width_in'] = $payload['board_specs']['width'];
-                    }
-                    if(isset($payload['board_specs']['length_ft'])) {
-                        $updateDetailAttr['length_ft'] = $payload['board_specs']['length_ft'];
-                    }
-                    if(isset($payload['board_specs']['length_in'])) {
-                        $updateDetailAttr['length_in'] = $payload['board_specs']['length_in'];
-                    }
-                    if(isset($payload['board_specs']['thickness'])) {
-                        $updateDetailAttr['thickness_cm'] = $payload['board_specs']['thickness'];
-                    }
-                    if(isset($payload['board_specs']['rail'])) {
-                        $updateDetailAttr['rail_cm'] = $payload['board_specs']['rail'];
-                    }
-                    if(isset($payload['board_specs']['volume'])) {
-                        $updateDetailAttr['volume_ltr'] = $payload['board_specs']['volume'];
-                    }
-                    if(isset($payload['board_specs']['capacity'])) {
-                        $updateDetailAttr['capacity_lbs'] = $payload['board_specs']['capacity'];
-                    }
-                    if(isset($payload['board_specs']['brand_id'])) {
-                        $updateDetailAttr['brand_id'] = $payload['board_specs']['brand_id'];
-                    }
-                    if(isset($payload['board_specs']['material_id'])) {
-                        $updateDetailAttr['material_id'] = $payload['board_specs']['material_id'];
-                    }
-                    if(isset($payload['board_specs']['fin_type_id'])) {
-                        $updateDetailAttr['fin_type_id'] = $payload['board_specs']['fin_type_id'];
-                    }
-                    if(isset($payload['board_specs']['skill_levels'])) {
-                        $updateRelations['skills'] = $payload["board_specs"]['skill_levels'];
-                    }
-                    if(isset($payload['board_specs']['wave_types'])) {
-                        $updateRelations['wave_types'] = $payload["board_specs"]['wave_types'];
-                    }
-                    if(isset($payload['board_specs']['added_accessories'])) {
-                        $updateRelations['added_accessories'] = $payload["board_specs"]['added_accessories'];
-                    }
+                if (isset($payload['board_specs']['width'])) {
+                    $updateDetailAttr['width_in'] = $payload['board_specs']['width'];
+                }
+                if (isset($payload['board_specs']['length_ft'])) {
+                    $updateDetailAttr['length_ft'] = $payload['board_specs']['length_ft'];
+                }
+                if (isset($payload['board_specs']['length_in'])) {
+                    $updateDetailAttr['length_in'] = $payload['board_specs']['length_in'];
+                }
+                if (isset($payload['board_specs']['thickness'])) {
+                    $updateDetailAttr['thickness_cm'] = $payload['board_specs']['thickness'];
+                }
+                if (isset($payload['board_specs']['rail'])) {
+                    $updateDetailAttr['rail_cm'] = $payload['board_specs']['rail'];
+                }
+                if (isset($payload['board_specs']['volume'])) {
+                    $updateDetailAttr['volume_ltr'] = $payload['board_specs']['volume'];
+                }
+                if (isset($payload['board_specs']['capacity'])) {
+                    $updateDetailAttr['capacity_lbs'] = $payload['board_specs']['capacity'];
+                }
+                if (isset($payload['board_specs']['brand_id'])) {
+                    $updateDetailAttr['brand_id'] = $payload['board_specs']['brand_id'];
+                }
+                if (isset($payload['board_specs']['material_id'])) {
+                    $updateDetailAttr['material_id'] = $payload['board_specs']['material_id'];
+                }
+                if (isset($payload['board_specs']['fin_type_id'])) {
+                    $updateDetailAttr['fin_type_id'] = $payload['board_specs']['fin_type_id'];
+                }
+                if (isset($payload['board_specs']['skill_levels'])) {
+                    $updateRelations['skills'] = $payload["board_specs"]['skill_levels'];
+                }
+                if (isset($payload['board_specs']['wave_types'])) {
+                    $updateRelations['wave_types'] = $payload["board_specs"]['wave_types'];
+                }
+                if (isset($payload['board_specs']['added_accessories'])) {
+                    $updateRelations['added_accessories'] = $payload["board_specs"]['added_accessories'];
+                }
 
-                    $updateBoardDetail = $this->boardDetailsRepository->findById($updateDetailId);
+                $updateBoardDetail = $this->boardDetailsRepository->findById($updateDetailId);
 
-                    if(empty($updateBoardDetail)) return $this->respondNotFound(
-                        HttpMessages::RESOURCE_NOT_FOUND,
-                        ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE);
-                    else $this->boardDetailsRepository->updateWithRelationships(
-                        $updateBoardDetail,
-                        $updateDetailAttr,
-                        $updateRelations
-                    );
-            }else{
+                if (empty($updateBoardDetail)) return $this->respondNotFound(
+                    HttpMessages::RESOURCE_NOT_FOUND,
+                    ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
+                );
+                else $this->boardDetailsRepository->updateWithRelationships(
+                    $updateBoardDetail,
+                    $updateDetailAttr,
+                    $updateRelations
+                );
+            } else {
                 return $this->respondInvalidRequestError(
                     HttpMessages::INVALID_PAYLOAD,
                     ErrorCodes::INVALID_PAYLOAD_ERROR_CODE
@@ -343,6 +344,10 @@ class ListingsService implements ListingsServiceInterface
             ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
         );
 
+        // if($deleteListing->detailable_id != 0 &&
+        //     $deleteListing->detailable_type == DetailableType::BOARD_LST){
+        //         $deleteDetail = $this->boardDetailsRepository->fin
+        // }
         $result = $this->listingRepository->softDelete($deleteListing);
 
         if ($result > 0) return $this->respondSuccess(HttpMessages::DELETED_SUCCESSFULLY);

@@ -2,7 +2,8 @@
 
 namespace App\Services\Contracts;
 
-interface RoleServiceInterface {
+interface RoleServiceInterface
+{
 
     public function getAllRoles(array $reqParams);
 

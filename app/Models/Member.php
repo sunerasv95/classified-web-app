@@ -10,15 +10,10 @@ use Illuminate\Notifications\Notifiable;
 
 class Member extends Authenticatable
 {
-    use HasApiTokens,Notifiable;
-
     protected $fillable = [
         'first_name',
         'last_name',
-        'username',
-        'email',
-        'password',
-        'is_email_verified',
+        'user_code',
         'membership_type_id',
         'is_store',
         'store_name',
@@ -27,23 +22,18 @@ class Member extends Authenticatable
         'address_line_1',
         'address_line_2',
         'city_id',
+        'zip_code',
+        'country_id',
         'geo_location',
-        'status',
         'is_deleted',
-        'email_verified_at',
-        'blocked_at',
         'deleted_at'
     ];
 
-    protected $hidden = [
-        'password',
-    ];
-
-
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-
+    public static $defaultSearchQueryColumns = [
+        "first_name",
+        "last_name",
+        "user_code"
+];
 
     public function socialLogins()
     {

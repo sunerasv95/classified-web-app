@@ -5,10 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\LoginWithSocialProviderRequest;
-use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\RegisterWithSocialProviderRequest;
+use App\Http\Requests\Member\CreateMemberRequest;
 use App\Services\Contracts\AuthServiceInterface;
-use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
@@ -19,10 +18,11 @@ class AuthController extends Controller
         $this->authService = $authService;
     }
 
-    public function register(RegisterRequest $request)
+    public function register(CreateMemberRequest $request)
     {
         $validatedData = $request->validated();
-        return $this->authService->registerMemberWithUsernamePassword($validatedData);
+        //dd($validatedData);
+        return $this->authService->registerMember($validatedData);
     }
 
     public function login(LoginRequest $request)

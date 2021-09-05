@@ -2,13 +2,20 @@
 
 namespace App\Services;
 
+use App\Enums\Common;
+use App\Enums\SystemStatus;
+use App\Http\Resources\Member\AuthenticatedMember;
+use App\Http\Resources\Member\MemberResource;
+use App\Models\MemberType;
 use App\Repositories\Contracts\MemberRepositoryInterface;
 use App\Repositories\Contracts\SocialLoginRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Services\Contracts\AuthServiceInterface;
 use App\Traits\ApiResponser;
 use App\Util\Enums;
+use App\Util\ErrorCodes;
 use App\Util\HttpMessages;
+use Illuminate\Support\Facades\DB;
 
 class AuthService implements AuthServiceInterface
 {
@@ -38,7 +45,7 @@ class AuthService implements AuthServiceInterface
         $email = $payload['email'];
         $password = $payload['password'];
 
-        $user = $this->memberRepository->getMemberByEmail($email); //todo: check whether user account is active/blocked/not email verified
+        $user = $this->memberRepository->findByEmail($email); //todo: check whether user account is active/blocked/not email verified
         if(!isset($user)) return $this->respondUnAuthorized(HttpMessages::NOT_FOUND_USER_WITH_EMAIL_USERNAME_MESSAGE);
 
         if(checkHashedPassword($password, $user->password)) {
@@ -57,7 +64,7 @@ class AuthService implements AuthServiceInterface
         $provider   = $payload['provider'];
 
         //check member exists
-        $member = $this->memberRepository->getMemberByEmail($email);
+        $member = $this->memberRepository->findByEmail($email);
         if(!isset($member)) return $this->respondUnAuthorized(HttpMessages::NOT_FOUND_USER_WITH_EMAIL_USERNAME_MESSAGE);
 
         $memberId = $member->id;
@@ -69,24 +76,48 @@ class AuthService implements AuthServiceInterface
         return $this->respondWithAccessToken($token, HttpMessages::LOGIN_SUCCESS_MESSAGE);
     }
 
-    public function registerMemberWithUsernamePassword(array $payload)
+    public function registerMember(array $payload)
     {
-        $email = $username = null;
-        $memberData = array();
+        DB::beginTransaction();
 
-        $memberData['first_name']       = $payload['first_name'];
-        $memberData['last_name']        = $payload['last_name'];
-        $memberData['email']            = $payload['email'];
-        $memberData['username']         = $payload['email']; //todo: make unique name with email and validate if it exists
-        $memberData['password']         = makeHashedPassword($payload['password']);
-        $memberData['avatar_url']       = $payload['avatar'];
-        $memberData['member_type_id']   = Enums::REGULAR_MEMBER_TYPE;
-        $memberData['is_active']        = Enums::STATUS_ACTIVE;
-        $memberData['is_blocked']       = Enums::NOT_BLOCKED;
-        $memberData['is_deleted']       = Enums::NOT_DELETED;
+        try {
+            $memberAttr = $userAttrr = [];
 
-        $newMember = $this->memberRepository->create($memberData);
-        return $this->respondSuccess(HttpMessages::REGISTER_SUCCESS_MESSAGE);
+            $memberAttr['first_name']           = $payload['first_name'];
+            $memberAttr['last_name']            = $payload['last_name'];
+            $memberAttr['member_type_id']       = 1;
+
+            $userAttrr['email']                = $payload['email'];
+            $userAttrr['username']             = $payload['username'];
+            $userAttrr['user_code']            = $payload['user_code'];
+            $userAttrr['password']             = makeHashedPassword($payload['password']);
+            $userAttrr['country_code']         = $payload['country_code'];
+            $userAttrr['mobile_number']        = $payload['mobile_number'];
+            $userAttrr['is_email_verified']    = SystemStatus::NO_STATUS;
+            $userAttrr['is_mobile_verified']   = SystemStatus::NO_STATUS;
+            $userAttrr['status']               = SystemStatus::NO_STATUS;
+            $userAttrr['is_deleted']           = SystemStatus::NOT_DELETED;
+            $userAttrr['email_verified_at']    = null;
+
+            $newUser = $this->userRepository->create($userAttrr);
+
+            $memberAttr['user_code'] = $newUser->user_code;
+            $this->memberRepository->create($memberAttr);
+            $token = $newUser->createToken('Laravel Password Grant Client')->accessToken;
+
+            DB::commit();
+
+            $data = array(
+                "success" => true,
+                "message" => HttpMessages::CREATED_SUCCESSFULLY,
+                "result" => new AuthenticatedMember($newUser, $token)
+            );
+            return $this->respondCreated($data);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
     }
 
     public function registerMemberWithSocialProvider(array $payload)
@@ -101,7 +132,7 @@ class AuthService implements AuthServiceInterface
         $email      = $payload['email'];
         $provider   = $payload['provider'];
 
-        $member = $this->memberRepository->getMemberByEmail($email);
+        $member = $this->memberRepository->findByEmail($email);
         if(!isset($member)) return $this->respondUnAuthorized(HttpMessages::NOT_FOUND_USER_WITH_EMAIL_USERNAME_MESSAGE);
 
         $memberId = $member->id;

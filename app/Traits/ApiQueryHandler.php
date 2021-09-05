@@ -18,10 +18,15 @@ trait ApiQueryHandler
 
     public function applySort(array $requestParams): array
     {
-        $orderby = [];
-
-        if (!empty($requestParams['sort']) &&
-            !empty($requestParams['order'])) {
+        $orderby = [
+            "sort" => "id",
+            "order" => "asc"
+        ];
+        //dd($requestParams);
+        if (
+            (isset($requestParams['sort']) && !empty($requestParams['sort'])) &&
+            (isset($requestParams['order']) && !empty($requestParams['order']))
+        ) {
             $orderby['sort']  = $requestParams['sort'];
             $orderby['order'] = $requestParams['order'];
         }
@@ -31,14 +36,18 @@ trait ApiQueryHandler
 
     public function applyPagination(array $requestParams): array
     {
-        $pagination = [];
-
-        if (isset($requestParams['limit']) &&
-            isset($requestParams['offset'])) {
-            $pagination['limit']  = $requestParams['limit'];
-            $pagination['offset'] = $requestParams['offset'];
+        $pagination = [
+            "limit" => 10,
+            "offset" => 0
+        ];
+        //dd($requestParams);
+        if (isset($requestParams['limit']) && isset($requestParams['offset'])) {
+            if($requestParams['limit'] != "" && $requestParams['offset'] != ""){
+                $pagination['limit']  = $requestParams['limit'];
+                $pagination['offset'] = $requestParams['offset'];
+            }
         }
-
+        //dd($pagination);
         return $pagination;
     }
 

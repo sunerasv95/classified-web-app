@@ -8,6 +8,17 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class GetQueryRequest extends FormRequest
 {
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            "qry"       => Str::replaceArray("+", [" "], strval(trim($this->qry))),
+            "sort"      => strval(trim($this->sort)),
+            "order"     => strval(trim($this->order)),
+            "limit"     => strval(trim($this->limit)),
+            "offset"    => strval(trim($this->offset))
+        ]);
+    }
+    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -34,14 +45,5 @@ class GetQueryRequest extends FormRequest
         ];
     }
 
-    protected function prepareForValidation()
-    {
-        $this->merge([
-            "qry"       => Str::replaceArray("+", [" "], strval(trim($this->qry))),
-            "sort"      => strval(trim($this->sort)),
-            "order"     => strval(trim($this->order)),
-            "limit"     => strval(trim($this->limit)),
-            "offset"    => strval(trim($this->offset))
-        ]);
-    }
+
 }

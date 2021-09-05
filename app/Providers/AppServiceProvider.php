@@ -23,9 +23,11 @@ use App\Services\Contracts\CategoryServiceInterface;
 use App\Services\Contracts\FileServiceInterface;
 use App\Services\Contracts\ListingImageServiceInterface;
 use App\Services\Contracts\ListingsServiceInterface;
+use App\Services\Contracts\MemberServiceInterface;
 use App\Services\Contracts\PermissionServiceInterface;
 use App\Services\Contracts\PricingOptionServiceInterface;
 use App\Services\Contracts\RoleServiceInterface;
+use App\Services\MemberService;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
@@ -51,7 +53,7 @@ class AppServiceProvider extends ServiceProvider
 
         //Admin
         $this->app->bind(AdminServiceInterface::class, AdminService::class);
-
+        $this->app->bind(MemberServiceInterface::class, MemberService::class);
 
         $this->app->bind(ListingsServiceInterface::class, ListingsService::class);
         $this->app->bind(CategoryServiceInterface::class, CategoryService::class);

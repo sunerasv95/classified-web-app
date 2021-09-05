@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\SystemPrefix;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
@@ -37,6 +38,30 @@ if (!function_exists('makeUniqueUsernameWithEmail')) {
         return $username;
     }
 }
+
+if (!function_exists('makeUsername')) {
+    function makeUsername(string $text)
+    {
+        $text = ucfirst(strtolower(substr($text, 0, 5)));
+        $randomNumber = rand(199,999);
+
+        $username = $text.$randomNumber;
+        return $username;
+    }
+}
+
+if (!function_exists('makeMemberUserCode')) {
+    function makeMemberUserCode()
+    {
+        $prefix = SystemPrefix::MEMBER_USER_CODE_PREFIX;
+        $randomNumber = rand(1000000,9999999);
+
+        $userCode = $prefix.$randomNumber;
+        return $userCode;
+    }
+}
+
+
 
 
 if (!function_exists('getCurrentDateTime')) {

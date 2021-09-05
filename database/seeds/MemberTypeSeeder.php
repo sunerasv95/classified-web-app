@@ -15,8 +15,8 @@ class MemberTypeSeeder extends Seeder
         $memberships = ["Basic", "Bronze", "Silver", "Gold"];
 
         foreach($memberships as $membership){
-            DB::table('member_types')->insert([
-                'member_type' => $membership,
+            DB::table('membership_types')->insert([
+                'membership_type' => $membership,
                 'description' => "tesfdfdfdf",
                 'status' => 1,
                 'is_deleted' => 0,

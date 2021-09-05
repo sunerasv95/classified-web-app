@@ -11,40 +11,14 @@ use Illuminate\Notifications\Notifiable;
 
 class Admin extends Authenticatable
 {
-    use HasApiTokens,Notifiable;
-
-
     protected $fillable = [
-        'name',
-        'email',
+        'first_name',
+        'last_name',
         'user_code',
-        'password',
         'role_id',
-        'status',
         'is_deleted',
-        'is_email_verified',
-        'email_verified_at',
-        'approved_date',
-        'blocked_date',
+        'approved_at',
         'deleted_at'
-    ];
-
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
-
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
     ];
 
     public function role(): BelongsTo

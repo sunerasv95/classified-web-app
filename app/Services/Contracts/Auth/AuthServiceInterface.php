@@ -8,7 +8,7 @@ interface AuthServiceInterface {
 
     public function loginWithSocialProvider(array $payload);
 
-    public function registerMemberWithUsernamePassword(array $payload);
+    public function registerMember(array $payload);
 
     public function registerMemberWithSocialProvider(array $payload);
 

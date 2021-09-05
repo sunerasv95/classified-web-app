@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\ListingsController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\BrandsController;
+use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PricingOptionsController;
 use App\Http\Controllers\RoleController;
@@ -51,6 +52,14 @@ Route::prefix('users')
         Route::post('/', [AdminController::class, 'create']);
         Route::patch('{userCode}', [AdminController::class, 'update']);
         //Route::post('{userId}/appovals', [AdminController::class, 'approveAdminUser']);
+});
+
+Route::prefix('/members')->group(function () {
+    Route::get('/', [MemberController::class, 'getAll']);
+    Route::get('search', [MemberController::class, 'search']);
+    Route::get('{memberCode}', [MemberController::class, 'getOne']);
+    // Route::post('/', [PermissionController::class, 'create']);
+    Route::patch('{memberCode}', [MemberController::class, 'update']);
 });
 
 Route::prefix('/listings')->group(function () {

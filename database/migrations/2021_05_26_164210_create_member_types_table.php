@@ -13,9 +13,9 @@ class CreateMemberTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('member_types', function (Blueprint $table) {
+        Schema::create('membership_types', function (Blueprint $table) {
             $table->id();
-            $table->string("member_type");
+            $table->string("membership_type");
             $table->string("description");
             $table->tinyInteger("status")->default(1);
             $table->tinyInteger("is_deleted")->default(0);
@@ -31,6 +31,6 @@ class CreateMemberTypesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('member_types');
+        Schema::dropIfExists('membership_types');
     }
 }

@@ -20,6 +20,7 @@ class CreateListingsTable extends Migration
             $table->string("listing_title", 150);
             $table->string("listing_slug" , 150)->unique();
             $table->text("listing_description", 500);
+            $table->integer('member_id')->unsigned();
             $table->integer("category_id");
             $table->enum("transaction_type", [TransactionType::SALE, TransactionType::RENT]);
             $table->integer("pricing_option_id");

@@ -61,6 +61,23 @@ if (!function_exists('makeMemberUserCode')) {
     }
 }
 
+if (!function_exists('makeAdminUserCode')) {
+    function makeAdminUserCode()
+    {
+        $prefix = SystemPrefix::ADMIN_USER_CODE_PREFIX;
+        $randomNumber = rand(1000000,9999999);
+
+        $userCode = $prefix.$randomNumber;
+        return $userCode;
+    }
+}
+
+if (!function_exists('makeRoleCode')) {
+    function makeRoleCode()
+    {
+        return rand(8000, 9000);
+    }
+}
 
 
 

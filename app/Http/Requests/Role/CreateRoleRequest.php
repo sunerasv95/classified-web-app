@@ -11,7 +11,7 @@ class CreateRoleRequest extends FormRequest
     {
         return $this->merge([
             "role_slug"   => Str::slug($this->role_name),
-            "role_code" => rand(8000, 9000)
+            "role_code" => makeRoleCode()
         ]);
     }
     /**
@@ -35,9 +35,8 @@ class CreateRoleRequest extends FormRequest
             "role_name"                     => "required|string",
             "role_slug"                     => "required|string|unique:roles,role_slug",
             "role_code"                     => "required|integer|unique:roles,role_code",
-            "status"                        => "required|integer"
-            // "permissions"                   => "required|array|min:1",
-            // "permissions.*.permission_id"   => "required|integer"
+            "permissions"                   => "required|array|min:1",
+            "permissions.*.permission_code" => "required|integer"
         ];
     }
 }

@@ -36,8 +36,7 @@ class CreatePermissionRequest extends FormRequest
         return [
             "permission_name"   => "required|string",
             "permission_slug"   => "required|string|unique:permissions,permission_slug",
-            "permission_code"   => "required|integer|unique:permissions,permission_code",
-            "status"            => "required|integer"
+            "permission_code"   => "required|integer|unique:permissions,permission_code"
         ];
     }
 

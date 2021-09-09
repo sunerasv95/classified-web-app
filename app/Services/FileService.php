@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Repositories\Contracts\BrandRepositoryInterface;
 use App\Services\Contracts\FileServiceInterface;
 use App\Services\Contracts\ListingImageServiceInterface;
 use App\Traits\ApiResponser;

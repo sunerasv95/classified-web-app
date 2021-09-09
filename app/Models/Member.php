@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -29,14 +30,20 @@ class Member extends Authenticatable
         'deleted_at'
     ];
 
-    public static $defaultSearchQueryColumns = [
+    public static $searchable = [
         "first_name",
         "last_name",
         "user_code"
-];
+    ];
 
     public function socialLogins()
     {
         return $this->hasMany(MemberSocialLogins::class);
+    }
+
+
+    public function listings(): HasMany
+    {
+        return $this->hasMany(Listing::class, 'member_id');
     }
 }

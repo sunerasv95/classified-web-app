@@ -24,6 +24,7 @@ class Listing extends Model
         "category_id",
         "transaction_type",
         "pricing_option_id",
+        "member_id",
         "list_price",
         "listing_thumbnail_url",
         "detailable_type",
@@ -34,11 +35,11 @@ class Listing extends Model
         "deleted_at"
     ];
 
-    public static $defaultSearchQueryColumns = [
-            "listing_title"
+    public static $searchable = [
+        "listing_title"
     ];
 
-    public static $filters = [
+    public static $filterable = [
         "status" => "status",
         "category" => "category_id",
         "price" => "list_price"
@@ -62,6 +63,11 @@ class Listing extends Model
     public function detailable()
     {
         return $this->morphTo();
+    }
+
+    public function member(): BelongsTo
+    {
+        return $this->belongsTo(Member::class);
     }
 
 }

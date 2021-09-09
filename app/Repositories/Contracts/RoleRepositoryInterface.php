@@ -49,9 +49,4 @@ interface RoleRepositoryInterface extends BaseRepositoryInterface
         array $attributes,
         array $relationships
     ): bool;
-
-    public function updateRolePermissions(
-        Role $model,
-        array $permissions
-    );
 }

@@ -2,18 +2,20 @@
 
 namespace App\Services;
 
+use App\Enums\Common;
 use App\Http\Resources\Brand\BrandResource;
 use App\Services\Contracts\BrandServiceInterface;
 use App\Repositories\Contracts\BrandRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 use App\Traits\ApiResponser;
-use App\Util\Enums;
-use App\Util\ErrorCodes;
-use App\Util\HttpMessages;
+use App\Traits\ApiQueryHandler;
+use App\Util\Messages;
+use App\Enums\ErrorCodes;
 
 class BrandService implements BrandServiceInterface
 {
-
     use ApiResponser;
+    use ApiQueryHandler;
 
     private $brandRepository;
 
@@ -24,197 +26,211 @@ class BrandService implements BrandServiceInterface
 
     public function getAllBrands(array $reqParams)
     {
-        $paginate = $orderby = array();
+        $paginate = $orderby = [];
 
-        if (isset($reqParams[Enums::SORT_QUERY_PARAM]) &&
-            isset($reqParams[Enums::SORT_ORDER_QUERY_PARAM])) {
-            $orderby[Enums::SORT_QUERY_PARAM]       = $reqParams[Enums::SORT_QUERY_PARAM];
-            $orderby[Enums::SORT_ORDER_QUERY_PARAM] = $reqParams[Enums::SORT_ORDER_QUERY_PARAM];
-        }
-        if (isset($reqParams[Enums::LIMIT_QUERY_PARAM]) &&
-            isset($reqParams[Enums::OFFSET_QUERY_PARAM])) {
-            $paginate[Enums::LIMIT_QUERY_PARAM]  = $reqParams[Enums::LIMIT_QUERY_PARAM];
-            $paginate[Enums::OFFSET_QUERY_PARAM] = $reqParams[Enums::OFFSET_QUERY_PARAM];
-        }
+        try {
+            $paginate   = $this->applyPagination($reqParams);
+            $orderby    = $this->applySort($reqParams);
 
-        $brands = $this->brandRepository
-            ->getAll(
-                array(),
-                array("*"),
-                array(),
+            $brands = $this->brandRepository->getAll(
+                [],
+                ["*"],
+                [],
                 $paginate,
                 $orderby
             );
-        return $this->respondWithResource(
-            new BrandResource($brands),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
-        );
+            return $this->respondWithResource(
+                new BrandResource($brands),
+                Messages::OKAY
+            );
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function getBrandById(int $id)
     {
-        $brand = $this->brandRepository->findById($id);
-        if(empty($brand)) return $this->respondNotFound(
-            HttpMessages::RESOURCE_NOT_FOUND,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
-        );
+        try {
+            $brand = $this->brandRepository->findById($id);
+            if (empty($brand)) return $this->respondNotFound(
+                Messages::RESOURCE_NOT_FOUND,
+                ErrorCodes::NOT_FOUND
+            );
 
-        return $this->respondWithResource(
-            new BrandResource($brand),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
-        );
+            return $this->respondWithResource(
+                new BrandResource($brand),
+                Messages::OKAY
+            );
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function getBrandByCode(string $brandCode)
     {
-        $brand = $this->brandRepository->findByBrandCode($brandCode);
-        if(empty($brand)) return $this->respondNotFound(
-            HttpMessages::RESOURCE_NOT_FOUND,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
-        );
+        try {
+            $brand = $this->brandRepository->findByBrandCode($brandCode);
+            if (empty($brand)) return $this->respondNotFound(
+                Messages::RESOURCE_NOT_FOUND,
+                ErrorCodes::NOT_FOUND
+            );
 
-        return $this->respondWithResource(
-            new BrandResource($brand),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
-        );
+            return $this->respondWithResource(
+                new BrandResource($brand),
+                Messages::OKAY
+            );
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function filterBrands(array $reqParams)
     {
         $keyword = null;
-        $filters = $paginate = $orderby = array();
+        $filters = $paginate = $orderby = [];
 
-        if (isset($reqParams[Enums::SEARCH_QUERY_PARAM])) {
-            $keyword = $reqParams[Enums::SEARCH_QUERY_PARAM];
-        }
-        if (isset($reqParams[Enums::BRAND_STATUS_PARAM])) {
-            $filters[Enums::BRAND_STATUS_PARAM] = $reqParams[Enums::BRAND_STATUS_PARAM];
-        }
-        if (isset($reqParams[Enums::SORT_QUERY_PARAM]) &&
-            isset($reqParams[Enums::SORT_ORDER_QUERY_PARAM])) {
-            $orderby[Enums::SORT_QUERY_PARAM]       = $reqParams[Enums::SORT_QUERY_PARAM];
-            $orderby[Enums::SORT_ORDER_QUERY_PARAM] = $reqParams[Enums::SORT_ORDER_QUERY_PARAM];
-        }
-        if (isset($reqParams[Enums::LIMIT_QUERY_PARAM]) &&
-            isset($reqParams[Enums::OFFSET_QUERY_PARAM])) {
-            $paginate[Enums::LIMIT_QUERY_PARAM]  = $reqParams[Enums::LIMIT_QUERY_PARAM];
-            $paginate[Enums::OFFSET_QUERY_PARAM] = $reqParams[Enums::OFFSET_QUERY_PARAM];
-        }
+        try {
+            $paginate   = $this->applyPagination($reqParams);
+            $orderby    = $this->applySort($reqParams);
+            $keyword    = $this->applySearchFilter($reqParams);
+            $filters    = $this->applyFilters($reqParams, Common::BRAND_FILTERS);
 
-        $brands = $this->brandRepository
-            ->applyFilters(
+            $brands = $this->brandRepository->applyFilters(
                 $keyword,
                 $filters,
-                array("*"),
-                array(),
+                ["*"],
+                [],
                 $paginate,
                 $orderby,
-                array()
+                []
             );
 
-        return $this->respondWithResource(
-            new BrandResource($brands),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
-        );
+            return $this->respondWithResource(
+                new BrandResource($brands),
+                Messages::OKAY
+            );
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function createBrand(array $payload)
     {
-        $newBrand = $this->brandRepository->create($payload);
-        if ($newBrand) {
-            $data = array(
-                "success" => true,
-                "message" => HttpMessages::CREATED_SUCCESSFULLY,
-                "result" => new BrandResource($newBrand)
-            );
+        DB::beginTransaction();
+        try {
+            $newBrand = $this->brandRepository->create($payload);
+            if ($newBrand) {
+                $data = array(
+                    "success" => true,
+                    "message" => Messages::CREATED_SUCCESSFULLY,
+                    "result" => new BrandResource($newBrand)
+                );
 
-            return $this->respondCreated($data);
+                DB::commit();
+
+                return $this->respondCreated($data);
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
         }
-        return $this->respondInternalError(
-            HttpMessages::INTERNAL_SERVER_ERROR,
-            ErrorCodes::INTERNAL_SERVER_ERROR_CODE
-        );
     }
 
     public function updateBrandById(int $id, array $payload)
     {
-        if(empty($payload)) return $this->respondInvalidRequestError(
-            HttpMessages::BAD_REQUEST,
-            ErrorCodes::BAD_REQUEST
-        );
+        DB::beginTransaction();
+        try {
+            if (empty($payload)) return $this->respondInvalidRequestError(
+                Messages::BAD_REQUEST,
+                ErrorCodes::BAD_REQUEST
+            );
 
-        $brand = $this->brandRepository->findById($id);
-        if(empty($brand)) return $this->respondNotFound(
-            HttpMessages::RESOURCE_NOT_FOUND,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
-        );
-        $result = $this->brandRepository->update($brand, $payload);
+            $brand = $this->brandRepository->findById($id);
+            if (empty($brand)) return $this->respondNotFound(
+                Messages::RESOURCE_NOT_FOUND,
+                ErrorCodes::NOT_FOUND
+            );
 
-        if ($result > 0) return $this->respondSuccess(HttpMessages::UPDATED_SUCCESSFULLY);
-        else return $this->respondInternalError(
-            HttpMessages::INTERNAL_SERVER_ERROR,
-            ErrorCodes::INTERNAL_SERVER_ERROR_CODE
-        );
+            $result = $this->brandRepository->update($brand, $payload);
+            if ($result > 0) {
+                DB::commit();
+                return $this->respondSuccess(Messages::UPDATED_SUCCESSFULLY);
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
     }
 
     public function updateBrandByCode(string $brandCode, array $payload)
     {
-        if(empty($payload)) return $this->respondInvalidRequestError(
-            HttpMessages::BAD_REQUEST,
-            ErrorCodes::BAD_REQUEST
-        );
+        DB::beginTransaction();
+        try {
+            if (empty($payload)) return $this->respondInvalidRequestError(
+                Messages::BAD_REQUEST,
+                ErrorCodes::BAD_REQUEST
+            );
 
-        $brand = $this->brandRepository->findByBrandCode($brandCode);
-        if(empty($brand)) return $this->respondNotFound(
-            HttpMessages::RESOURCE_NOT_FOUND,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
-        );
-        $result = $this->brandRepository->update($brand, $payload);
+            $brand = $this->brandRepository->findByBrandCode($brandCode);
+            if (empty($brand)) return $this->respondNotFound(
+                Messages::RESOURCE_NOT_FOUND,
+                ErrorCodes::NOT_FOUND
+            );
 
-        if ($result > 0) return $this->respondSuccess(HttpMessages::UPDATED_SUCCESSFULLY);
-        else return $this->respondInternalError(
-            HttpMessages::INTERNAL_SERVER_ERROR,
-            ErrorCodes::INTERNAL_SERVER_ERROR_CODE
-        );
+            $result = $this->brandRepository->update($brand, $payload);
+            if ($result > 0) {
+                DB::commit();
+                return $this->respondSuccess(Messages::UPDATED_SUCCESSFULLY);
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
     }
 
     public function deleteBrandById(int $id)
     {
         $brand = null;
 
-        $brand = $this->brandRepository->findById($id);
-        if(empty($brand)) return $this->respondNotFound(
-            HttpMessages::RESOURCE_NOT_FOUND,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
-        );
+        DB::beginTransaction();
+        try {
+            $brand = $this->brandRepository->findById($id);
+            if (empty($brand)) return $this->respondNotFound(
+                Messages::RESOURCE_NOT_FOUND,
+                ErrorCodes::NOT_FOUND
+            );
 
-        $updateDeleted = $this->brandRepository->update($brand, array("is_deleted" => 1));
-        $result = $this->brandRepository->delete($brand);
-
-        if ($updateDeleted && $result) return $this->respondSuccess(HttpMessages::DELETED_SUCCESSFULLY);
-        else return $this->respondInternalError(
-            HttpMessages::INTERNAL_SERVER_ERROR,
-            ErrorCodes::INTERNAL_SERVER_ERROR_CODE
-        );
+            $result = $this->brandRepository->softDelete($brand);
+            if ($result > 0) {
+                DB::commit();
+                return $this->respondSuccess(Messages::DELETED_SUCCESSFULLY);
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
     }
 
     public function deleteBrandByCode(string $brandCode)
     {
         $brand = null;
 
-        $brand = $this->brandRepository->findByBrandCode($brandCode);
-        if(empty($brand)) return $this->respondNotFound(
-            HttpMessages::RESOURCE_NOT_FOUND,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
-        );
+        DB::beginTransaction();
+        try {
+            $brand = $this->brandRepository->findByBrandCode($brandCode);
+            if (empty($brand)) return $this->respondNotFound(
+                Messages::RESOURCE_NOT_FOUND,
+                ErrorCodes::NOT_FOUND
+            );
 
-        $updateDeleted = $this->brandRepository->update($brand, array("is_deleted" => 1));
-        $result = $this->brandRepository->delete($brand);
-
-        if ($updateDeleted && $result) return $this->respondSuccess(HttpMessages::DELETED_SUCCESSFULLY);
-        else return $this->respondInternalError(
-            HttpMessages::INTERNAL_SERVER_ERROR,
-            ErrorCodes::INTERNAL_SERVER_ERROR_CODE
-        );
+            $result = $this->brandRepository->softDelete($brand);
+            if ($result > 0) {
+                DB::commit();
+                return $this->respondSuccess(Messages::DELETED_SUCCESSFULLY);
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
     }
 }

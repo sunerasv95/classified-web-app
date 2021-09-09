@@ -71,7 +71,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(FileServiceInterface::class, FileService::class);
 
         Relation::morphMap([
-            DetailableType::BOARD_LST => BoardDetails::class
+            DetailableType::BOARD_LST => BoardDetails::class        
         ]);
     }
 }

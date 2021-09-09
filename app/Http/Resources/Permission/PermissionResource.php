@@ -25,8 +25,8 @@ class PermissionResource extends JsonResource
                     $data['slug']           = $category['permission_slug'];
                     $data['code']           = $category['permission_code'];
                     $data['status']         = $category['status'];
-                    $data['created_at']     = timeStampToDate($category['created_at']);
-                    $data['updated_at']     = timeStampToDate($category['updated_at']);
+                    $data['created_at']     = $category['created_at'];
+                    $data['updated_at']     = $category['updated_at'];
                     return $data;
                 }),
                 "results_count" => $resourceResponse->count()
@@ -38,8 +38,8 @@ class PermissionResource extends JsonResource
             $data['slug']           = $resourceResponse['permission_slug'];
             $data['code']           = $resourceResponse['permission_code'];
             $data['status']         = $resourceResponse['status'];
-            $data['created_at']     = timeStampToDate($resourceResponse['created_at']);
-            $data['updated_at']     = timeStampToDate($resourceResponse['updated_at']);
+            $data['created_at']     = $resourceResponse['created_at'];
+            $data['updated_at']     = $resourceResponse['updated_at'];
 
             return [
                 "data" =>  $data

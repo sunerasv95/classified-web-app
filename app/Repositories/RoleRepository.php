@@ -9,17 +9,16 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Mockery\Matcher\Any;
 
-class RoleRepository extends BaseRepository implements RoleRepositoryInterface  {
+class RoleRepository extends BaseRepository implements RoleRepositoryInterface
+{
 
-    private $permissionRepository;
+    private $roleSearchable = [];
 
     public function __construct(
-        Role $model,
-        PermissionRepository $permissionRepository
-    )
-    {
+        Role $model
+    ) {
         parent::__construct($model);
-        $this->permissionRepository = $permissionRepository;
+        $this->roleSearchable = $model::$searchable;
     }
 
     public function findById(
@@ -27,8 +26,7 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface  
         array $criteria = [],
         array $columns = ["*"],
         array $relations = []
-    ): ?Model
-    {
+    ): ?Model {
         $criteria['id'] = $id;
         return $this->getOne($criteria, $columns, $relations);
     }
@@ -38,8 +36,7 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface  
         array $criteria = [],
         array $columns = ["*"],
         array $relations = []
-    ): ?Model
-    {
+    ): ?Model {
         $criteria['role_slug'] = $slug;
         return $this->getOne($criteria, $columns, $relations);
     }
@@ -49,8 +46,7 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface  
         array $criteria = [],
         array $columns = ["*"],
         array $relations = []
-    ): ?Model
-    {
+    ): ?Model {
         //dd($roleCode,$criteria, $columns, $relations);
         $criteria['role_code'] = $roleCode;
         return $this->getOne($criteria, $columns, $relations);
@@ -64,9 +60,8 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface  
         array $paginate = [],
         array $orderBy = [],
         array $groupByCols = []
-    ): Collection
-    {
-        $queryCols = ["role_name", "role_slug", "role_code"];
+    ): Collection {
+        $queryCols = $this->roleSearchable;
         return $this->filterCriteria(
             $query,
             $queryCols,
@@ -79,53 +74,59 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface  
         );
     }
 
-    public function createWithRelationships(array $attributes, array $relationships):Model
-    {
+    public function createWithRelationships(
+        array $attributes,
+        array $relationships
+    ): Model {
         $savedRole  = $this->create($attributes);
-        $roleId     = $savedRole->id;
-
-        if(isset($relationships['permissions'])){
-            $rolesPermissionsArr = $relationships['permissions'];
-            foreach($rolesPermissionsArr as $k => $permission){
-                $rolesPermissionsArr[$k]['role_id'] = $roleId;
-            }
-            $savedRole->permissions()->attach($rolesPermissionsArr);
+        if (isset($relationships['permissions'])) {
+            $this->createOrUpdateRolePermissions(
+                $savedRole,
+                $relationships['permissions'],
+                "CREATE_ACTION"
+            );
         }
-
         return $savedRole;
     }
 
-    public function updateWithRelationships(Role $model, array $attributes, array $relationships): bool
-    {
-        $roleId = $model->id;
-
-        if(isset($relationships['permissions'])) $rolePermissionsArr = $relationships['permissions'];
-        if(!empty($rolePermissionsArr)){
-            foreach($rolePermissionsArr as $k => $permission){
-                $rolePermissionsArr[$k]['role_id'] = $roleId;
-            }
-            $model->permissions()->sync($rolePermissionsArr);
+    public function updateWithRelationships(
+        Role $updateRole,
+        array $attributes,
+        array $updateRelationships
+    ): bool {
+        if (isset($updateRelationships['permissions'])) {
+            $this->createOrUpdateRolePermissions(
+                $updateRole,
+                $updateRelationships['permissions'],
+                "UPDATE_ACTION"
+            );
         }
-
-        $updatedRole  = $this->update($model, $attributes);
-        return $updatedRole;
+        return $this->update($updateRole, $attributes);
     }
 
-    public function updateRolePermissions(
-        Role $model,
-        array $permissions
-    )
-    {
-        $roleId = $model->id;
-        $permissionsToUpdate = array();
-        foreach($permissions as $permission){
-            //dd($permission);
-            $data = [];
-            $pmsId = $this->permissionRepository->findByPermissionCode($permission['permission_code'])->id;
-            $data['permission_id'] = $pmsId;
-            $data['role_id'] =$roleId;
-            array_push($permissionsToUpdate,$data);
+    private function createOrUpdateRolePermissions(
+        Role $role,
+        array $permissions,
+        $action = "CREATE_ACTION"
+    ) {
+        $roleId = $result = null;
+
+        $roleId = $role->id;
+        foreach ($permissions as $k => $permission) {
+            $permissions[$k]['role_id'] = $roleId;
         }
-        $model->permissions()->sync($permissionsToUpdate);
+        switch ($action) {
+            case $action == "CREATE_ACTION";
+                $result = $role->permissions()->attach($permissions);
+                break;
+
+            case $action == "UPDATE_ACTION";
+                $result = $role->permissions()->sync($permissions);
+                break;
+            default:
+                $result = $role->permissions()->attach($permissions);
+        }
+
+        return $result;
     }
 }

@@ -25,6 +25,14 @@ class Category extends Model
         "deleted_at"
     ];
 
+    public static $searchable = [
+        "category_name", "category_code"
+    ];
+
+    public static $filterable = [
+        "status"
+    ];
+
     public function parent(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'parent_id');

@@ -4,16 +4,15 @@ namespace App\Services;
 
 use App\Http\Resources\Admin\AdminAuthResource;
 use App\Http\Resources\Admin\AdminResource;
-use App\Http\Resources\Brand\BrandResource;
 use App\Repositories\Contracts\AdminRepositoryInterface;
-use App\Services\Contracts\BrandServiceInterface;
-use App\Repositories\Contracts\BrandRepositoryInterface;
 use App\Services\Contracts\AdminServiceInterface;
 use App\Traits\ApiResponser;
 use App\Util\Enums;
-use App\Util\ErrorCodes;
-use App\Util\HttpMessages;
-use Illuminate\Support\Facades\Http;
+use App\Enums\ErrorCodes;
+use App\Enums\SystemStatus;
+use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Util\Messages;
+use Illuminate\Support\Facades\DB;
 
 class AdminService implements AdminServiceInterface
 {
@@ -21,10 +20,15 @@ class AdminService implements AdminServiceInterface
     use ApiResponser;
 
     private $adminRepository;
+    private $userRepository;
 
-    public function __construct(AdminRepositoryInterface $adminRepository)
+    public function __construct(
+        UserRepositoryInterface $userRepository,
+        AdminRepositoryInterface $adminRepository
+    )
     {
-        $this->adminRepository = $adminRepository;
+        $this->adminRepository  = $adminRepository;
+        $this->userRepository   = $userRepository;
     }
 
     public function getAllAdminUsers(array $reqParams)
@@ -57,7 +61,7 @@ class AdminService implements AdminServiceInterface
 
         return $this->respondWithResource(
             new AdminResource($adminUsers),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
+            Messages::OKAY
         );
     }
 
@@ -74,13 +78,13 @@ class AdminService implements AdminServiceInterface
             );
         //dd($adminUser);
         if(empty($adminUser)) return $this->respondNotFound(
-            HttpMessages::NOT_FOUND_USER_MESSAGE,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
+            Messages::NOT_FOUND_USER_MESSAGE,
+            ErrorCodes::NOT_FOUND
         );
 
         return $this->respondWithResource(
             new AdminResource($adminUser),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
+            Messages::OKAY
         );
     }
 
@@ -97,13 +101,13 @@ class AdminService implements AdminServiceInterface
             );
         //dd($adminUser);
         if(empty($adminUser)) return $this->respondNotFound(
-            HttpMessages::NOT_FOUND_USER_MESSAGE,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
+            Messages::NOT_FOUND_USER_MESSAGE,
+            ErrorCodes::NOT_FOUND
         );
 
         return $this->respondWithResource(
             new AdminAuthResource($adminUser),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
+            Messages::OKAY
         );
     }
 
@@ -148,42 +152,55 @@ class AdminService implements AdminServiceInterface
 
         return $this->respondWithResource(
             new AdminResource($adminUsers),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
+            Messages::OKAY
         );
     }
 
     public function createAdminUser(array $payload)
     {
         $adminUser = $email = null;
-        $adminData = array();
+        $userAttr = $adminAttr =  [];
+        DB::beginTransaction();
+        try {
+            $email = $payload['email'];
+            $adminUser = $this->userRepository->findByEmail($email, ['is_top_level_user' => 1]);
+            //dd($adminUser);
+            if (isset($adminUser)) return $this->respondResourceAlreadyExistsError(
+                Messages::RESOURCE_EXISTS,
+                ErrorCodes::ALREADY_EXISTS
+            );
 
-        $email = $payload['email'];
+            $adminAttr['first_name']          = $payload['first_name'];
+            $adminAttr['last_name']           = $payload['last_name'];
+            $adminAttr['role_id']             = 1;
 
-        $adminUser = $this->adminRepository->findByEmail($email);
-        if(!empty($adminUser)) return $this->respondResourceAlreadyExistsError(
-            HttpMessages::EMAIL_IS_ALREADY_EXISTS,
-            ErrorCodes::RESOURCE_EXISTS_ERROR_CODE
-        );
+            $userAttr['email']                = $payload['email'];
+            $userAttr['username']             = $payload['username'];
+            $userAttr['user_code']            = $payload['user_code'];
+            $userAttr['password']             = makeHashedPassword($payload['password']);
+            $userAttr['is_top_level_user']    = SystemStatus::YES_STATUS;
+            $userAttr['is_email_verified']    = SystemStatus::NO_STATUS;
+            $userAttr['status']               = SystemStatus::NO_STATUS;
+            $userAttr['is_deleted']           = SystemStatus::NOT_DELETED;
+            $userAttr['email_verified_at']    = null;
 
-        $adminData['name']              = $payload['name'];
-        $adminData['email']             = $email;
-        $adminData['user_code']         = Enums::ADMIN_CODE_PREFIX. rand(1000, 5000);
-        $adminData['role_id']           = $payload['role_id'];
-        $adminData['is_email_verified'] = Enums::STATUS_NO;
-        $adminData['password']          = makeHashedPassword($payload['password']);
-        $adminData['is_approved']       = Enums::STATUS_NO;
-        $adminData['is_active']         = Enums::STATUS_NO;
-        $adminData['is_blocked']        = Enums::NOT_BLOCKED;
-        $adminData['is_deleted']        = Enums::NOT_DELETED;
+            $newUser = $this->userRepository->create($userAttr);
 
-        $this->adminRepository->create($adminData);
-        return $this->respondSuccess(HttpMessages::CREATED_SUCCESSFULLY);
+            $adminAttr['user_code'] = $newUser->user_code;
+            $this->adminRepository->create($adminAttr);
+
+            DB::commit();
+            return $this->respondSuccess(Messages::SUCCESS);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
     }
 
     public function updateAdminUser(string $userCode, array $payload)
     {
         if(empty($payload)) return $this->respondInvalidRequestError(
-            HttpMessages::BAD_REQUEST,
+            Messages::BAD_REQUEST,
             ErrorCodes::BAD_REQUEST
         );
 
@@ -197,8 +214,8 @@ class AdminService implements AdminServiceInterface
 
         $result = $this->adminRepository->update($adminUser, $payload);
 
-        if ($result > 0) return $this->respondSuccess(HttpMessages::UPDATED_SUCCESSFULLY);
-        else return $this->respondInternalError(null, ErrorCodes::INTERNAL_SERVER_ERROR_CODE);
+        if ($result > 0) return $this->respondSuccess(Messages::UPDATED_SUCCESSFULLY);
+        else return $this->respondInternalError(null, ErrorCodes::SERVER_ERROR);
     }
 
 
@@ -209,13 +226,13 @@ class AdminService implements AdminServiceInterface
 
         $approvedByUser = $payload['approved_user_id'];
         if($userId === $approvedByUser) return $this->respondInvalidRequestError(
-            HttpMessages::APPROVAL_REJECTED,
+            Messages::APPROVAL_REJECTED,
             ErrorCodes::INVALID_REQUEST
         );
 
         $adminUser = $this->adminRepository->findById($userId, array("is_approved" => 0, "role_id" => 0));
         if(empty($adminUser)) return $this->respondNotFound(
-            HttpMessages::NOT_FOUND_USER_MESSAGE,
+            Messages::NOT_FOUND_USER_MESSAGE,
             ErrorCodes::INVALID_REQUEST
         );
 
@@ -223,8 +240,8 @@ class AdminService implements AdminServiceInterface
         $approvalData['approved_date']  = getCurrentDateTime();
         $result = $this->adminRepository->update($adminUser, $approvalData);
 
-        if($result > 0) return $this->respondSuccess(HttpMessages::SUCCESSFULLY_APPROVED_MESSAGE);
-        else return $this->respondInternalError(null, ErrorCodes::INTERNAL_SERVER_ERROR_CODE);
+        if($result > 0) return $this->respondSuccess(Messages::SUCCESSFULLY_APPROVED_MESSAGE);
+        else return $this->respondInternalError(null, ErrorCodes::SERVER_ERROR);
     }
 
 
@@ -233,9 +250,9 @@ class AdminService implements AdminServiceInterface
 
     //     switch($user){
     //         case($user['is_approved'] == 1):
-    //             return $this->respondInvalidRequestError(HttpMessages::ALREADY_APPROVED_USER_MESSAGE);
+    //             return $this->respondInvalidRequestError(Messages::ALREADY_APPROVED_USER_MESSAGE);
     //         case($user['is_blocked'] == 1):
-    //                 return $this->respondInvalidRequestError(HttpMessages::ALREADY_APPROVED_USER_MESSAGE);
+    //                 return $this->respondInvalidRequestError(Messages::ALREADY_APPROVED_USER_MESSAGE);
     //     }
     // }
 

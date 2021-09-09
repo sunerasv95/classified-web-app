@@ -14,12 +14,12 @@ interface AdminRepositoryInterface extends BaseRepositoryInterface
         array $relations = []
     ): ?Model;
 
-    public function findByEmail(
-        string $email,
-        array $criteria = [],
-        array $columns = ["*"],
-        array $relations = []
-    ): ?Model;
+    // public function findByEmail(
+    //     string $email,
+    //     array $criteria = [],
+    //     array $columns = ["*"],
+    //     array $relations = []
+    // ): ?Model;
 
     public function findByUserCode(
         string $userCode,

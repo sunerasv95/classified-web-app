@@ -19,7 +19,7 @@ class User extends Authenticatable
         'password',
         'country_code',
         'mobile_number',
-        'is_admin',
+        'is_top_level_user',
         'is_mobile_verified',
         'is_email_verified',
         'status',

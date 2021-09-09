@@ -14,12 +14,12 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface  
         parent::__construct($model);
     }
 
-    public function getUserByEmail(
+    public function findByEmail(
         string $email,
         array $criteria = [],
         array $columns = ["*"],
         array $relations = []
-    ): Model
+    ): ?Model
     {
         $criteria = ["email" => $email];
         $user = $this->getOne($criteria, $columns, $relations);

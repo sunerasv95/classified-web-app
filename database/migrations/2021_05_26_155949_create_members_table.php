@@ -17,7 +17,7 @@ class CreateMembersTable extends Migration
             $table->id();
             $table->string('first_name');
             $table->string('last_name');
-            $table->string("user_code");
+            $table->string("user_code")->unique();
             $table->tinyInteger("membership_type_id")->nullable();
             $table->string('is_store')->default(0);
             $table->string('store_name')->nullable();

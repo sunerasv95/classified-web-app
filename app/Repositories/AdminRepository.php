@@ -27,16 +27,16 @@ class AdminRepository extends BaseRepository implements AdminRepositoryInterface
         return $this->getOne($criteria, $columns, $relations);
     }
 
-    public function findByEmail(
-        string $email,
-        array $criteria = [],
-        array $columns = ["*"],
-        array $relations = []
-    ): ?Model
-    {
-        $criteria['email'] = $email;
-        return $this->getOne($criteria, $columns, $relations);
-    }
+    // public function findByEmail(
+    //     string $email,
+    //     array $criteria = [],
+    //     array $columns = ["*"],
+    //     array $relations = []
+    // ): ?Model
+    // {
+    //     $criteria['email'] = $email;
+    //     return $this->getOne($criteria, $columns, $relations);
+    // }
 
     public function findByUserCode(
         string $userCode,

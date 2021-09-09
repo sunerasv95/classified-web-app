@@ -28,8 +28,8 @@ class CategoryResource extends JsonResource
                     $data['parent_id']      = isset($category['parent']) ? $category['parent']['id'] : null;
                     $data['parent']         = isset($category['parent']) ? $category['parent']['category_name'] : null;
                     $data['status']         = $category['status'];
-                    $data['created_at']     = timeStampToDate($category['created_at']);
-                    $data['updated_at']     = timeStampToDate($category['updated_at']);
+                    $data['created_at']     = $category['created_at'];
+                    $data['updated_at']     = $category['updated_at'];
                     return $data;
                 }),
                 "results_count" => $resourceResponse->count()
@@ -44,8 +44,8 @@ class CategoryResource extends JsonResource
             $data['parent_id']      = isset($resourceResponse['parent']) ? $resourceResponse['parent']['id'] : null;
             $data['parent']         = isset($resourceResponse['parent']) ? $resourceResponse['parent']['category_name'] : null;
             $data['status']         = $resourceResponse['status'];
-            $data['created_at']     = timeStampToDate($resourceResponse['created_at']);
-            $data['updated_at']     = timeStampToDate($resourceResponse['updated_at']);
+            $data['created_at']     = $resourceResponse['created_at'];
+            $data['updated_at']     = $resourceResponse['updated_at'];
 
             return [
                 "data" =>  $data

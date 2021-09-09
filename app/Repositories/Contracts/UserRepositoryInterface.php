@@ -6,5 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 interface UserRepositoryInterface extends BaseRepositoryInterface
 {
-    public function getUserByEmail(string $email, array $criteria = [], array $columns = ["*"], array $relations = []): Model;
+    public function findByEmail(
+        string $email,
+        array $criteria = [],
+        array $columns = ["*"],
+        array $relations = []
+    ): ?Model;
 }

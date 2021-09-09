@@ -11,12 +11,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class MemberRepository extends BaseRepository implements MemberRepositoryInterface  {
 
-    private $memberSearchAttributes = [];
+    private $memberSearchable = [];
 
     public function __construct(Member $model)
     {
         parent::__construct($model);
-        $this->memberSearchAttributes = $model::$defaultSearchQueryColumns;
+        $this->memberSearchable = $model::$searchable;
     }
 
     public function findByEmail(
@@ -62,7 +62,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
         array $groupByCols = []
     ): Collection
     {
-        $queryCols = $this->memberSearchAttributes;
+        $queryCols = $this->memberSearchable;
         return $this->filterCriteria(
             $query,
             $queryCols,

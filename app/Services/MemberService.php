@@ -2,15 +2,17 @@
 
 namespace App\Services;
 
+use App\Enums\Common;
 use App\Http\Resources\Member\MemberResource;
 use App\Repositories\Contracts\MemberRepositoryInterface;
 use App\Services\Contracts\MemberServiceInterface;
 use App\Traits\ApiQueryHandler;
 use App\Traits\ApiResponser;
 use App\Util\Enums;
-use App\Util\ErrorCodes;
-use App\Util\HttpMessages;
+use App\Enums\ErrorCodes;
+use App\Util\Messages;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class MemberService implements MemberServiceInterface
 {
@@ -29,17 +31,25 @@ class MemberService implements MemberServiceInterface
     {
         $paginate = $orderby = [];
 
+       try {
         $orderby = $this->applySort($reqParams);
         $paginate = $this->applyPagination($reqParams);
 
-        //dd($paginate, $orderby);
-
-        $members = $this->memberRepository->getAll([],["*"],[],$paginate,$orderby);
+        $members = $this->memberRepository->getAll(
+            array(),
+            array("*"),
+            array(),
+            $paginate,
+            $orderby
+        );
 
         return $this->respondWithResource(
             new MemberResource($members),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
+            Messages::OKAY
         );
+       } catch (\Throwable $th) {
+           throw $th;
+       }
     }
 
     public function filterMembers(array $reqParams)
@@ -47,12 +57,11 @@ class MemberService implements MemberServiceInterface
         $keyword = null;
         $filters = $paginate = $orderby = array();
 
-        $paginate   = $this->applyPagination($reqParams);
+        try {
+            $paginate   = $this->applyPagination($reqParams);
         $orderby    = $this->applySort($reqParams);
         $keyword    = $this->applySearchFilter($reqParams);
-        $filters    = $this->applyListingFilters($reqParams);
-
-       //dd($filters, $paginate, $orderby, $keyword);
+        $filters    = $this->applyFilters($reqParams, Common::MEMBER_FILTERS);
 
         $roles = $this->memberRepository
             ->applyFilters(
@@ -67,8 +76,11 @@ class MemberService implements MemberServiceInterface
 
         return $this->respondWithResource(
             new MemberResource($roles),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
+            Messages::OKAY
         );
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     // public function getRoleById(int $roleId)
@@ -81,29 +93,32 @@ class MemberService implements MemberServiceInterface
     //     );
 
     //     if(empty($role)) return $this->respondNotFound(
-    //         HttpMessages::RESOURCE_NOT_FOUND,
-    //         ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
+    //         Messages::RESOURCE_NOT_FOUND,
+    //         ErrorCodes::NOT_FOUND
     //     );
 
     //     return $this->respondWithResource(
     //         new RoleResource($role),
-    //         HttpMessages::RESPONSE_OKAY_MESSAGE
+    //         Messages::OKAY
     //     );
     // }
 
     public function getMemberByCode(string $memberCode)
     {
-        $member = $this->memberRepository->findByMemberCode($memberCode);
-
+        try {
+            $member = $this->memberRepository->findByMemberCode($memberCode);
         if(empty($member)) return $this->respondNotFound(
-            HttpMessages::RESOURCE_NOT_FOUND,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
+            Messages::RESOURCE_NOT_FOUND,
+            ErrorCodes::NOT_FOUND
         );
 
         return $this->respondWithResource(
             new MemberResource($member),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
+            Messages::OKAY
         );
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     // public function createRole(array $payload)
@@ -113,15 +128,15 @@ class MemberService implements MemberServiceInterface
     //     if ($newRole) {
     //         $data = array(
     //             "success" => true,
-    //             "message" => HttpMessages::CREATED_SUCCESSFULLY,
+    //             "message" => Messages::CREATED_SUCCESSFULLY,
     //             "result" => new RoleResource($newRole)
     //         );
     //         return $this->respondCreated($data);
     //     }
 
     //     return $this->respondInternalError(
-    //         HttpMessages::INTERNAL_SERVER_ERROR,
-    //         ErrorCodes::INTERNAL_SERVER_ERROR_CODE
+    //         Messages::SERVER_ERROR,
+    //         ErrorCodes::SERVER_ERROR
     //     );
     // }
 
@@ -131,17 +146,17 @@ class MemberService implements MemberServiceInterface
 
     //     $role = $this->roleRepository->findById($roleId);
     //     if(!isset($role)) return $this->respondNotFound(
-    //         HttpMessages::RESOURCE_NOT_FOUND,
-    //         ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
+    //         Messages::RESOURCE_NOT_FOUND,
+    //         ErrorCodes::NOT_FOUND
     //     );
 
     //     $roleUpdated = $this->roleRepository
     //         ->updateWithRelationships($role, $updateRole, $relations);
 
-    //     if($roleUpdated > 0) return $this->respondSuccess(HttpMessages::CREATED_SUCCESSFULLY);
+    //     if($roleUpdated > 0) return $this->respondSuccess(Messages::CREATED_SUCCESSFULLY);
     //     else return $this->respondInternalError(
-    //         HttpMessages::RESOURCE_UPDATION_FAILED,
-    //         ErrorCodes::INTERNAL_SERVER_ERROR_CODE
+    //         Messages::RESOURCE_UPDATION_FAILED,
+    //         ErrorCodes::SERVER_ERROR
     //     );
     // }
 
@@ -152,8 +167,8 @@ class MemberService implements MemberServiceInterface
 
     //     $role = $this->roleRepository->findByRoleCode($roleCode);
     //     if(!isset($role)) return $this->respondNotFound(
-    //         HttpMessages::RESOURCE_NOT_FOUND,
-    //         ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
+    //         Messages::RESOURCE_NOT_FOUND,
+    //         ErrorCodes::NOT_FOUND
     //     );
 
     //     $roleUpdated = $this->roleRepository->update($role, $payload);
@@ -162,35 +177,39 @@ class MemberService implements MemberServiceInterface
     //         $this->roleRepository->updateRolePermissions($role, $permissions);
     //     }
 
-    //     if($roleUpdated > 0) return $this->respondSuccess(HttpMessages::UPDATED_SUCCESSFULLY);
+    //     if($roleUpdated > 0) return $this->respondSuccess(Messages::UPDATED_SUCCESSFULLY);
     //     else return $this->respondInternalError(
-    //         HttpMessages::RESOURCE_UPDATION_FAILED,
-    //         ErrorCodes::INTERNAL_SERVER_ERROR_CODE
+    //         Messages::RESOURCE_UPDATION_FAILED,
+    //         ErrorCodes::SERVER_ERROR
     //     );
     // }
 
 
     public function updateMemberByCode(string $memberCode, array $payload)
     {
-        if (empty($payload)) return $this->respondInvalidRequestError(
-            HttpMessages::INVALID_PAYLOAD,
-            ErrorCodes::INVALID_PAYLOAD_ERROR_CODE
-        );
+        DB::beginTransaction();
+        try {
+            if (empty($payload)) return $this->respondInvalidRequestError(
+                Messages::INVALID_PAYLOAD,
+                ErrorCodes::INVALID_PAYLOAD
+            );
 
-        $updateMember = $this->memberRepository->findByMemberCode($memberCode);
+            $updateMember = $this->memberRepository->findByMemberCode($memberCode);
+            if (empty($updateMember)) return $this->respondNotFound(
+                Messages::RESOURCE_NOT_FOUND,
+                ErrorCodes::NOT_FOUND
+            );
 
-        if (empty($updateMember)) return $this->respondNotFound(
-            HttpMessages::RESOURCE_NOT_FOUND,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
-        );
+            $result = $this->memberRepository->update($updateMember, $payload);
+            if ($result > 0){
+                DB::commit();
+                return $this->respondSuccess(Messages::UPDATED_SUCCESSFULLY);
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
 
-        $result = $this->memberRepository->update($updateMember, $payload);
-
-        if ($result > 0) return $this->respondSuccess(HttpMessages::UPDATED_SUCCESSFULLY);
-        else return $this->respondInternalError(
-            HttpMessages::INTERNAL_SERVER_ERROR,
-            ErrorCodes::INTERNAL_SERVER_ERROR_CODE
-        );
     }
 
 
@@ -199,16 +218,16 @@ class MemberService implements MemberServiceInterface
     //     $deleteMember = $this->memberRepository->findByMemberCode($memberCode);
 
     //     if (empty($deleteMember)) return $this->respondNotFound(
-    //         HttpMessages::RESOURCE_NOT_FOUND,
-    //         ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
+    //         Messages::RESOURCE_NOT_FOUND,
+    //         ErrorCodes::NOT_FOUND
     //     );
 
     //     $result = $this->memberRepository->delete($deleteMember);
 
-    //     if ($result > 0) return $this->respondSuccess(HttpMessages::DELETED_SUCCESSFULLY);
+    //     if ($result > 0) return $this->respondSuccess(Messages::DELETED_SUCCESSFULLY);
     //     else return $this->respondInternalError(
-    //         HttpMessages::INTERNAL_SERVER_ERROR,
-    //         ErrorCodes::INTERNAL_SERVER_ERROR_CODE
+    //         Messages::SERVER_ERROR,
+    //         ErrorCodes::SERVER_ERROR
     //     );
     // }
 

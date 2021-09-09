@@ -15,6 +15,10 @@ class Role extends Model
         "status"
     ];
 
+    public static $searchable = [
+        "role_name", "role_code", "role_slug"
+    ];
+
     public function admins(): HasMany
     {
         return $this->hasMany(Admin::class, "role_id");

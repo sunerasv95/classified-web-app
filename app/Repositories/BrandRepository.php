@@ -10,12 +10,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class BrandRepository extends BaseRepository implements BrandRepositoryInterface  {
 
-    private $brandSearchAttributes = [];
+    private $brandSearchable = [];
 
     public function __construct(Brand $model)
     {
         parent::__construct($model);
-        $this->brandSearchAttributes = $model::$defaultSearchQueryColumns;
+        $this->brandSearchable = $model::$searchable;
     }
 
     public function findById(
@@ -51,7 +51,7 @@ class BrandRepository extends BaseRepository implements BrandRepositoryInterface
         array $groupByCols = []
     ): Collection
     {
-        $queryCols = $this->brandSearchAttributes;
+        $queryCols = $this->brandSearchable;
         return $this->filterCriteria(
             $query,
             $queryCols,

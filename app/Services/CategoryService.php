@@ -2,25 +2,27 @@
 
 namespace App\Services;
 
+use App\Enums\Common;
 use App\Traits\ApiResponser;
 use App\Http\Resources\Category\CategoryResource;
 use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Services\Contracts\CategoryServiceInterface;
-use App\Util\Enums;
-use App\Util\ErrorCodes;
-use App\Util\HttpMessages;
-use Error;
+use App\Enums\ErrorCodes;
+use App\Traits\ApiQueryHandler;
+use App\Util\Messages;
+use Illuminate\Support\Facades\DB;
+
 
 class CategoryService implements CategoryServiceInterface
 {
     use ApiResponser;
+    use ApiQueryHandler;
 
     private $categoryRepository;
 
     public function __construct(
         CategoryRepositoryInterface $categoryRepository
-    )
-    {
+    ) {
         $this->categoryRepository = $categoryRepository;
     }
 
@@ -28,74 +30,76 @@ class CategoryService implements CategoryServiceInterface
     {
         $paginate = $orderby = array();
 
-        if (isset($reqParams[Enums::SORT_QUERY_PARAM]) &&
-            isset($reqParams[Enums::SORT_ORDER_QUERY_PARAM])
-        ) {
-            $orderby[Enums::SORT_QUERY_PARAM]       = $reqParams[Enums::SORT_QUERY_PARAM];
-            $orderby[Enums::SORT_ORDER_QUERY_PARAM] = $reqParams[Enums::SORT_ORDER_QUERY_PARAM];
-        }
-        if (isset($reqParams[Enums::LIMIT_QUERY_PARAM]) &&
-            isset($reqParams[Enums::OFFSET_QUERY_PARAM])
-        ) {
-            $paginate[Enums::LIMIT_QUERY_PARAM]  = $reqParams[Enums::LIMIT_QUERY_PARAM];
-            $paginate[Enums::OFFSET_QUERY_PARAM] = $reqParams[Enums::OFFSET_QUERY_PARAM];
-        }
+        try {
+            $paginate    = $this->applyPagination($reqParams);
+            $orderby     = $this->applySort($reqParams);
 
-        $categories = $this->categoryRepository
-            ->getAll(
-                array(),
-                array("*"),
-                array("parent"),
-                $paginate,
-                $orderby
+            $categories = $this->categoryRepository
+                ->getAll(
+                    array(),
+                    array("*"),
+                    array("parent"),
+                    $paginate,
+                    $orderby
+                );
+
+            return $this->respondWithResource(
+                new CategoryResource($categories),
+                Messages::OKAY
             );
-
-        return $this->respondWithResource(
-            new CategoryResource($categories),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
-        );
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function getCategoryById(int $id)
     {
-        $category = $this->categoryRepository
-            ->findById(
-                $id,
-                array(),
-                array("*"),
-                array("parent")
+        try {
+            $category = $this->categoryRepository
+                ->findById(
+                    $id,
+                    array(),
+                    array("*"),
+                    array("parent")
+                );
+
+            if (empty($category)) return $this->respondNotFound(
+                Messages::RESOURCE_NOT_FOUND,
+                ErrorCodes::NOT_FOUND
             );
 
-        if (empty($category)) return $this->respondNotFound(
-            HttpMessages::RESOURCE_NOT_FOUND,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
-        );
-
-        return $this->respondWithResource(
-            new CategoryResource($category),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
-        );
+            return $this->respondWithResource(
+                new CategoryResource($category),
+                Messages::OKAY
+            );
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function getCategoryByCode(string $categoryCode)
     {
-        $category = $this->categoryRepository
-            ->findByCategoryCode(
-                $categoryCode,
-                array(),
-                array("*"),
-                array("parent")
+        try {
+            $category = $this->categoryRepository
+                ->findByCategoryCode(
+                    $categoryCode,
+                    array(),
+                    array("*"),
+                    array("parent")
+                );
+
+            if (empty($category)) return $this->respondNotFound(
+                Messages::RESOURCE_NOT_FOUND,
+                ErrorCodes::NOT_FOUND
             );
 
-        if (empty($category)) return $this->respondNotFound(
-            HttpMessages::RESOURCE_NOT_FOUND,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
-        );
-
-        return $this->respondWithResource(
-            new CategoryResource($category),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
-        );
+            return $this->respondWithResource(
+                new CategoryResource($category),
+                Messages::OKAY
+            );
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function filterCategories(array $reqParams)
@@ -103,142 +107,151 @@ class CategoryService implements CategoryServiceInterface
         $keyword = null;
         $filters = $paginate = $orderby = array();
 
-        if (isset($reqParams[Enums::SEARCH_QUERY_PARAM])) {
-            $keyword = $reqParams[Enums::SEARCH_QUERY_PARAM];
-        }
-        if (isset($reqParams[Enums::CATEGORY_STATUS_PARAM])) {
-            $filters[Enums::CATEGORY_STATUS_PARAM] = $reqParams[Enums::CATEGORY_STATUS_PARAM];
-        }
-        if (isset($reqParams[Enums::SORT_QUERY_PARAM]) &&
-            isset($reqParams[Enums::SORT_ORDER_QUERY_PARAM])
-        ) {
-            $orderby[Enums::SORT_QUERY_PARAM]       = $reqParams[Enums::SORT_QUERY_PARAM];
-            $orderby[Enums::SORT_ORDER_QUERY_PARAM] = $reqParams[Enums::SORT_ORDER_QUERY_PARAM];
-        }
-        if (isset($reqParams[Enums::LIMIT_QUERY_PARAM]) &&
-            isset($reqParams[Enums::OFFSET_QUERY_PARAM])
-        ) {
-            $paginate[Enums::LIMIT_QUERY_PARAM]  = $reqParams[Enums::LIMIT_QUERY_PARAM];
-            $paginate[Enums::OFFSET_QUERY_PARAM] = $reqParams[Enums::OFFSET_QUERY_PARAM];
-        }
+        try {
+            $paginate   = $this->applyPagination($reqParams);
+            $orderby    = $this->applySort($reqParams);
+            $keyword    = $this->applySearchFilter($reqParams);
+            $filters    = $this->applyFilters($reqParams, Common::CATEGORY_FILTERS);
 
-        $categories = $this->categoryRepository
-            ->applyFilters(
-                $keyword,
-                $filters,
-                array("*"),
-                array("parent"),
-                $paginate,
-                $orderby,
-                array()
+            $categories = $this->categoryRepository
+                ->applyFilters(
+                    $keyword,
+                    $filters,
+                    array("*"),
+                    array("parent"),
+                    $paginate,
+                    $orderby,
+                    array()
+                );
+
+            return $this->respondWithResource(
+                new CategoryResource($categories),
+                Messages::OKAY
             );
-
-        return $this->respondWithResource(
-            new CategoryResource($categories),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
-        );
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function createCategory(array $payload)
     {
-        $newCategory = $this->categoryRepository->create($payload);
-        if ($newCategory) {
-            $data = array(
-                "success" => true,
-                "message" => HttpMessages::CREATED_SUCCESSFULLY,
-                "result" => new CategoryResource($newCategory)
-            );
+        DB::beginTransaction();
+        try {
+            $newCategory = $this->categoryRepository->create($payload);
+            if ($newCategory) {
+                $data = array(
+                    "success" => true,
+                    "message" => Messages::CREATED_SUCCESSFULLY,
+                    "result" => new CategoryResource($newCategory)
+                );
 
-            return $this->respondCreated($data);
+                DB::commit();
+
+                return $this->respondCreated($data);
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
         }
-
-        return $this->respondInternalError(
-            HttpMessages::INTERNAL_SERVER_ERROR,
-            ErrorCodes::INTERNAL_SERVER_ERROR_CODE
-        );
     }
 
     public function updateCategoryById(int $id, array $payload)
     {
-        if (empty($payload)) return $this->respondInvalidRequestError(
-            HttpMessages::BAD_REQUEST,
-            ErrorCodes::BAD_REQUEST
-        );
-
-        $category = $this->categoryRepository
-            ->findById(
-                $id,
-                array(),
-                array("*"),
-                array()
+        DB::beginTransaction();
+        try {
+            if (empty($payload)) return $this->respondInvalidRequestError(
+                Messages::INVALID_PAYLOAD,
+                ErrorCodes::INVALID_PAYLOAD
             );
 
-        if (empty($category)) return $this->respondNotFound(
-            HttpMessages::RESOURCE_NOT_FOUND,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
-        );
+            $updateCategory = $this->categoryRepository
+                ->findById(
+                    $id,
+                    array(),
+                    array("*"),
+                    array()
+                );
 
-        $result = $this->categoryRepository->update($category, $payload);
+            if (empty($updateCategory)) return $this->respondNotFound(
+                Messages::RESOURCE_NOT_FOUND,
+                ErrorCodes::NOT_FOUND
+            );
 
-        if ($result > 0) return $this->respondSuccess(
-            HttpMessages::UPDATED_SUCCESSFULLY
-        );
-        else return $this->respondInternalError(
-            null,
-            ErrorCodes::INTERNAL_SERVER_ERROR_CODE
-        );
+            $result = $this->categoryRepository->update($updateCategory, $payload);
+
+            if ($result > 0) {
+                DB::commit();
+                return $this->respondSuccess(Messages::UPDATED_SUCCESSFULLY);
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
     }
 
     public function updateCategoryByCode(string $categoryCode, array $payload)
     {
-        if (empty($payload)) return $this->respondInvalidRequestError(
-            HttpMessages::BAD_REQUEST,
-            ErrorCodes::BAD_REQUEST
-        );
-
-        $category = $this->categoryRepository
-            ->findByCategoryCode(
-                $categoryCode,
-                array(),
-                array("*"),
-                array()
+        DB::beginTransaction();
+        try {
+            if (empty($payload)) return $this->respondInvalidRequestError(
+                Messages::INVALID_PAYLOAD,
+                ErrorCodes::INVALID_PAYLOAD
             );
 
-        if (empty($category)) return $this->respondNotFound(
-            HttpMessages::RESOURCE_NOT_FOUND,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
-        );
+            $category = $this->categoryRepository
+                ->findByCategoryCode(
+                    $categoryCode,
+                    array(),
+                    array("*"),
+                    array()
+                );
 
-        $result = $this->categoryRepository->update($category, $payload);
+            if (empty($category)) return $this->respondNotFound(
+                Messages::RESOURCE_NOT_FOUND,
+                ErrorCodes::NOT_FOUND
+            );
 
-        if ($result > 0) return $this->respondSuccess(
-            HttpMessages::UPDATED_SUCCESSFULLY
-        );
-        else return $this->respondInternalError(
-            null,
-            ErrorCodes::INTERNAL_SERVER_ERROR_CODE
-        );
+            $result = $this->categoryRepository->update($category, $payload);
+
+            if ($result > 0) {
+                DB::commit();
+                return $this->respondSuccess(Messages::UPDATED_SUCCESSFULLY);
+            } else return $this->respondInternalError(
+                null,
+                ErrorCodes::SERVER_ERROR
+            );
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
     }
 
     public function deleteCategoryByCode(string $categoryCode)
     {
-        $category = $this->categoryRepository
-            ->findByCategoryCode(
-                $categoryCode,
-                array(),
-                array("*"),
-                array()
+        DB::beginTransaction();
+        try {
+            $deleteCategory = $this->categoryRepository
+                ->findByCategoryCode(
+                    $categoryCode,
+                    array(),
+                    array("*"),
+                    array()
+                );
+
+            if (empty($deleteCategory)) return $this->respondNotFound(
+                Messages::RESOURCE_NOT_FOUND,
+                ErrorCodes::NOT_FOUND
             );
 
-        if (empty($category)) return $this->respondNotFound(
-            HttpMessages::RESOURCE_NOT_FOUND,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
-        );
+            $result = $this->categoryRepository->softDelete($deleteCategory);
 
-        $updateDeleted = $this->categoryRepository->update($category, array("is_deleted" => 1));
-        $result = $this->categoryRepository->delete($category);
-
-        if ($updateDeleted && $result) return $this->respondSuccess(HttpMessages::DELETED_SUCCESSFULLY);
-        else return $this->respondInternalError(null, ErrorCodes::INTERNAL_SERVER_ERROR_CODE);
+            if ($result > 0) {
+                DB::commit();
+                return $this->respondSuccess(Messages::DELETED_SUCCESSFULLY);
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
     }
 }

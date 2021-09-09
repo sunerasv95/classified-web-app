@@ -9,9 +9,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class CategoryRepository extends BaseRepository implements CategoryRepositoryInterface
 {
+    private $categorySearchable = [];
+
     public function __construct(Category $model)
     {
         parent::__construct($model);
+        $this->categorySearchable = $model::$searchable;
     }
 
     public function findById(
@@ -47,7 +50,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
         array $groupByCols = []
     ): Collection
     {
-        $queryCols = ["category_name", "category_description"];
+        $queryCols = $this->categorySearchable;
         return $this->filterCriteria(
             $query,
             $queryCols,

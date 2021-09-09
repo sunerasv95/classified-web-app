@@ -3,18 +3,16 @@
 namespace App\Services;
 
 use App\Enums\Common;
+use App\Enums\ErrorCodes;
 use App\Enums\SystemStatus;
 use App\Http\Resources\Member\AuthenticatedMember;
-use App\Http\Resources\Member\MemberResource;
-use App\Models\MemberType;
 use App\Repositories\Contracts\MemberRepositoryInterface;
 use App\Repositories\Contracts\SocialLoginRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Services\Contracts\AuthServiceInterface;
 use App\Traits\ApiResponser;
 use App\Util\Enums;
-use App\Util\ErrorCodes;
-use App\Util\HttpMessages;
+use App\Util\Messages;
 use Illuminate\Support\Facades\DB;
 
 class AuthService implements AuthServiceInterface
@@ -30,8 +28,7 @@ class AuthService implements AuthServiceInterface
         UserRepositoryInterface $userRepository,
         MemberRepositoryInterface $memberRepository,
         SocialLoginRepositoryInterface $socialLoginsRepository
-    )
-    {
+    ) {
         $this->userRepository           = $userRepository;
         $this->memberRepository         = $memberRepository;
         $this->socialLoginsRepository   = $socialLoginsRepository;
@@ -42,17 +39,24 @@ class AuthService implements AuthServiceInterface
     {
         $email = $password = "";
 
-        $email = $payload['email'];
-        $password = $payload['password'];
+        try {
+            $email      = $payload['email'];
+            $password   = $payload['password'];
 
-        $user = $this->memberRepository->findByEmail($email); //todo: check whether user account is active/blocked/not email verified
-        if(!isset($user)) return $this->respondUnAuthorized(HttpMessages::NOT_FOUND_USER_WITH_EMAIL_USERNAME_MESSAGE);
+            $user = $this->userRepository->findByEmail($email);
+            if (!isset($user)) return $this->respondUnAuthorized(
+                Messages::INVALID_LOGIN,
+                ErrorCodes::INVALID_LOGIN
+            );
 
-        if(checkHashedPassword($password, $user->password)) {
-            $token = $user->createToken(Enums::PASSPORT_CLIENT)->accessToken;
-            return $this->respondWithAccessToken($token, HttpMessages::LOGIN_SUCCESS_MESSAGE);
-        }else {
-            return $this->respondUnAuthorized(HttpMessages::PASSWORDS_MISMATCHED_MESSAGE);
+            if (checkHashedPassword($password, $user->password)) {
+                $token = $user->createToken(Common::PASSPORT_PASSWORD_GRANT_CLIENT)->accessToken;
+                return $this->respondWithAccessToken($token, Messages::OKAY);
+            } else {
+                return $this->respondUnAuthorized(Messages::INVALID_LOGIN, ErrorCodes::INVALID_LOGIN);
+            }
+        } catch (\Throwable $th) {
+            throw $th;
         }
     }
 
@@ -63,23 +67,22 @@ class AuthService implements AuthServiceInterface
         $email      = $payload['email'];
         $provider   = $payload['provider'];
 
-        //check member exists
         $member = $this->memberRepository->findByEmail($email);
-        if(!isset($member)) return $this->respondUnAuthorized(HttpMessages::NOT_FOUND_USER_WITH_EMAIL_USERNAME_MESSAGE);
+        if (!isset($member)) return $this->respondUnAuthorized(Messages::INVALID_LOGIN, ErrorCodes::INVALID_LOGIN);
 
         $memberId = $member->id;
         //check social login credentials are exists, and not revoked
-        $socialLogin = $this->socialLoginsRepository->getSocialLoginByMemberId($memberId, array("provider"=>$provider, "is_revoked" => 0));
-        if(!isset($socialLogin)) return $this->respondUnAuthorized(HttpMessages::LOGIN_FAILED_MESSAGE);
+        $socialLogin = $this->socialLoginsRepository
+            ->getSocialLoginByMemberId($memberId, array("provider" => $provider, "is_revoked" => 0));
+        if (!isset($socialLogin)) return $this->respondUnAuthorized(Messages::INVALID_LOGIN, ErrorCodes::INVALID_LOGIN);
 
-        $token = $member->createToken(Enums::PASSPORT_CLIENT)->accessToken;
-        return $this->respondWithAccessToken($token, HttpMessages::LOGIN_SUCCESS_MESSAGE);
+        $token = $member->createToken(Common::PASSPORT_PASSWORD_GRANT_CLIENT)->accessToken;
+        return $this->respondWithAccessToken($token, Messages::LOGIN_SUCCESS_MESSAGE);
     }
 
     public function registerMember(array $payload)
     {
         DB::beginTransaction();
-
         try {
             $memberAttr = $userAttrr = [];
 
@@ -109,11 +112,10 @@ class AuthService implements AuthServiceInterface
 
             $data = array(
                 "success" => true,
-                "message" => HttpMessages::CREATED_SUCCESSFULLY,
+                "message" => Messages::CREATED_SUCCESSFULLY,
                 "result" => new AuthenticatedMember($newUser, $token)
             );
             return $this->respondCreated($data);
-
         } catch (\Throwable $th) {
             DB::rollBack();
             throw $th;
@@ -133,13 +135,17 @@ class AuthService implements AuthServiceInterface
         $provider   = $payload['provider'];
 
         $member = $this->memberRepository->findByEmail($email);
-        if(!isset($member)) return $this->respondUnAuthorized(HttpMessages::NOT_FOUND_USER_WITH_EMAIL_USERNAME_MESSAGE);
+        if (!isset($member)) return $this->respondUnAuthorized(
+            Messages::INVALID_LOGIN,
+            ErrorCodes::INVALID_LOGIN
+        );
 
         $memberId = $member->id;
-        $socialLogin = $this->socialLoginsRepository->getSocialLoginByMemberId($memberId, array("provider"=>$provider, "is_revoked" => 0));
-        if(isset($socialLogin)) {
-            $token = $member->createToken(Enums::PASSPORT_CLIENT)->accessToken;
-            return $this->respondWithAccessToken($token, HttpMessages::LOGIN_SUCCESS_MESSAGE);
+        $socialLogin = $this->socialLoginsRepository
+            ->getSocialLoginByMemberId($memberId, array("provider" => $provider, "is_revoked" => 0));
+        if (isset($socialLogin)) {
+            $token = $member->createToken(Enums::PASSPORT_PASSWORD_GRANT_CLIENT)->accessToken;
+            return $this->respondWithAccessToken($token, Messages::LOGIN_SUCCESS_MESSAGE);
         }
 
         $memberData['first_name']       = $payload['first_name'];

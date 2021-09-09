@@ -10,12 +10,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class ListingRepository extends BaseRepository implements ListingRepositoryInterface  {
 
-    private $listingSearchAttributes;
+    private $listingSearchable;
 
     public function __construct(Listing $model)
     {
         parent::__construct($model);
-        $this->listingSearchAttributes = $model::$defaultSearchQueryColumns;
+        $this->listingSearchable = $model::$searchable;
     }
 
 
@@ -63,7 +63,7 @@ class ListingRepository extends BaseRepository implements ListingRepositoryInter
         array $groupByCols = []
     ): Collection
     {
-        $queryCols = $this->listingSearchAttributes;
+        $queryCols = $this->listingSearchable;
         return $this->filterCriteria(
             $query,
             $queryCols,

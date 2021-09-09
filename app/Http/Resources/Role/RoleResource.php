@@ -19,28 +19,44 @@ class RoleResource extends JsonResource
         //When resource returns a collection
         if($resourceResponse instanceof \Illuminate\Database\Eloquent\Collection){
             return [
-                "data" => $resourceResponse->map(function ($category) {
+                "data" => $resourceResponse->map(function ($role) {
                     $data = [];
-                    $data['id']             = $category['id'];
-                    $data['name']           = $category['role_name'];
-                    $data['slug']           = $category['role_slug'];
-                    $data['code']           = $category['role_code'];
-                    $data['status']         = $category['status'];
-                    $data['created_at']     = timeStampToDate($category['created_at']);
-                    $data['updated_at']     = timeStampToDate($category['updated_at']);
+
+                    $permissions = $role['permissions'];
+
+                    $data['id']             = $role['id'];
+                    $data['name']           = $role['role_name'];
+                    $data['slug']           = $role['role_slug'];
+                    $data['code']           = $role['role_code'];
+                    $data['created_at']     = $role['created_at'];
+                    $data['updated_at']     = $role['updated_at'];
+                    $data['permissions']    = $permissions->map(function($permission){
+                        return [
+                            "name" => $permission['permission_name'],
+                            "code" => $permission['permission_code']
+                        ];
+                    });
                     return $data;
                 }),
                 "results_count" => $resourceResponse->count()
             ];
         }else{ //When resource returns a Model
             $data = [];
+
+            $permissions = $resourceResponse['permissions'];
+
             $data['id']             = $resourceResponse['id'];
             $data['name']           = $resourceResponse['role_name'];
             $data['slug']           = $resourceResponse['role_slug'];
             $data['code']           = $resourceResponse['role_code'];
-            $data['status']         = $resourceResponse['status'];
-            $data['created_at']     = timeStampToDate($resourceResponse['created_at']);
-            $data['updated_at']     = timeStampToDate($resourceResponse['updated_at']);
+            $data['created_at']     = $resourceResponse['created_at'];
+            $data['updated_at']     = $resourceResponse['updated_at'];
+            $data['permissions']  = $permissions->map(function($permission){
+                    return [
+                        "name" => $permission['permission_name'],
+                        "code" => $permission['permission_code']
+                    ];
+                });
 
             return [
                 "data" =>  $data

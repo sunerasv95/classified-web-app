@@ -2,55 +2,60 @@
 
 namespace App\Services;
 
+use App\Enums\Common;
 use App\Http\Resources\Role\RoleResource;
 use App\Repositories\Contracts\RoleRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Services\Contracts\RoleServiceInterface;
 use App\Traits\ApiResponser;
 use App\Util\Enums;
-use App\Util\ErrorCodes;
-use App\Util\HttpMessages;
+use App\Enums\ErrorCodes;
+use App\Repositories\Contracts\PermissionRepositoryInterface;
+use App\Traits\ApiQueryHandler;
+use App\Util\Messages;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class RoleService implements RoleServiceInterface
 {
 
     use ApiResponser;
+    use ApiQueryHandler;
 
     private $roleRepository;
+    private $permissionRepository;
 
-    public function __construct(RoleRepositoryInterface $roleRepository)
+    public function __construct(
+        RoleRepositoryInterface $roleRepository,
+        PermissionRepositoryInterface $permissionRepository
+    )
     {
         $this->roleRepository = $roleRepository;
+        $this->permissionRepository = $permissionRepository;
     }
 
     public function getAllRoles(array $reqParams)
     {
         $paginate = $orderby = array();
 
-        if (isset($reqParams[Enums::SORT_QUERY_PARAM]) &&
-            isset($reqParams[Enums::SORT_ORDER_QUERY_PARAM])
-        ) {
-            $orderby[Enums::SORT_QUERY_PARAM]       = $reqParams[Enums::SORT_QUERY_PARAM];
-            $orderby[Enums::SORT_ORDER_QUERY_PARAM] = $reqParams[Enums::SORT_ORDER_QUERY_PARAM];
+        try {
+            $paginate = $this->applyPagination($reqParams);
+            $orderby = $this->applySort($reqParams);
+
+            $roles = $this->roleRepository->getAll(
+                array(),
+                array("*"),
+                array("permissions"),
+                $paginate,
+                $orderby
+            );
+            return $this->respondWithResource(
+                new RoleResource($roles),
+                Messages::OKAY
+            );
+        } catch (\Throwable $th) {
+            throw $th;
         }
-        if (isset($reqParams[Enums::LIMIT_QUERY_PARAM]) &&
-            isset($reqParams[Enums::OFFSET_QUERY_PARAM])
-        ) {
-            $paginate[Enums::LIMIT_QUERY_PARAM]  = $reqParams[Enums::LIMIT_QUERY_PARAM];
-            $paginate[Enums::OFFSET_QUERY_PARAM] = $reqParams[Enums::OFFSET_QUERY_PARAM];
-        }
-        $roles = $this->roleRepository->getAll(
-            array(),
-            array("*"),
-            array("permissions"),
-            $paginate,
-            $orderby
-        );
-        return $this->respondWithResource(
-            new RoleResource($roles),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
-        );
     }
 
     public function filterRoles(array $reqParams)
@@ -58,99 +63,111 @@ class RoleService implements RoleServiceInterface
         $keyword = null;
         $filters = $paginate = $orderby = array();
 
-        if (isset($reqParams[Enums::SEARCH_QUERY_PARAM])) {
-            $keyword = $reqParams[Enums::SEARCH_QUERY_PARAM];
-        }
-        if (isset($reqParams[Enums::ROLES_STATUS_PARAM])) {
-            $filters[Enums::ROLES_STATUS_PARAM] = $reqParams[Enums::ROLES_STATUS_PARAM];
-        }
-        if (isset($reqParams[Enums::SORT_QUERY_PARAM]) &&
-            isset($reqParams[Enums::SORT_ORDER_QUERY_PARAM])
-        ) {
-            $orderby[Enums::SORT_QUERY_PARAM]       = $reqParams[Enums::SORT_QUERY_PARAM];
-            $orderby[Enums::SORT_ORDER_QUERY_PARAM] = $reqParams[Enums::SORT_ORDER_QUERY_PARAM];
-        }
-        if (isset($reqParams[Enums::LIMIT_QUERY_PARAM]) &&
-            isset($reqParams[Enums::OFFSET_QUERY_PARAM])
-        ) {
-            $paginate[Enums::LIMIT_QUERY_PARAM]  = $reqParams[Enums::LIMIT_QUERY_PARAM];
-            $paginate[Enums::OFFSET_QUERY_PARAM] = $reqParams[Enums::OFFSET_QUERY_PARAM];
-        }
+        try {
+            $paginate   = $this->applyPagination($reqParams);
+            $orderby    = $this->applySort($reqParams);
+            $keyword    = $this->applySearchFilter($reqParams);
+            $filters    = $this->applyFilters($reqParams, Common::ROLE_FILTERS);
 
-        $roles = $this->roleRepository
-            ->applyFilters(
-                $keyword,
-                $filters,
-                array("*"),
-                array(),
-                $paginate,
-                $orderby,
-                array()
+
+            $roles = $this->roleRepository
+                ->applyFilters(
+                    $keyword,
+                    $filters,
+                    array("*"),
+                    array(),
+                    $paginate,
+                    $orderby,
+                    array()
+                );
+
+            return $this->respondWithResource(
+                new RoleResource($roles),
+                Messages::OKAY
             );
-
-        return $this->respondWithResource(
-            new RoleResource($roles),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
-        );
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function getRoleById(int $roleId)
     {
-        $role = $this->roleRepository->findById(
-            $roleId,
-            array(),
-            array("*"),
-            array("permissions")
-        );
+        try {
+            $role = $this->roleRepository->findById(
+                $roleId,
+                array(),
+                array("*"),
+                array("permissions")
+            );
+            if (empty($role)) return $this->respondNotFound(
+                Messages::RESOURCE_NOT_FOUND,
+                ErrorCodes::NOT_FOUND
+            );
 
-        if(empty($role)) return $this->respondNotFound(
-            HttpMessages::RESOURCE_NOT_FOUND,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
-        );
-
-        return $this->respondWithResource(
-            new RoleResource($role),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
-        );
+            return $this->respondWithResource(
+                new RoleResource($role),
+                Messages::OKAY
+            );
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function getRoleByCode(string $roleCode)
     {
-        $role = $this->roleRepository->findByRoleCode(
-            $roleCode,
-            array(),
-            array("*"),
-            array("permissions")
-        );
+        try {
+            $role = $this->roleRepository->findByRoleCode(
+                $roleCode,
+                array(),
+                array("*"),
+                array("permissions")
+            );
+            if (empty($role)) return $this->respondNotFound(
+                Messages::RESOURCE_NOT_FOUND,
+                ErrorCodes::NOT_FOUND
+            );
 
-        if(empty($role)) return $this->respondNotFound(
-            HttpMessages::RESOURCE_NOT_FOUND,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
-        );
-
-        return $this->respondWithResource(
-            new RoleResource($role),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
-        );
+            return $this->respondWithResource(
+                new RoleResource($role),
+                Messages::OKAY
+            );
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function createRole(array $payload)
     {
-        $newRole = $this->roleRepository->create($payload);//->createWithRelationships($roleData, $relations);
+        $relations = [];
+        // dd($payload);
+        DB::beginTransaction();
+        try {
+            $permissions = [];
+            foreach($payload['permissions'] as $permission){
+                $code = $permission['permission_code'];
+                $pid = $this->permissionRepository->findByPermissionCode($code)->id;
+                array_push($permissions, ['permission_id' => $pid]);
+            }
 
-        if ($newRole) {
-            $data = array(
-                "success" => true,
-                "message" => HttpMessages::CREATED_SUCCESSFULLY,
-                "result" => new RoleResource($newRole)
+            $relations['permissions'] =  $permissions;
+            $newRole = $this->roleRepository->createWithRelationships(
+                $payload,
+                $relations
             );
-            return $this->respondCreated($data);
-        }
 
-        return $this->respondInternalError(
-            HttpMessages::INTERNAL_SERVER_ERROR,
-            ErrorCodes::INTERNAL_SERVER_ERROR_CODE
-        );
+            if ($newRole) {
+                $data = array(
+                    "success" => true,
+                    "message" => Messages::CREATED_SUCCESSFULLY,
+                    "result" => new RoleResource($newRole)
+                );
+                DB::commit();
+                return $this->respondCreated($data);
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
     }
 
     // public function updateRoleById(int $roleId, array $payload)
@@ -159,48 +176,63 @@ class RoleService implements RoleServiceInterface
 
     //     $role = $this->roleRepository->findById($roleId);
     //     if(!isset($role)) return $this->respondNotFound(
-    //         HttpMessages::RESOURCE_NOT_FOUND,
-    //         ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
+    //         Messages::RESOURCE_NOT_FOUND,
+    //         ErrorCodes::NOT_FOUND
     //     );
 
     //     $roleUpdated = $this->roleRepository
     //         ->updateWithRelationships($role, $updateRole, $relations);
 
-    //     if($roleUpdated > 0) return $this->respondSuccess(HttpMessages::CREATED_SUCCESSFULLY);
+    //     if($roleUpdated > 0) return $this->respondSuccess(Messages::CREATED_SUCCESSFULLY);
     //     else return $this->respondInternalError(
-    //         HttpMessages::RESOURCE_UPDATION_FAILED,
-    //         ErrorCodes::INTERNAL_SERVER_ERROR_CODE
+    //         Messages::RESOURCE_UPDATION_FAILED,
+    //         ErrorCodes::SERVER_ERROR
     //     );
     // }
 
     public function updateRoleWithPermissionsByCode(string $roleCode, array $payload)
     {
-        //dd($roleCode, $payload);
-        $permissions = array();
+        $relations = array();
 
-        $role = $this->roleRepository->findByRoleCode($roleCode);
-        if(!isset($role)) return $this->respondNotFound(
-            HttpMessages::RESOURCE_NOT_FOUND,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
-        );
+        DB::beginTransaction();
+        try {
+            if (empty($payload)) return $this->respondInvalidRequestError(
+                Messages::INVALID_PAYLOAD,
+                ErrorCodes::INVALID_PAYLOAD
+            );
+            
+            $role = $this->roleRepository->findByRoleCode($roleCode);
+            if (empty($role)) return $this->respondNotFound(
+                Messages::RESOURCE_NOT_FOUND,
+                ErrorCodes::NOT_FOUND
+            );
 
-        $roleUpdated = $this->roleRepository->update($role, $payload);
-        if(!empty($payload['permissions'])){
-            $permissions = $payload['permissions'];
-            $this->roleRepository->updateRolePermissions($role, $permissions);
+            if (!empty($payload['permissions'])) {
+                $permissions = [];
+                foreach($payload['permissions'] as $permission){
+                    $code = $permission['permission_code'];
+                    $pid = $this->permissionRepository->findByPermissionCode($code)->id;
+                    array_push($permissions, ['permission_id' => $pid]);
+                }
+                $relations['permissions'] =  $permissions;
+            }
+
+            $roleUpdated = $this->roleRepository->updateWithRelationships(
+                $role,
+                $payload,
+                $relations
+            );
+            if ($roleUpdated > 0) {
+                DB::commit();
+                return $this->respondSuccess(Messages::UPDATED_SUCCESSFULLY);
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
         }
-
-        if($roleUpdated > 0) return $this->respondSuccess(HttpMessages::UPDATED_SUCCESSFULLY);
-        else return $this->respondInternalError(
-            HttpMessages::RESOURCE_UPDATION_FAILED,
-            ErrorCodes::INTERNAL_SERVER_ERROR_CODE
-        );
     }
 
     public function deleteRoleByCode(string $string)
     {
-
     }
-
-
 }

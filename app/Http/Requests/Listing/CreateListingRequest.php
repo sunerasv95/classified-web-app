@@ -64,7 +64,8 @@ class CreateListingRequest extends FormRequest
             "board_specs.skill_levels.*"        => "integer",
             "board_specs.wave_types"            => "required_with:board_specs|array|min:1",
             "board_specs.wave_types.*"          => "integer",
-            "board_specs.added_accessories"     => "nullable|array"
+            "board_specs.added_accessories"     => "nullable|array",
+            "member_code"                       => "required|string|exists:users,user_code"
         ];
     }
 }

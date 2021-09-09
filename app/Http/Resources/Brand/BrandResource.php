@@ -26,9 +26,9 @@ class BrandResource extends JsonResource
                     $data['slug']           = $brand['brand_slug'];
                     $data['code']           = $brand['brand_code'];
                     $data['img_url']        = $brand['brand_image_url'];
-                    $data['status']         = $brand['status'];
-                    $data['created_at']     = timeStampToDate($brand['created_at']);
-                    $data['updated_at']     = timeStampToDate($brand['updated_at']);
+                    // $data['status']         = $brand['status'];
+                    $data['created_at']     = $brand['created_at'];
+                    $data['updated_at']     = $brand['updated_at'];
                     return $data;
                 }),
                 "results_count" => $resourceResponse->count()
@@ -42,8 +42,8 @@ class BrandResource extends JsonResource
             $data['code']           = $resourceResponse['brand_code'];
             $data['img_url']        = $resourceResponse['brand_image_url'];
             $data['status']         = $resourceResponse['status'];
-            $data['created_at']     = timeStampToDate($resourceResponse['created_at']);
-            $data['updated_at']     = timeStampToDate($resourceResponse['updated_at']);
+            $data['created_at']     = $resourceResponse['created_at'];
+            $data['updated_at']     = $resourceResponse['updated_at'];
 
             return [
                 "data" =>  $data

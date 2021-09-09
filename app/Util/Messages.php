@@ -3,7 +3,7 @@
 
 namespace App\Util;
 
-final class HttpMessages {
+final class Messages {
 
     /*******************************
      *
@@ -16,12 +16,10 @@ final class HttpMessages {
      ****/
 
     const UNAUTHORIZED_MESSAGE                          = "Unauthorized";
-    const UNAUTHORIZED_ACTION                           = "The action is unauthorized";
     const NOT_FOUND_USER_MESSAGE                        = "User not found";
     const NOT_FOUND_USER_WITH_EMAIL_USERNAME_MESSAGE    = "No user found with that email or username";
     const NOT_APPROVED_USER_MESSAGE                     = "User does not has any administration authorities";
     const NOT_ACTIVATEDD_USER_MESSAGE                   = "User is not activated";
-    const INVALID_LOGIN_CREDENTIALS                     = "Login credential/s are not valid";
 
     const LOGIN_FAILED_MESSAGE                          = "Log in failed";
     const PASSWORDS_MISMATCHED_MESSAGE                  = "Passwords are not matched";
@@ -34,9 +32,13 @@ final class HttpMessages {
     const APPROVAL_REJECTED                             = "Approval request has been rejected";
 
 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    
-    const RESPONSE_OKAY_MESSAGE             = "OK";
+    const INVALID_LOGIN                     = "Invalid login credentials";
+    const UNAUTHORIZED_ACTION               = "The action is unauthorized";
+
+
+    const OKAY                              = "OK";
 
     const UPDATED_SUCCESSFULLY              = "Updated Successfully";
     const CREATED_SUCCESSFULLY              = "Created Successfully";
@@ -52,6 +54,7 @@ final class HttpMessages {
     const RESOURCE_EXISTS                   = "Resource exists";
     const INVALID_PAYLOAD                   = "Invalid payload passed";
 
-    const INTERNAL_SERVER_ERROR            = "Internal Server Error";
+    const SUCCESS                           = "Success";
+    const SERVER_ERROR                      = "Internal Server Error";
 
 }

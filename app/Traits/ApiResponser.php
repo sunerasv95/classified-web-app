@@ -3,7 +3,7 @@
 namespace App\Traits;
 
 use App\Util\Enums;
-use App\Util\ErrorCodes;
+use App\Enums\ErrorCodes;
 use Error;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -149,7 +149,7 @@ trait ApiResponser
     protected function respondError(
         $message,
         int $statusCode = 400,
-        int $error_code = ErrorCodes::UNDEFINED_ERROR_CODE,
+        int $error_code = ErrorCodes::UNDEFINED,
         Exception $exception = null
     )
     {
@@ -197,7 +197,7 @@ trait ApiResponser
 
     protected function respondValidationErrors(
         ValidationException $exception,
-        $errorCode = ErrorCodes::VALIDATION_ERROR_CODE
+        $errorCode = ErrorCodes::VALIDATION_ERROR
     )
     {
         return $this->apiResponse(
@@ -217,10 +217,7 @@ trait ApiResponser
             "success" => true,
             "message" => $message,
             "result" => [
-                "data" => [
-                    "access_token" => $token,
-                    "token_type" => Enums::PASSPORT_TOKEN_TYPE
-                ]
+                "token" => $token
             ]
         ), 200);
     }

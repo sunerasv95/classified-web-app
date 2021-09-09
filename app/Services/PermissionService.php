@@ -2,19 +2,23 @@
 
 namespace App\Services;
 
+use App\Enums\Common;
 use App\Http\Resources\Permission\PermissionResource;
 use App\Repositories\Contracts\PermissionRepositoryInterface;
 use App\Services\Contracts\PermissionServiceInterface;
 use App\Traits\ApiResponser;
 use App\Util\Enums;
-use App\Util\ErrorCodes;
-use App\Util\HttpMessages;
+use App\Enums\ErrorCodes;
+use App\Traits\ApiQueryHandler;
+use App\Util\Messages;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class PermissionService implements PermissionServiceInterface
 {
 
     use ApiResponser;
+    use ApiQueryHandler;
 
     private $permissionRepository;
 
@@ -27,31 +31,25 @@ class PermissionService implements PermissionServiceInterface
     {
         $paginate = $orderby = array();
 
-        if (isset($reqParams[Enums::SORT_QUERY_PARAM]) &&
-            isset($reqParams[Enums::SORT_ORDER_QUERY_PARAM])
-        ) {
-            $orderby[Enums::SORT_QUERY_PARAM]       = $reqParams[Enums::SORT_QUERY_PARAM];
-            $orderby[Enums::SORT_ORDER_QUERY_PARAM] = $reqParams[Enums::SORT_ORDER_QUERY_PARAM];
-        }
-        if (isset($reqParams[Enums::LIMIT_QUERY_PARAM]) &&
-            isset($reqParams[Enums::OFFSET_QUERY_PARAM])
-        ) {
-            $paginate[Enums::LIMIT_QUERY_PARAM]  = $reqParams[Enums::LIMIT_QUERY_PARAM];
-            $paginate[Enums::OFFSET_QUERY_PARAM] = $reqParams[Enums::OFFSET_QUERY_PARAM];
-        }
+        try {
+            $paginate = $this->applyPagination($reqParams);
+            $orderby = $this->applySort($reqParams);
 
-        $permissions = $this->permissionRepository->getAll(
-            array(),
-            array("*"),
-            array(),
-            $paginate,
-            $orderby
-        );
+            $permissions = $this->permissionRepository->getAll(
+                array(),
+                array("*"),
+                array(),
+                $paginate,
+                $orderby
+            );
 
-        return $this->respondWithResource(
-            new PermissionResource($permissions),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
-        );
+            return $this->respondWithResource(
+                new PermissionResource($permissions),
+                Messages::OKAY
+            );
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function filterPermissions(array $reqParams)
@@ -59,131 +57,142 @@ class PermissionService implements PermissionServiceInterface
         $keyword = null;
         $filters = $paginate = $orderby = array();
 
-        if (isset($reqParams[Enums::SEARCH_QUERY_PARAM])) {
-            $keyword = $reqParams[Enums::SEARCH_QUERY_PARAM];
-        }
-        if (isset($reqParams[Enums::PERMISSION_STATUS_PARAM])) {
-            $filters[Enums::PERMISSION_STATUS_PARAM] = $reqParams[Enums::PERMISSION_STATUS_PARAM];
-        }
-        if (isset($reqParams[Enums::SORT_QUERY_PARAM]) &&
-            isset($reqParams[Enums::SORT_ORDER_QUERY_PARAM])
-        ) {
-            $orderby[Enums::SORT_QUERY_PARAM]       = $reqParams[Enums::SORT_QUERY_PARAM];
-            $orderby[Enums::SORT_ORDER_QUERY_PARAM] = $reqParams[Enums::SORT_ORDER_QUERY_PARAM];
-        }
-        if (isset($reqParams[Enums::LIMIT_QUERY_PARAM]) &&
-            isset($reqParams[Enums::OFFSET_QUERY_PARAM])
-        ) {
-            $paginate[Enums::LIMIT_QUERY_PARAM]  = $reqParams[Enums::LIMIT_QUERY_PARAM];
-            $paginate[Enums::OFFSET_QUERY_PARAM] = $reqParams[Enums::OFFSET_QUERY_PARAM];
-        }
+        try {
+            $paginate   = $this->applyPagination($reqParams);
+            $orderby    = $this->applySort($reqParams);
+            $keyword    = $this->applySearchFilter($reqParams);
+            $filters    = $this->applyFilters($reqParams, Common::PERMISSION_FILTERS);
 
-        $permissions = $this->permissionRepository
-            ->applyFilters(
-                $keyword,
-                $filters,
-                array("*"),
-                array(),
-                $paginate,
-                $orderby,
-                array()
+            $permissions = $this->permissionRepository
+                ->applyFilters(
+                    $keyword,
+                    $filters,
+                    array("*"),
+                    array(),
+                    $paginate,
+                    $orderby,
+                    array()
+                );
+
+            return $this->respondWithResource(
+                new PermissionResource($permissions),
+                Messages::OKAY
             );
-
-        return $this->respondWithResource(
-            new PermissionResource($permissions),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
-        );
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function getPermissionById(int $permissionId)
     {
-        $permission = $this->permissionRepository->findById($permissionId);
+        try {
+            $permission = $this->permissionRepository->findById($permissionId);
+            if (empty($permission)) return $this->respondNotFound(
+                Messages::RESOURCE_NOT_FOUND,
+                ErrorCodes::NOT_FOUND
+            );
 
-        if(empty($permission)) return $this->respondNotFound(
-            HttpMessages::RESOURCE_NOT_FOUND,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
-        );
-
-        return $this->respondWithResource(
-            new PermissionResource($permission),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
-        );
+            return $this->respondWithResource(
+                new PermissionResource($permission),
+                Messages::OKAY
+            );
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function getPermissionByCode(string $permissionCode)
     {
-        $permission = $this->permissionRepository->findByPermissionCode($permissionCode);
+        try {
+            $permission = $this->permissionRepository->findByPermissionCode($permissionCode);
+            if (empty($permission)) return $this->respondNotFound(
+                Messages::RESOURCE_NOT_FOUND,
+                ErrorCodes::NOT_FOUND
+            );
 
-        if(empty($permission)) return $this->respondNotFound(
-            HttpMessages::RESOURCE_NOT_FOUND,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
-        );
-
-        return $this->respondWithResource(
-            new PermissionResource($permission),
-            HttpMessages::RESPONSE_OKAY_MESSAGE
-        );
+            return $this->respondWithResource(
+                new PermissionResource($permission),
+                Messages::OKAY
+            );
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     public function createPermission(array $payload)
     {
-        $newPermission = null;
-        $newPermission = $this->permissionRepository->create($payload);
+        DB::beginTransaction();
+        try {
+            $newPermission = $this->permissionRepository->create($payload);
+            if ($newPermission) {
+                $data = array(
+                    "success" => true,
+                    "message" => Messages::CREATED_SUCCESSFULLY,
+                    "result" => new PermissionResource($newPermission)
+                );
 
-        if(isset($newPermission)) return $this->respondSuccess(HttpMessages::CREATED_SUCCESSFULLY);
-        else return $this->respondInternalError(
-            HttpMessages::INTERNAL_SERVER_ERROR,
-            ErrorCodes::INTERNAL_SERVER_ERROR_CODE
-        );
+                DB::commit();
+                return $this->respondCreated($data);
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
     }
 
     public function updatePermissionById(int $permissionId, array $payload)
     {
-        if(empty($payload)) return $this->respondInvalidRequestError(
-            HttpMessages::BAD_REQUEST,
-            ErrorCodes::BAD_REQUEST
-        );
+        DB::beginTransaction();
+        try {
+            if (empty($payload)) return $this->respondInvalidRequestError(
+                Messages::INVALID_PAYLOAD,
+                ErrorCodes::INVALID_PAYLOAD
+            );
 
-        $permission = $this->permissionRepository->findById($permissionId);
-        if(!isset($permission)) return $this->respondNotFound(
-            HttpMessages::RESOURCE_NOT_FOUND,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
-        );
+            $permission = $this->permissionRepository->findById($permissionId);
+            if (!isset($permission)) return $this->respondNotFound(
+                Messages::RESOURCE_NOT_FOUND,
+                ErrorCodes::NOT_FOUND
+            );
 
-        $permissionUpdated = $this->permissionRepository->update($permission, $payload);
-
-        if($permissionUpdated > 0) return $this->respondSuccess(HttpMessages::UPDATED_SUCCESSFULLY);
-        else return $this->respondInternalError(
-            HttpMessages::INTERNAL_SERVER_ERROR,
-            ErrorCodes::INTERNAL_SERVER_ERROR_CODE
-        );
+            $permissionUpdated = $this->permissionRepository->update($permission, $payload);
+            if ($permissionUpdated > 0) {
+                DB::commit();
+                return $this->respondSuccess(Messages::UPDATED_SUCCESSFULLY);
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
     }
 
     public function updatePermissionByCode(string $permissionCode, array $payload)
     {
-        if(empty($payload)) return $this->respondInvalidRequestError(
-            HttpMessages::BAD_REQUEST,
-            ErrorCodes::BAD_REQUEST
-        );
-        
-        $permission = $this->permissionRepository->findByPermissionCode($permissionCode);
+        DB::beginTransaction();
+        try {
+            if (empty($payload)) return $this->respondInvalidRequestError(
+                Messages::INVALID_PAYLOAD,
+                ErrorCodes::INVALID_PAYLOAD
+            );
 
-        if(!isset($permission)) return $this->respondNotFound(
-            HttpMessages::RESOURCE_NOT_FOUND,
-            ErrorCodes::RESOURCE_NOT_FOUND_ERROR_CODE
-        );
+            $permission = $this->permissionRepository->findByPermissionCode($permissionCode);
+            if (!isset($permission)) return $this->respondNotFound(
+                Messages::RESOURCE_NOT_FOUND,
+                ErrorCodes::NOT_FOUND
+            );
 
-        $permissionUpdated = $this->permissionRepository->update($permission, $payload);
-
-        if($permissionUpdated > 0) return $this->respondSuccess(HttpMessages::UPDATED_SUCCESSFULLY);
-        else return $this->respondInternalError(
-            HttpMessages::INTERNAL_SERVER_ERROR,
-            ErrorCodes::INTERNAL_SERVER_ERROR_CODE
-        );
+            $permissionUpdated = $this->permissionRepository->update($permission, $payload);
+            if ($permissionUpdated > 0) {
+                DB::commit();
+                return $this->respondSuccess(Messages::UPDATED_SUCCESSFULLY);
+            }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
     }
 
     public function deletePermissionById(int $id)
     {
-
     }
 }

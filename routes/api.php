@@ -29,10 +29,13 @@ use App\Http\Controllers\UploadsController;
 // });
 
 
-Route::prefix('admin/auth/')->group(function () {
-    Route::post('login', [AdminAuthController::class, "login"]);
-});
+Route::prefix('admin')->group(function () {
+    Route::post('auth/login', [AuthController::class, "login"]);
 
+    Route::prefix('users')->group(function () {
+        Route::post('/', [AdminController::class, "create"]);
+    });
+});
 
 Route::prefix('/auth')->group(function () {
     Route::post('register', [AuthController::class, "register"]);

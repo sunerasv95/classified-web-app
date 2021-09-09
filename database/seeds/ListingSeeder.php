@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\SystemPrefix;
 use App\Enums\TransactionType;
 use App\Util\Enums;
 use Carbon\Carbon;
@@ -27,6 +28,7 @@ class ListingSeeder extends Seeder
                 'listing_slug' => Str::slug($title),
                 'listing_description' => "Test description with some testing ? * & @ % /// punctuation marks and chaaaracters",
                 'listing_thumbnail_url' => "https://picsum.photos/200/300",
+                'member_id' => 1,
                 'category_id' => 1,
                 'transaction_type' => TransactionType::SALE,
                 'pricing_option_id' => 1,

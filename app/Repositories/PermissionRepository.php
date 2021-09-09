@@ -10,9 +10,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class PermissionRepository extends BaseRepository implements PermissionRepositoryInterface  {
 
+    private $permissionSearchable = [];
+
     public function __construct(Permission $model)
     {
         parent::__construct($model);
+        $this->permissionSearchable = $model::$searchable;
     }
 
     public function findById(
@@ -58,7 +61,7 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
         array $groupByCols = []
     ): Collection
     {
-        $queryCols = ["permission_name", "permission_code", "permission_slug"];
+        $queryCols = $this->permissionSearchable;
         return $this->filterCriteria(
             $query,
             $queryCols,

@@ -23,8 +23,12 @@ class Brand extends Model
         "deleted_at"
     ];
 
-    public static $defaultSearchQueryColumns = [
-            "brand_name", "brand_code"
+    public static $searchable = [
+        "brand_name", "brand_code"
+    ];
+
+    public static $filterable = [
+        "status",
     ];
 
     // public function listings(): HasMany

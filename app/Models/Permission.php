@@ -14,6 +14,14 @@ class Permission extends Model
         "status"
     ];
 
+    public static $searchable = [
+        "permission_name", "permission_code", "permission_slug"
+    ];
+
+    public static $filterable = [
+        "status" => "status"
+    ];
+
     public function roles()
     {
         return $this->belongsToMany(Role::class, "role_permission", "permission_id", "role_id")->withTimestamps();
